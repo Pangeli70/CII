@@ -15,7 +15,7 @@ const rawSchema: Jsv.IApgJsvInterface = {
     type: 'object',
     properties: {
         type: {
-            $ref: 'eApgCii_es#/definitions/enumType'
+            $ref: 'eApgCii_Types#/definitions/enumType'
         },
 
         name: {

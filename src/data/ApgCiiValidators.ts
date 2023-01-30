@@ -7,7 +7,8 @@
  */
 
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
-import { eApgCii_TypesSchema } from "../schemas/eApgCadInsTypesSchema.ts";
+
+import { eApgCii_TypesSchema } from "../schemas/eApgCiiTypesSchema.ts";
 import { ApgCii_GenericSchema } from "../schemas/ApgCiiGenericSchema.ts";
 import { ApgCii_SetNameSchema } from "../schemas/ApgCiiSetNameSchema.ts";
 import { ApgCii_PopLayerSchema } from "../schemas/ApgCiiPopLayerSchema.ts";
