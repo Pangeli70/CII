@@ -65,7 +65,7 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         this.Gui(cad);
 
         const svg = cad.svg.render();
-        return { svg, logger }
+        return { svg, logger, test }
     }
 
 

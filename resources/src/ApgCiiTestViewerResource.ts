@@ -6,6 +6,7 @@
  * -----------------------------------------------------------------------
  */
 import { Drash, Tng, Uts, Cad } from "../../deps.ts";
+import { IApgCiiInstruction } from "../../src/interfaces/IApgCiiInstruction.ts";
 
 import { ApgCiiTester } from "../../test/src/classes/ApgCiiTester.ts";
 
@@ -54,13 +55,16 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
 
         let svgContent = "";
         let testLogger: any = { hasErrors: false };
+        let instructions: IApgCiiInstruction[] = [];
+        const { svg, logger, test } = ApgCiiTester.RunTest(testName as unknown as eApgCiiTests, blackBack, gridMode, debug);
+        svgContent = svg;
+        testLogger = logger;
+        instructions = test!.instructions;
 
-
-                    const { svg, logger } = ApgCiiTester.RunTest(testName as unknown as eApgCiiTests, blackBack, gridMode, debug);
-                    svgContent = svg;
-                    testLogger = logger;
-
-        await Deno.writeTextFile(Deno.cwd() + "/test/output/" + testName + ".svg", svgContent);
+        const isDenoDeploy = Deno.env.get("DENO_DEPLOYMENT_ID") !== undefined;
+        if (!isDenoDeploy) {
+            await Deno.writeTextFile(Deno.cwd() + "/test/output/" + testName + ".svg", svgContent);
+        }
 
         const templateData = {
             site: {
@@ -81,7 +85,8 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
                 }
             ],
             svgContent,
-            testLogger
+            testLogger,
+            instructions
         };
 
         const html = await Tng.ApgTngService.Render("/svg_viewer.html", templateData) as string;
@@ -138,7 +143,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
             }
         ];
 
-       
+
         return apageMenu;
     }
 }
