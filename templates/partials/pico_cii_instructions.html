@@ -1,7 +1,8 @@
 <div id="Cii_Instructions">
-    <p style="font-family: 'Lucida console', 'Courier New', Courier, monospace;">
+    <p>Instructions:</p>
+    <p style="font-family: 'Lucida console', 'Courier New', Courier, monospace; font-size: smaller; text-align: left;">
     [: for (const instruction of instructions) { 
-        const json = JSON.stringify(instruction); 
+        const json = JSON.stringify(instruction).replaceAll(",", ", "); 
         const brJson = json + "<br>\n";
         r.push(brJson);
     } :]
