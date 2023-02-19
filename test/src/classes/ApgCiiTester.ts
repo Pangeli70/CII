@@ -7,7 +7,7 @@
  * -----------------------------------------------------------------------
 */
 
-import { Lgr, Cad } from "../../../deps.ts";
+import { Lgr, Cad, StdPath } from "../../../deps.ts";
 import { ApgCii } from "../../../src/classes/ApgCii.ts";
 
 import { ApgCiiTest_01 } from "../../data/ApgCiiTest_01.ts";
@@ -23,6 +23,7 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
     protected static _ready = false;
     protected static _tests: Map<string, IApgCiiTest> = new Map();
 
+
     protected static init() {
 
         this._tests.set(ApgCiiTest_01.name, ApgCiiTest_01);
@@ -30,41 +31,63 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         this._tests.set(ApgCiiTest_03.name, ApgCiiTest_03);
         this._tests.set(ApgCiiTest_04.name, ApgCiiTest_04);
         this._tests.set(ApgCiiTest_05.name, ApgCiiTest_05);
+
         this._ready = true;
     }
 
 
-    static GetTest(atestName: string) {
+    static async GetTest(atestName: string) {
 
         if (!this._ready) this.init();
 
-        return this._tests.get(atestName);
+        let r = this._tests.get(atestName);
+
+        if (!r) {
+            // TODO @2 move this const declaratio outside from here
+            const JSON_INSTRUCTIONS_PATH = StdPath.resolve('./test/data/json');
+            const file = StdPath.normalize(JSON_INSTRUCTIONS_PATH + "/" + atestName);
+            const fileContent = await Deno.readTextFile(file);
+            try {
+                r = JSON.parse(fileContent) as IApgCiiTest;
+            }
+            catch (_error) {
+                r = {
+                    name: atestName,
+                    description: 'Error parsing instructions',
+                    instructions: []
+                };
+            }
+        }
+
+        return r;
     }
 
 
-    static RunTest(
-        aname: string,
-        isBlackBack = false,
-        agridMode = Cad.Test.eApgCadTestGridMode.LINES,
-        aisDebug = false,
+    static async RunTest(
+        cad: Cad.ApgCadSvg,
+        aname: string
     ) {
 
-        if (!this._ready) this.init();
-
-        const isDotGrid = agridMode == Cad.Test.eApgCadTestGridMode.DOTS;
-        const cad = new Cad.ApgCadSvg(isBlackBack, isDotGrid, aisDebug);
-        cad.svg.title = `Test instructions set`;
-        cad.svg.description = "Apg Svg Cad";
+        cad.svg.title = aname;
+        cad.svg.description = "Apg Svg Cad Instr. Interp.";
 
         const logger = new Lgr.ApgLgr('Instructions set');
-        const test = this.GetTest(aname);
-        // TODO @4 APG 20221228 Test here for undefined
-        const insSet = new ApgCii(logger, cad, test!.instructions);
-        insSet.build();
-        this.DrawCartouche(cad);
-        this.Gui(cad);
+        const test = await this.GetTest(aname);
 
-        const svg = cad.svg.render();
+        let svg = "";
+
+        if (test) { 
+
+            const insSet = new ApgCii(logger, cad)
+            insSet.set(test!.instructions);
+            insSet.build();
+
+            this.DrawCartouche(cad);
+            this.Gui(cad);
+            
+            svg = cad.svg.render();
+        }
+
         return { svg, logger, test }
     }
 

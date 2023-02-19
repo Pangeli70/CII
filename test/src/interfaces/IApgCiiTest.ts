@@ -11,7 +11,7 @@ import { IApgCiiInstruction } from "../../../src/interfaces/IApgCiiInstruction.t
 import { eApgCiiTests } from "../enums/eApgCiiTests.ts";
 
 export interface IApgCiiTest { 
-    name: eApgCiiTests;
+    name: eApgCiiTests | string;
     description: string;
     instructions: IApgCiiInstruction[]
 }

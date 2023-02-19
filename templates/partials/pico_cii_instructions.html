@@ -1,10 +1,16 @@
-<div id="Cii_Instructions">
-    <p>Instructions:</p>
-    <p style="font-family: 'Lucida console', 'Courier New', Courier, monospace; font-size: smaller; text-align: left;">
-    [: for (const instruction of instructions) { 
-        const json = JSON.stringify(instruction).replaceAll(",", ", "); 
-        const brJson = json + "<br>\n";
-        r.push(brJson);
-    } :]
-    </p>
+<div id="pico_cii_instructions">
+
+    <details>
+        <summary>
+            <h3>Instructions</h3>
+        </summary>
+        <p style="font-family: 'Lucida console', monospace; text-align: left;">
+        [: for (const instruction of instructions) { 
+            const json = JSON.stringify(instruction).replaceAll(",", ", "); 
+            const brJson = json + "<br>\n";
+            r.push(brJson);
+        } :]
+        </p>
+    </details>
+    
 </div>

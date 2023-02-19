@@ -15,11 +15,14 @@ const SERVER_INFO: Uts.IApgUtsServerInfo = {
   localPort: 49615
 }
 
+
 Tng.ApgTngService.Init("./templates", "", {
   useCache: false,
   cacheChunksLongerThan: 100,
   consoleLog: true
 });
+
+
 
 const server = new Drash.Server({
   hostname: '0.0.0.0',
