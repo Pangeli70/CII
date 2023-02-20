@@ -15,5 +15,6 @@ export enum eApgCiiTests {
     DIMS_AND_ANNOTS = "Dims as annotations",
     TC_MEAS_ON_SITE_1 = "Measures taken on site side view",
     TC_PED_DOORS_1 = "Doors on side view",
-    STRUCT_BEAMS = "Structural beams"
+    STRUCT_BEAMS = "Structural beams",
+    SLIDING_CURVE = "Sliding curve",
 }

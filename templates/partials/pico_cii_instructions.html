@@ -1,3 +1,9 @@
+<pre hidden>
+  [: arguments({
+    "#0": "IApgCiiInstruction[]"
+  }) :]
+</pre>
+
 <div id="pico_cii_instructions">
 
     <details>
@@ -5,12 +11,14 @@
             <h3>Instructions</h3>
         </summary>
         <p style="font-family: 'Lucida console', monospace; text-align: left;">
-        [: for (const instruction of instructions) { 
+        <pre><code>
+        [: for (const instruction of [#0]) { 
             const json = JSON.stringify(instruction).replaceAll(",", ", "); 
             const brJson = json + "<br>\n";
             r.push(brJson);
         } :]
+        </code></pre>
         </p>
     </details>
-    
+
 </div>

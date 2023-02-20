@@ -1,9 +1,10 @@
-<div id="pico_cad_test_options_dialog" >
+<div id="pico_cad_test_options_dialog">
 
+    [: const optionsDialogID = 'ApgCadTestOptionsDialog'; :]
 
     <script>
-        function openSettings(open) {
-            const d = document.getElementById('ApgCadTestOptionsDialog');
+        function openOptionsDialog(open) {
+            const d = document.getElementById('[: optionsDialogID :]');
             if (open) {
                 d.showModal()
             }
@@ -42,61 +43,77 @@
 
         function updatePage() {
             const newUrl = updateLink();
-            const d = document.getElementById('ApgCadTestSettingsDialog');
+            const d = document.getElementById('[: optionsDialogID :]');
             d.close();
             window.location.href = newUrl;
         }
 
     </script>
 
-    <button onclick='openSettings(true)'>Settings</button>
+    <button onclick='openOptionsDialog(true)'>Settings</button>
 
-    <dialog id="ApgCadTestOptionsDialog">
+    <dialog id="[: optionsDialogID :]">
         <div style="background-color: aliceblue; padding: 1rem;">
             <H2>Cad test settings</H2>
-
+            
+            [: const blackFlag = params.blackBack ? "checked" : ""; :]
             <label for="BlackFlag">
-                <input type="checkbox" id="BlackFlag" [: params.blackBack ? "checked" : "" :]>
+                <input type="checkbox" id="BlackFlag" [: blackFlag :]>
                 Use black background
             </label>
+            
+            [: const debugFlag = params.debug ? "checked" : ""; :]
             <label for="DebugFlag">
-                <input type="checkbox" id="DebugFlag" [: params.debug ? "checked" : "" :]>
+                <input type="checkbox" id="DebugFlag" [: debugFlag :]>
                 Show debug info (if available)
             </label>
+            
+            [: const manualFlag = (params.random==true) ? "" : "checked"; :]
             <label for="ManualFlag">
-                <input type="checkbox" id="ManualFlag" [: r.push(params.random==true ? ""
-                       : "checked" ) :]>
+                <input type="checkbox" id="ManualFlag" [: manualFlag :]>
                 Manual test (if available)
             </label>
+
             <label for="GridMode">
                 Grid mode
                 <select id="GridMode">
-                    <option value="None" [: r.push(params.gridMode=="None" ? "selected" : "" ) :]>
+
+                    [: const gridNone = params.gridMode=="None" ? "selected" : ""; :]
+                    <option value="None" [: gridNone :]>
                         None
                     </option>
-                    <option value="Lines" [: r.push(params.gridMode=="Lines" ? "selected" : "" ) :]>
+                    
+                    [: const gridLines = params.gridMode=="Lines" ? "selected" : ""; :]
+                    <option value="Lines" [: gridLines :]>
                         Lines
                     </option>
-                    <option value="Dots" [: r.push(params.gridMode=="Dots" ? "selected" : "" ) :]>
+                    
+                    [: const gridDots = params.gridMode=="Dots" ? "selected" : ""; :]
+                    <option value="Dots" [: gridDots :]>
                         Dots
                     </option>
+                    
                 </select>
             </label>
+            
             <label for="CartesianMode">
                 Cartesian axises
                 <select id="CartesianMode">
-                    <option value="None" [: r.push(params.cartesianMode=="None" ? "selected" : "" )
-                            :]>
+
+                    [: const cartNone = params.cartesianMode=="None" ? "selected" : ""; :]
+                    <option value="None" [: cartNone :]>
                         None
                     </option>
-                    <option value="Normal" [: r.push(params.cartesianMode=="Normal" ? "selected" : "" ) :]>
+
+                    [: const cartNormal = params.cartesianMode=="Normal" ? "selected" : ""; :]
+                    <option value="Normal" [: cartNormal :]>
                         Standard
                     </option>
                 </select>
             </label>
 
             <button onclick='updatePage()'>Update</button>
-            <button onclick='openSettings(false)'>Cancel</button>
+            <button onclick='openOptionsDialog(false)'>Cancel</button>
         </div>
     </dialog>
 

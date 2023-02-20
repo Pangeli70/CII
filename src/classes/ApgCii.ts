@@ -215,7 +215,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
     let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.pushLayer_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.PUSH_LAYER);
+    this.#traceInstruction(eApgCiiInstructionTypes.PUSH_LAYER, alayerName);
 
     const layer: Svg.ApgSvgNode | undefined = this._cad.setCurrentLayer(alayerName);
 
@@ -660,7 +660,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   #traceInstruction(atype: eApgCiiInstructionTypes, aname?: string) {
     this._currInstructionNum++;
-    let m = `${this._currInstructionNum}: ${atype}`;
+    let m = `  > ${this._currInstructionNum}: ${atype}`;
     if (aname != undefined) {
       m += " - " + aname;
     }
@@ -1173,174 +1173,170 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Parses the instructions set and builds the SVG drawing */
   build(asettingsOnly = false) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.build.name);
 
-    /** Current Instruction Index */
-    let index = 0;
-
+    let r: Rst.IApgRst = { ok: true }
     for (const ainstruction of this._instructions) {
-      if (r.ok) {
-        switch (ainstruction.type) {
-          case eApgCiiInstructionTypes.SET_NAME: {
-            r = this.setName_(ainstruction.name!); //
-            break;
-          }
-          case eApgCiiInstructionTypes.SET_VIEWBOX: {
-            r = this.setViewBox_(ainstruction.payload!); // 
-            break;
-          }
-          case eApgCiiInstructionTypes.SET_CARTESIAN: {
-            r = this.setCartesian_(ainstruction.payload!); // 
-            break;
-          }
-          case eApgCiiInstructionTypes.SET_BACKGROUND: {
-            r = this.setBackground_(ainstruction.payload!); // 
-            break;
-          }
-          case eApgCiiInstructionTypes.NEW_POINT: {
-            r = this.newPoint_(ainstruction); // 2023/01/04 
-            break;
-          }
-          case eApgCiiInstructionTypes.NEW_POINT_DELTA: {
-            r = this.newPointByDelta_(ainstruction); // 2023/01/04
-            break;
-          }
-          case eApgCiiInstructionTypes.NEW_STROKE_STYLE: {
-            throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_STROKE_STYLE);
-            // this._cad.newStrokeStyle(
-            //   ainstruction.name!,
-            //   ainstruction.payload!
-            // );
-            // break;
-          }
-          case eApgCiiInstructionTypes.NEW_FILL_STYLE: {
-            throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_FILL_STYLE);
-            // this._cad.newFillStyle(
-            //   ainstruction.name!,
-            //   ainstruction.payload!
-            // );
-            // break;
-          }
-          case eApgCiiInstructionTypes.NEW_TEXT_STYLE: {
-            throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_FILL_STYLE);
-            // this._cad.newFillStyle(
-            //   ainstruction.name!,
-            //   ainstruction.payload!
-            // );
-            // break;
-          }
-          case eApgCiiInstructionTypes.PUSH_LAYER: {
-            r = this.pushLayer_(ainstruction.name!); // 2023/01/04
-            break;
-          }
-          case eApgCiiInstructionTypes.POP_LAYER: {
-            r = this.popLayer_(); // 2023/01/22
-            break;
-          }
-          case eApgCiiInstructionTypes.NEW_GROUP: {
-            r = this.newGroup_(ainstruction); // 2023/01/21
-            break;
-          }
-          case eApgCiiInstructionTypes.SET_GROUP: {
-            r = this.setGroup_(ainstruction.name!); // 
-            break;
-          }
-          case eApgCiiInstructionTypes.NO_GROUP: {
-            this.noGroup_(); // 2023/01/21
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_POINTS: {
-            if (!asettingsOnly) {
-              r = this.drawPoints_(ainstruction); // 2023/01/04
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_ALL_POINTS: {
-            if (!asettingsOnly) {
-              r = this.drawAllPointsWithInfo_(ainstruction); // 2023/01/04
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_LINE: {
-            if (!asettingsOnly) {
-              r = this.drawLine_(ainstruction); // 2023/01/04
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_CIRCLE: {
-            if (!asettingsOnly) {
-              r = this.drawCircle_(ainstruction); // 2023/01/06
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_ARC: {
-            if (!asettingsOnly) {
-              r = this.drawArc_(ainstruction); // 2023/01/06
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_POLYLINE: {
-            if (!asettingsOnly) {
-              r = this.#drawPolyLine(ainstruction); // 2023/01/06
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS: {
-            if (!asettingsOnly) {
-              r = this.#drawRectangleByPoints(ainstruction); // 2023/01/07
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES: {
-            if (!asettingsOnly) {
-              r = this.#drawRectangleBySizes(ainstruction); // 2023/01/07 
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_POLYGON: {
-            if (!asettingsOnly) {
-              r = this.drawPolygon_(ainstruction); // 2023/01/07
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON: {
-            if (!asettingsOnly) {
-              r = this.drawRegularPolygon_(ainstruction); // 2023/01/15
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_TEXT: {
-            if (!asettingsOnly) {
-              r = this.#drawText(ainstruction); // 
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_ANNOTATION: {
-            if (!asettingsOnly) {
-              r = this.#drawAnnotation(ainstruction);
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_LIN_DIM: {
-            if (!asettingsOnly) {
-              r = this.#drawLinearDim(ainstruction);
-            }
-            break;
-          }
-          case eApgCiiInstructionTypes.DRAW_ARC_DIM: {
-            if (!asettingsOnly) {
-              r = this.#drawArcDim(ainstruction);
-            }
-            break;
-          }
-
+      let ri: Rst.IApgRst = { ok: true };
+      switch (ainstruction.type) {
+        case eApgCiiInstructionTypes.SET_NAME: {
+          ri = this.setName_(ainstruction.name!); //
+          break;
         }
+        case eApgCiiInstructionTypes.SET_VIEWBOX: {
+          ri = this.setViewBox_(ainstruction.payload!); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.SET_CARTESIAN: {
+          ri = this.setCartesian_(ainstruction.payload!); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.SET_BACKGROUND: {
+          ri = this.setBackground_(ainstruction.payload!); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.NEW_POINT: {
+          ri = this.newPoint_(ainstruction); // 2023/01/04 
+          break;
+        }
+        case eApgCiiInstructionTypes.NEW_POINT_DELTA: {
+          ri = this.newPointByDelta_(ainstruction); // 2023/01/04
+          break;
+        }
+        case eApgCiiInstructionTypes.NEW_STROKE_STYLE: {
+          throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_STROKE_STYLE);
+          // this._cad.newStrokeStyle(
+          //   ainstruction.name!,
+          //   ainstruction.payload!
+          // );
+          // break;
+        }
+        case eApgCiiInstructionTypes.NEW_FILL_STYLE: {
+          throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_FILL_STYLE);
+          // this._cad.newFillStyle(
+          //   ainstruction.name!,
+          //   ainstruction.payload!
+          // );
+          // break;
+        }
+        case eApgCiiInstructionTypes.NEW_TEXT_STYLE: {
+          throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_FILL_STYLE);
+          // this._cad.newFillStyle(
+          //   ainstruction.name!,
+          //   ainstruction.payload!
+          // );
+          // break;
+        }
+        case eApgCiiInstructionTypes.PUSH_LAYER: {
+          ri = this.pushLayer_(ainstruction.name!); // 2023/01/04
+          break;
+        }
+        case eApgCiiInstructionTypes.POP_LAYER: {
+          ri = this.popLayer_(); // 2023/01/22
+          break;
+        }
+        case eApgCiiInstructionTypes.NEW_GROUP: {
+          ri = this.newGroup_(ainstruction); // 2023/01/21
+          break;
+        }
+        case eApgCiiInstructionTypes.SET_GROUP: {
+          ri = this.setGroup_(ainstruction.name!); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.NO_GROUP: {
+          this.noGroup_(); // 2023/01/21
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_POINTS: {
+          if (!asettingsOnly) {
+            ri = this.drawPoints_(ainstruction); // 2023/01/04
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_ALL_POINTS: {
+          if (!asettingsOnly) {
+            ri = this.drawAllPointsWithInfo_(ainstruction); // 2023/01/04
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_LINE: {
+          if (!asettingsOnly) {
+            ri = this.drawLine_(ainstruction); // 2023/01/04
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_CIRCLE: {
+          if (!asettingsOnly) {
+            ri = this.drawCircle_(ainstruction); // 2023/01/06
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_ARC: {
+          if (!asettingsOnly) {
+            ri = this.drawArc_(ainstruction); // 2023/01/06
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_POLYLINE: {
+          if (!asettingsOnly) {
+            ri = this.#drawPolyLine(ainstruction); // 2023/01/06
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS: {
+          if (!asettingsOnly) {
+            ri = this.#drawRectangleByPoints(ainstruction); // 2023/01/07
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES: {
+          if (!asettingsOnly) {
+            ri = this.#drawRectangleBySizes(ainstruction); // 2023/01/07 
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_POLYGON: {
+          if (!asettingsOnly) {
+            ri = this.drawPolygon_(ainstruction); // 2023/01/07
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON: {
+          if (!asettingsOnly) {
+            ri = this.drawRegularPolygon_(ainstruction); // 2023/01/15
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_TEXT: {
+          if (!asettingsOnly) {
+            ri = this.#drawText(ainstruction); // 
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_ANNOTATION: {
+          if (!asettingsOnly) {
+            ri = this.#drawAnnotation(ainstruction);
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_LIN_DIM: {
+          if (!asettingsOnly) {
+            ri = this.#drawLinearDim(ainstruction);
+          }
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_ARC_DIM: {
+          if (!asettingsOnly) {
+            ri = this.#drawArcDim(ainstruction);
+          }
+          break;
+        }
+
       }
-      else {
+      if (!ri.ok) {
+        r = ri;
         break;
       }
-      index++;
     }
 
     this.logEnd(r);

@@ -15,6 +15,7 @@ import { ApgCiiTest_02 } from "../../data/ApgCiiTest_02.ts";
 import { ApgCiiTest_03 } from "../../data/ApgCiiTest_03.ts";
 import { ApgCiiTest_04 } from "../../data/ApgCiiTest_04.ts";
 import { ApgCiiTest_05 } from "../../data/ApgCiiTest_05.ts";
+import { ApgCiiTest_06 } from "../../data/ApgCiiTest_06.ts";
 
 import { IApgCiiTest } from "../interfaces/IApgCiiTest.ts";
 
@@ -31,6 +32,7 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         this._tests.set(ApgCiiTest_03.name, ApgCiiTest_03);
         this._tests.set(ApgCiiTest_04.name, ApgCiiTest_04);
         this._tests.set(ApgCiiTest_05.name, ApgCiiTest_05);
+        this._tests.set(ApgCiiTest_06.name, ApgCiiTest_06);
 
         this._ready = true;
     }
@@ -83,7 +85,6 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
             insSet.build();
 
             this.DrawCartouche(cad);
-            this.Gui(cad);
             
             svg = cad.svg.render();
         }

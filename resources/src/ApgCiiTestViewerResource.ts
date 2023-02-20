@@ -68,6 +68,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
             cadState,
             params,
             loggerResult,
+            loggerEvents: loggerResult.payload!.data,
             instructions
         };
 
@@ -225,7 +226,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
         let hrtElapsed = 0;
         let delta = "0.00000";
         let elapsed = "0.00000"
-        for (let i = 0; i != alogger.events.length - 1; i++) {
+        for (let i = 0; i < alogger.events.length; i++) {
             let logBegin = false;
             let message = "";
             const event = alogger.events[i];
@@ -272,11 +273,12 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
                 }
 
             }
-            const padding = "&nbsp".repeat(event.depth * 2);
+            const padding = "  ".repeat(event.depth * 2);
+            const depth = event.depth.toString().padStart(3);
      
             const currMethod = (logBegin) ? `${event.className}.${event.method}` : "";
             const index = i.toString().padStart(4, '0');
-            const currRow = `${index} ${elapsed} ${delta} ${padding} ${currMethod} ${message} ${payloadData}`;
+            const currRow = `${index} ${elapsed} ${delta} ${depth}${padding}${currMethod}${message} ${payloadData}`;
             p.push(currRow);
 
             if (

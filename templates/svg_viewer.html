@@ -3,15 +3,15 @@
 <section>
 
     [: if(loggerResult.ok){ :]
+        [: partial("/partials/pico_cad_test_toolbar.html") :]
         [: partial("/partials/svg_pan_zoom_inline_viewer.html") :]
-        [: partial("/partials/pico_cad_test_options_dialog.html") :]
     [: } :]
     
 </section>
 
-[: partial("/partials/pico_logger.html") :]
+[: partial("/partials/pico_logger.html", [loggerEvents]) :]
 
-[: partial("/partials/pico_cii_instructions.html") :]
+[: partial("/partials/pico_cii_instructions.html", [instructions]) :]
 
 [: partial("/partials/pico_cad_state.html", [cadState] ) :]
 

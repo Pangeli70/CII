@@ -1,3 +1,9 @@
+<pre hidden>
+  [: arguments({
+    "#0": "ApgLgrEvent[]"
+  }) :]
+</pre>
+
 <div id="pico_logger">
 
     <details>
@@ -5,14 +11,15 @@
             <h3>Logger</h3>
         </summary>
 
-        <p
-            style="font-family: 'Lucida Console', monospace; text-align: left;">
-            [: for (const row of loggerResult.payload.data){ :]
+        <p>
+        <pre><code>
+            [: for (const row of [#0]){ :]
             [: row :]
             <br>
             [: } :]
+            </code></pre>
         </p>
 
     </details>
-    
+
 </div>

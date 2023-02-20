@@ -168,11 +168,11 @@ function StructuralBeamSectionView(
 
 export const ApgCiiTest_05: IApgCiiTest = {
     name: eApgCiiTests.STRUCT_BEAMS,
-    description: "Sructural beams on side view 1",
+    description: "Structural beams on side view 1",
     instructions: [
         {
             type: eApgCiiInstructionTypes.SET_NAME,
-            name: 'TEST 04',
+            name: 'TEST 05',
         },
         {
             type: eApgCiiInstructionTypes.NEW_POINT,

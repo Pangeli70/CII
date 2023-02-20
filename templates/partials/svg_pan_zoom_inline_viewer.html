@@ -1,89 +1,36 @@
 <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
 
 <div id="inline-svg"
-         style="background-color: #888888; width: 100%; display:flex; justify-content: center;">
+     style="background-color: #888888; width: 100%; display:flex; justify-content: center;">
   [: svgContent :]
 </div>
 
 <script>
-  document.getElementById('APG_SVG_DOC').addEventListener('load', function () {
-    // Will get called after embed element was loaded
-    svgPanZoom(
-      document.getElementById('APG_SVG_DOC'),
-      {
-        panEnabled: true,
-        controlIconsEnabled: true,
-        zoomEnabled: true,
-        dblClickZoomEnabled: true,
-        mouseWheelZoomEnabled: false,
-        preventMouseEventsDefault: true,
-        zoomScaleSensitivity: 0.25,
-        minZoom: 0.1,
-        maxZoom: 20,
-        fit: true,
-        contain: true,
-        center: true,
-        refreshRate: 'auto'
-      }
-    );
-  })
-</script>
 
-<script>
+  var svgPanZoomInstance = null;
 
-  const GUI_MENU_ID = 'GUI_MENU';
-  const LAYER_BOARD_ID = 'LAYER_BOARD';
-  let currentBoard = "";
-
-  function SwitchVisibility(aactivator, atarget) {
-
-    var show = aactivator.getAttribute('show');
-    if (show == "true") {
-      aactivator.setAttribute('fill', 'white');
-      aactivator.setAttribute('show', 'false');
-      atarget.style.display = "none";
-    }
-    else {
-      aactivator.setAttribute('fill', 'green');
-      aactivator.setAttribute('show', 'true');
-      atarget.style.display = "block";
-    }
+  const svgPanZoomSettings = {
+    panEnabled: true,
+    controlIconsEnabled: false,
+    zoomEnabled: true,
+    dblClickZoomEnabled: true,
+    mouseWheelZoomEnabled: false,
+    preventMouseEventsDefault: true,
+    zoomScaleSensitivity: 0.25,
+    minZoom: 0.1,
+    maxZoom: 20,
+    fit: true,
+    contain: true,
+    center: true,
+    refreshRate: 'auto'
   }
 
-  function GuiButtonOnClick(event) {
-
-    const button = event.target;
-
-    const board = (currentBoard == "") ?
-      document.getElementById(GUI_MENU_ID) :
-      document.getElementById(currentBoard);
-
-    SwitchVisibility(button, board);
-
+  function initPanZoom(asvg, asettings) {
+    svgPanZoomInstance = svgPanZoom(asvg, asettings)
   }
 
-  function LayerBoardMenuOnClick(event) {
+  const svg = document.getElementById('APG_SVG_DOC');
 
-    const button = event.target;
-    const guiMenu = document.getElementById(GUI_MENU_ID);
-    guiMenu.style.display = "none";
-    const layerBoard = document.getElementById(LAYER_BOARD_ID);
-    layerBoard.style.display = "block";
-    currentBoard = LAYER_BOARD_ID;
-    
-  }
-
-  function LayerBoardButtonOnClick(event) {
-
-    const button = event.target;
-    const buttonID = button.getAttribute('id');
-    const layer = buttonID.split("_")[2];
-
-    const layerGroup = document.getElementById(layer)
-
-    SwitchVisibility(button, layerGroup);
-
-  }
-
+  svg.addEventListener('load', initPanZoom(svg, svgPanZoomSettings))
 
 </script>
