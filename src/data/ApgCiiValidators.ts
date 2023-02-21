@@ -28,6 +28,15 @@ import { ApgCii_DrawRectanglePointsSchema } from "../schemas/ApgCiiDrawRectangle
 import { ApgCii_DrawRectangleSizesSchema } from "../schemas/ApgCiiDrawRectangleSizesSchema.ts";
 import { ApgCii_DrawRegularPolygonSchema } from "../schemas/ApgCiiDrawRegularPolygonSchema.ts";
 import { ApgCii_DrawPolygonSchema } from "../schemas/ApgCiiDrawPolygonSchema.ts";
+
+import { ApgCii_DrawPathBeginSchema } from "../schemas/ApgCiiDrawPathBeginSchema.ts";
+import { ApgCii_DrawPathMoveSchema } from "../schemas/ApgCiiDrawPathMoveSchema.ts";
+import { ApgCii_DrawPathLineSchema } from "../schemas/ApgCiiDrawPathLineSchema.ts";
+import { ApgCii_DrawPathArcSchema } from "../schemas/ApgCiiDrawPathArcSchema.ts";
+import { ApgCii_DrawPathCloseSchema } from "../schemas/ApgCiiDrawPathCloseSchema.ts";
+import { ApgCii_DrawPathEndSchema } from "../schemas/ApgCiiDrawPathEndSchema.ts";
+
+
 import { ApgCii_DrawLinearDimSchema } from "../schemas/ApgCiiDrawLinearDimSchema.ts";
 import { ApgCii_DrawArcDimSchema } from "../schemas/ApgCiiDrawArcDimSchema.ts";
 import { ApgCii_DrawAnnotationSchema } from "../schemas/ApgCiiDrawAnnotationSchema.ts";
@@ -120,6 +129,30 @@ export const ApgCiiValidators = [
     {
         type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES, // Ok 2023/01/06
         jsonSchema: ApgCii_DrawRectangleSizesSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN, // 
+        jsonSchema: ApgCii_DrawPathBeginSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_PATH_MOVE, // 
+        jsonSchema: ApgCii_DrawPathMoveSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_PATH_LINE, // 
+        jsonSchema: ApgCii_DrawPathLineSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_PATH_ARC, // 
+        jsonSchema: ApgCii_DrawPathArcSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE, // 
+        jsonSchema: ApgCii_DrawPathCloseSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_PATH_END, // 
+        jsonSchema: ApgCii_DrawPathEndSchema,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_GROUP, 

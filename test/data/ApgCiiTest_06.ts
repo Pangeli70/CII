@@ -22,7 +22,6 @@ function SlidingCurveSideView(
     const width = 55;
     const firstSegment = 122;
     const totalLenght = 1000;
-    const points: A2D.Apg2DPoint[] = [];
     const toRad = Math.PI / 180;
 
 
@@ -68,7 +67,8 @@ function SlidingCurveSideView(
         h: dy
     });
 
-    const arcSlice = ((180 - afirstAngle) - (90 + asecondAngle)) / 360;
+    const arcAngle = ((180 - afirstAngle) - (90 + asecondAngle));
+    const arcSlice = arcAngle / 360;
     const arcPrimitiveRadious = aradious + width / 2;
     const arcPrimitiveLength = (2 * Math.PI * arcPrimitiveRadious) * arcSlice;
     const secondSegment = totalLenght - firstSegment - arcPrimitiveLength;
@@ -134,10 +134,78 @@ function SlidingCurveSideView(
     });
 
 
-    r.push({
-        type: eApgCiiInstructionTypes.DRAW_POLYGON,
-        points: [aorigin, aname + '_1', aname + '_Center', aname + '_2', aname + '_3', aname + '_4', aname + '_5', aname + '_6', aname + '_7']
+    // r.push({
+    //     type: eApgCiiInstructionTypes.DRAW_POLYGON,
+    //     points: [aorigin, aname + '_1', aname + '_Center', aname + '_2', aname + '_3', aname + '_4', aname + '_5', aname + '_6', aname + '_7']
 
+    // });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
+        origin: aorigin,
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_MOVE,
+        origin: aorigin,
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+        origin: aname + '_1',
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_ARC,
+        origin: aname + '_2',
+        radious: aradious,
+        angle: arcAngle,
+        payload: {
+            largeArc: false,
+            clockwise: true
+        }
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+        origin: aname + '_3',
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+        origin: aname + '_4',
+    });
+
+
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+        origin: aname + '_5',
+    });
+
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_ARC,
+        origin: aname + '_6',
+        angle: arcAngle,
+        radious: aradious + width,
+        payload: {
+            largeArc: false,
+            clockwise: false
+        }
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+        origin: aname + '_7',
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE,
+    });
+
+    r.push({
+        type: eApgCiiInstructionTypes.DRAW_PATH_END
     });
 
     r.push({
@@ -175,7 +243,7 @@ export const ApgCiiTest_06: IApgCiiTest = {
             x: 2000,
             y: 1200
         },
-        ...SlidingCurveSideView("CURVE_2", 'O_2', 380, 6,55),
+        ...SlidingCurveSideView("CURVE_2", 'O_2', 380, 6, 55),
         {
             type: eApgCiiInstructionTypes.NEW_POINT,
             name: 'O_3',

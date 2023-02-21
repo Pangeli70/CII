@@ -45,7 +45,10 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
         let loggerResult: Rst.IApgRst = { ok: true };
         let instructions: IApgCiiInstruction[] = [];
         let cadState: any = {};
+
+        // TODO @1 -- APG 20230221 - Use same logger for validator and for interpreter
         const { svg, logger, test } = await ApgCiiTester.RunTest(cad, params.name as unknown as eApgCiiTests);
+
         svgContent = svg;
         loggerResult = this.#loggerResult(logger);
         instructions = test!.instructions;
@@ -113,16 +116,6 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
         catch (err) {
             return err;
         }
-    }
-
-    async #getCadTestResult(params: Cad.Test.IApgCadTestParameters) {
-
-        let cad: Cad.ApgCadSvg | undefined;
-
-        switch (params.type) {
-
-        }
-        return cad;
     }
 
     async #saveSvgIfNotIsDeploy(params: Cad.Test.IApgCadTestParameters, svgContent: string) {
@@ -216,6 +209,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
     }
 
 
+    // TODO @1 -- APG 20230219 Move from here maybe in LGR
     #loggerResult(alogger: Lgr.ApgLgr) {
 
         const r: Rst.IApgRst = { ok: true };
@@ -244,13 +238,13 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
 
             // Detect errors
             if (event.result) {
-                if (event.result.message) { 
+                if (event.result.message) {
                     message = event.result.message;
                 }
                 if (!event.result.ok) {
                     r.ok = false;
                 }
-                if (message.includes("{")) { 
+                if (message.includes("{")) {
                     logBegin = true;
                 }
             }
@@ -275,7 +269,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
             }
             const padding = "  ".repeat(event.depth * 2);
             const depth = event.depth.toString().padStart(3);
-     
+
             const currMethod = (logBegin) ? `${event.className}.${event.method}` : "";
             const index = i.toString().padStart(4, '0');
             const currRow = `${index} ${elapsed} ${delta} ${depth}${padding}${currMethod}${message} ${payloadData}`;

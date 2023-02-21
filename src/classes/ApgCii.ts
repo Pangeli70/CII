@@ -42,12 +42,20 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Set of instructions */
   private _instructions: IApgCiiInstruction[] = [];
 
-
-  /** The Object is correctly initialized */
-  private _ready = false;
-
   /** Stack of layers */
   private _layersStack: Svg.ApgSvgNode[] = [];
+
+  /** Last node for Stroke ad fill operations */
+  private _lastNode: Svg.ApgSvgNode | null = null;
+
+  /** Path Drawing mode: only path and point operations are allowed in this mode */
+  private _pathMode = false;
+
+  /** Path builder for path mode */
+  private _pathBuilder = new Svg.ApgSvgPathBuilder();
+
+  /** Path origin */
+  private _pathOrigin: A2D.Apg2DPoint | null = null;
 
 
   constructor(alogger: Lgr.ApgLgr, acad: Cad.ApgCadSvg) {
@@ -63,7 +71,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  // #region Instuctions loading -----------------------------------------------
+  // #region Instuctions loading and validation --------------------------------
 
   public set(ainstructions: IApgCiiInstruction[]) {
     let r: Rst.IApgRst = { ok: true }
@@ -71,7 +79,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
     r = this.#validateAndSet(ainstructions);
 
-    this.logEnd();
+    this.logEnd(r);
     return r;
   }
 
@@ -89,11 +97,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
-  // #endregion
-
-
-  // #region Instuctions validation --------------------------------------------
-
   #validateAndSet(ainstructions: IApgCiiInstruction[]) {
 
     let r: Rst.IApgRst = { ok: true }
@@ -109,7 +112,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r
 
   }
-
 
   // #endregion
 
@@ -136,69 +138,77 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   setViewBox_(aviewBox: Cad.IApgCadSvgViewBox) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.setViewBox_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.SET_VIEWBOX);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_VIEWBOX);
 
-    if (this._currInstructionNum === 2) {
-      this._cad.setViewBox(aviewBox);
-    }
-    else {
-      r = Rst.ApgRstErrors.Parametrized(
-        "If present [%1] must be the second instruction immediately after [%2]",
-        [eApgCiiInstructionTypes.SET_VIEWBOX, eApgCiiInstructionTypes.SET_NAME]
-      );
+    if (r.ok) {
+
+      if (this._currInstructionNum === 2) {
+        this._cad.setViewBox(aviewBox);
+      }
+      else {
+        r = Rst.ApgRstErrors.Parametrized(
+          "If present [%1] must be the second instruction immediately after [%2]",
+          [eApgCiiInstructionTypes.SET_VIEWBOX, eApgCiiInstructionTypes.SET_NAME]
+        );
+      }
     }
 
     this.logEnd();
     return r;
   }
+
 
   setCartesian_(acartesianParams: Cad.IApgCadSvgCartesians) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.setCartesian_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.SET_CARTESIAN);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_CARTESIAN);
 
-    const prevType = this._instructions[this._currInstructionNum - 1].type;
-    if (
-      (prevType === eApgCiiInstructionTypes.SET_NAME) ||
-      (prevType === eApgCiiInstructionTypes.SET_VIEWBOX) ||
-      (prevType === eApgCiiInstructionTypes.SET_BACKGROUND)
-    ) {
-      this._cad.setCartesian(acartesianParams);
-    }
-    else {
-      r = Rst.ApgRstErrors.Parametrized(
-        "If present [%1] must follow [%2], [%3] or [%4]",
-        [eApgCiiInstructionTypes.SET_CARTESIAN, eApgCiiInstructionTypes.SET_NAME, eApgCiiInstructionTypes.SET_VIEWBOX, eApgCiiInstructionTypes.SET_BACKGROUND]
-      );
+    if (r.ok) {
+      const prevType = this._instructions[this._currInstructionNum - 1].type;
+      if (
+        (prevType === eApgCiiInstructionTypes.SET_NAME) ||
+        (prevType === eApgCiiInstructionTypes.SET_VIEWBOX) ||
+        (prevType === eApgCiiInstructionTypes.SET_BACKGROUND)
+      ) {
+        this._cad.setCartesian(acartesianParams);
+      }
+      else {
+        r = Rst.ApgRstErrors.Parametrized(
+          "If present [%1] must follow [%2], [%3] or [%4]",
+          [eApgCiiInstructionTypes.SET_CARTESIAN, eApgCiiInstructionTypes.SET_NAME, eApgCiiInstructionTypes.SET_VIEWBOX, eApgCiiInstructionTypes.SET_BACKGROUND]
+        );
+      }
     }
 
     this.logEnd();
     return r;
   }
 
+
   setBackground_(abckg: Cad.IApgCadSvgGround) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.setBackground_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.SET_BACKGROUND);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_BACKGROUND);
 
-    const prevType = this._instructions[this._currInstructionNum - 1].type;
-    if (
-      (prevType === eApgCiiInstructionTypes.SET_NAME) ||
-      (prevType === eApgCiiInstructionTypes.SET_VIEWBOX)
-    ) {
-      this._cad.setBackground(abckg);
-    }
-    else {
-      r = Rst.ApgRstErrors.Parametrized(
-        "If present [%1] must follow [%2], or [%3]",
-        [eApgCiiInstructionTypes.SET_BACKGROUND, eApgCiiInstructionTypes.SET_NAME, eApgCiiInstructionTypes.SET_VIEWBOX]
-      );
+    if (r.ok) {
+
+      const prevType = this._instructions[this._currInstructionNum - 1].type;
+      if (
+        (prevType === eApgCiiInstructionTypes.SET_NAME) ||
+        (prevType === eApgCiiInstructionTypes.SET_VIEWBOX)
+      ) {
+        this._cad.setBackground(abckg);
+      }
+      else {
+        r = Rst.ApgRstErrors.Parametrized(
+          "If present [%1] must follow [%2], or [%3]",
+          [eApgCiiInstructionTypes.SET_BACKGROUND, eApgCiiInstructionTypes.SET_NAME, eApgCiiInstructionTypes.SET_VIEWBOX]
+        );
+      }
     }
 
     this.logEnd();
@@ -213,20 +223,21 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Sets the current layer by name and puts it on the stack. Layer must already exist */
   pushLayer_(alayerName: string) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.pushLayer_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.PUSH_LAYER, alayerName);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.PUSH_LAYER, alayerName);
 
-    const layer: Svg.ApgSvgNode | undefined = this._cad.setCurrentLayer(alayerName);
+    if (r.ok) {
+      const layer: Svg.ApgSvgNode | undefined = this._cad.setCurrentLayer(alayerName);
 
-    if (!layer) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Layer [%1] not found `,
-        [alayerName]
-      )
-    }
-    else {
-      this._layersStack.push(layer);
+      if (!layer) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Layer [%1] not found `,
+          [alayerName]
+        )
+      }
+      else {
+        this._layersStack.push(layer);
+      }
     }
 
     this.logEnd();
@@ -237,27 +248,29 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Removes the layer from the stack and restores the previous one. Stack must not be empty */
   popLayer_() {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.popLayer_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.POP_LAYER);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.POP_LAYER);
 
-    const layer = this._layersStack.pop();
+    if (r.ok) {
 
-    if (!layer) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `There aren't any layer on the layer stack. There are POP_LAYER mismatches.`,
-        []
-      )
-    }
-    else if (this._layersStack.length < 1) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Pop operation has emptied the layer Stack. There is a POP_LAYER mismatch.`,
-        []
-      )
-    }
-    else {
-      const layerName = this._layersStack[this._layersStack.length - 1].ID;
-      this._cad.setCurrentLayer(layerName);
+      const layer = this._layersStack.pop();
+
+      if (!layer) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `There aren't any layer on the layer stack. There are POP_LAYER mismatches.`,
+          []
+        )
+      }
+      else if (this._layersStack.length < 1) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Pop operation has emptied the layer Stack. There is a POP_LAYER mismatch.`,
+          []
+        )
+      }
+      else {
+        const layerName = this._layersStack[this._layersStack.length - 1].ID;
+        this._cad.setCurrentLayer(layerName);
+      }
     }
 
     this.logEnd();
@@ -269,67 +282,74 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
    * @returns Error If the group name already exists */
   newGroup_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.newGroup_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.NEW_GROUP);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_GROUP);
 
-    const group: Svg.ApgSvgNode | undefined = this._cad.getGroup(ainstruction.name!);
+    if (r.ok) {
+      const group: Svg.ApgSvgNode | undefined = this._cad.getGroup(ainstruction.name!);
 
-    if (group) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Group name [%1] already exists. Use SetGroup instead.`,
-        [ainstruction.name!]
-      )
-    }
-    else {
-      const options: Cad.IApgCadStyleOptions = {};
-      if (ainstruction.strokeStyle) {
-        r = this.#checkStrokeStyle(ainstruction.strokeStyle);
+      if (group) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Group name [%1] already exists. Use SetGroup instead.`,
+          [ainstruction.name!]
+        )
       }
-      if (r.ok && ainstruction.fillStyle) {
-        r = this.#checkFillStyle(ainstruction.fillStyle);
-      }
-      if (r.ok && ainstruction.textStyle) {
-        r = this.#checkTextStyle(ainstruction.textStyle);
-      }
-      if (r.ok) {
-        this._cad.newGroup(ainstruction.name!, options);
+      else {
+        const options: Cad.IApgCadStyleOptions = {};
+        if (ainstruction.strokeStyle) {
+          r = this.#checkStrokeStyle(ainstruction.strokeStyle);
+        }
+        if (r.ok && ainstruction.fillStyle) {
+          r = this.#checkFillStyle(ainstruction.fillStyle);
+        }
+        if (r.ok && ainstruction.textStyle) {
+          r = this.#checkTextStyle(ainstruction.textStyle);
+        }
+        if (r.ok) {
+          this._cad.newGroup(ainstruction.name!, options);
+        }
       }
     }
 
     this.logEnd();
     return r;
   }
+
 
   /** Relinks the drawing instructions to the already created and named group.  */
   setGroup_(agroupName: string) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.setGroup_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.SET_GROUP);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_GROUP);
 
-    const group: Svg.ApgSvgNode | undefined = this._cad.setCurrentGroup(agroupName);
+    if (r.ok) {
+      const group: Svg.ApgSvgNode | undefined = this._cad.setCurrentGroup(agroupName);
 
-    if (!group) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Group [%1] not found .`,
-        [agroupName]
-      )
+      if (!group) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Group [%1] not found .`,
+          [agroupName]
+        )
+      }
     }
 
     this.logEnd();
     return r;
   }
+
 
   /** After this call the drawing instructions will bond to the current layer */
   noGroup_() {
 
     this.logBegin(this.noGroup_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.NO_GROUP);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NO_GROUP);
 
-    this._cad.unSetCurrentGroup();
+    if (r.ok) {
+      this._cad.unSetCurrentGroup();
+    }
 
     this.logEnd();
+    return r;
   }
 
   //#endregion
@@ -337,13 +357,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   // #region Points management --------------------------------------------------
 
-  /** Adds a point to the points set. */
+  /** Adds a point to the points set. Path mode compatible*/
   newPoint_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
-    this.logBegin(this.newPoint_.name);
     const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
-    this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT, pointName);
+
+    this.logBegin(this.newPoint_.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT, pointName, true);
 
     if (ainstruction.name) {
       const pointExists = this._points.get(ainstruction.name);
@@ -354,6 +374,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         )
       }
     }
+
     if (r.ok) {
       const newPoint = new A2D.Apg2DPoint(ainstruction.x!, ainstruction.y!);
       this._nextPointIndex++;
@@ -365,13 +386,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  /** Adds a point to the points set, by setting a distance from another point. */
+  /** Adds a point to the points set, by setting a distance from another point. Path mode compatible */
   newPointByDelta_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
-    this.logBegin(this.newPointByDelta_.name,);
     const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
-    this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT_DELTA, pointName);
+
+    this.logBegin(this.newPointByDelta_.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT_DELTA, pointName, true);
 
     const point = this._points.get(ainstruction.origin!);
 
@@ -461,6 +482,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   #get2Points(apointNames: string[], apoints: A2D.Apg2DPoint[]) {
 
     let r = this.#get2PointsByNames(apointNames!);
@@ -470,6 +492,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
     return r;
   }
+
 
   #extractPointsFromPayload(ar: Rst.IApgRst, apts: A2D.Apg2DPoint[]) {
 
@@ -488,6 +511,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
     return ar;
   }
+
 
   #getPointsByNames(apts: string[]) {
 
@@ -525,16 +549,16 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   #trySetRotation(
     node: Svg.ApgSvgNode,
-    afirstPoint: A2D.Apg2DPoint,
-    aangle: number,
-    apivot?: string,
+    apivot: A2D.Apg2DPoint | string,
+    aangle: number
   ) {
     let r: Rst.IApgRst = { ok: true }
 
-    const pivot = A2D.Apg2DPoint.Clone(afirstPoint);
-    if (apivot) {
+    let pivot: A2D.Apg2DPoint | null = null
+    if (typeof (apivot) == 'string') {
       const newPivot = this._points.get(apivot);
       if (!newPivot) {
         r = Rst.ApgRstErrors.Parametrized(
@@ -543,13 +567,20 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         )
       }
       else {
-        pivot.copyFrom(newPivot);
+        pivot = A2D.Apg2DPoint.Clone(newPivot);
       }
     }
-    node.rotate(aangle, pivot.x, pivot.y);
+    else {
+      pivot = A2D.Apg2DPoint.Clone(apivot);
+    }
+
+    if (r.ok && pivot) {
+      node.rotate(aangle, pivot.x, pivot.y);
+    }
 
     return r;
   }
+
 
   #trySetFillStyle(node: Svg.ApgSvgNode, afillStyleName: string) {
     let r = this.#checkFillStyle(afillStyleName);
@@ -563,6 +594,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
     return r;
   }
+
 
   #trySetStrokeStyle(node: Svg.ApgSvgNode, astrokeStyleName: string) {
     let r = this.#checkStrokeStyle(astrokeStyleName);
@@ -580,6 +612,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   #trySetTextStyle(node: Svg.ApgSvgNode, atextStyleName: string) {
     let r = this.#checkTextStyle(atextStyleName);
     const p = Rst.ApgRst.ExtractPayload(r, "IApgSvgTextStyle") as Rst.IApgRst;
@@ -593,12 +626,14 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   #checkIfPolygonIsClosed(apts: A2D.Apg2DPoint[]) {
     const lastI = apts.length - 1;
     if (apts[0].x != apts[lastI].x || apts[0].y != apts[lastI].y) {
       apts.push(apts[0]);
     }
   }
+
 
   #checkStrokeStyle(astrokeStyleName: string) {
     let r: Rst.IApgRst = { ok: true }
@@ -617,6 +652,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   #checkFillStyle(afillStyleName: string) {
     let r: Rst.IApgRst = { ok: true }
 
@@ -633,6 +669,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
     return r;
   }
+
 
   #checkTextStyle(atextStyleName: string) {
     let r: Rst.IApgRst = { ok: true }
@@ -651,6 +688,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   #getBasicShapesFactory() {
     const factory = this._cad.getPrimitiveFactory(
       Cad.eApgCadFactories.BASIC_SHAPES
@@ -658,25 +696,38 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return factory;
   }
 
-  #traceInstruction(atype: eApgCiiInstructionTypes, aname?: string) {
+
+  #traceInstruction(atype: eApgCiiInstructionTypes, aname?: string, apathModeAllowed = false) {
     this._currInstructionNum++;
     let m = `  > ${this._currInstructionNum}: ${atype}`;
-    if (aname != undefined) {
+    if (aname && aname != "") {
       m += " - " + aname;
     }
     this.logTrace(m);
+
+    return this.#checkPathMode(atype, apathModeAllowed);
+
   }
 
-  //#endregion
 
+  #checkPathMode(atype: eApgCiiInstructionTypes, apathModeAllowed: boolean) {
+    let r: Rst.IApgRst = { ok: true }
 
-  // #region Drawing routines --------------------------------------------------
+    if (!apathModeAllowed && this._pathMode) {
+      r = Rst.ApgRstErrors.Parametrized(
+        `Interpreter is in path mode. The current instruction [%1] is not allowed`,
+        [atype]
+      )
+    }
+
+    return r;
+  }
 
 
   #setShapeAttributes(
     anode: Svg.ApgSvgNode,
     ainstruction: IApgCiiInstruction,
-    p: A2D.Apg2DPoint
+    arotationPivot?: A2D.Apg2DPoint
   ) {
 
     let r: Rst.IApgRst = { ok: true };
@@ -693,23 +744,33 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
 
     if (r.ok && ainstruction.angle) {
-      r = this.#trySetRotation(anode, p, ainstruction.angle, ainstruction.pivot);
+      if (arotationPivot) {
+        r = this.#trySetRotation(anode, arotationPivot, ainstruction.angle);
+      }
+      else if (ainstruction.pivot) {
+        r = this.#trySetRotation(anode, ainstruction.pivot, ainstruction.angle);
+      }
     }
 
     return r;
   }
 
+  //#endregion
+
+
+  // #region Drawing routines --------------------------------------------------
+
 
   /** Draws a series of points */
   drawPoints_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawPoints_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_POINTS);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_POINTS);
 
     const pts: A2D.Apg2DPoint[] = [];
-
-    r = this.#getNPoints(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#getNPoints(ainstruction.points!, pts);
+    }
 
     if (r.ok) {
 
@@ -737,13 +798,15 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws all the points adding debbugging info (name / coordinates) */
   drawAllPointsWithInfo_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawAllPointsWithInfo_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ALL_POINTS);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ALL_POINTS);
 
-    r = this.#checkTextStyle(ainstruction.textStyle!)
-    if (!r.ok) {
-      r = this.#checkTextStyle(Cad.eApgCadDftTextStyles.MONO);
+    if (r.ok) {
+      r = this.#checkTextStyle(ainstruction.textStyle!)
+
+      if (!r.ok) {
+        r = this.#checkTextStyle(Cad.eApgCadDftTextStyles.MONO);
+      }
     }
 
     if (r.ok) {
@@ -770,18 +833,20 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   /** Draws a line between the given points */
   drawLine_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawLine_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_LINE, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_LINE, ainstruction.name);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#get2Points(ainstruction.points!, pts);
 
     if (r.ok) {
+      r = this.#get2Points(ainstruction.points!, pts);
+    }
 
+    if (r.ok) {
       const factory = this.#getBasicShapesFactory();
       const node = factory.buildLine(pts[0], pts[1])
 
@@ -794,15 +859,17 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   /** Draws an open polyline */
   #drawPolyLine(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.#drawPolyLine.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_POLYLINE, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_POLYLINE, ainstruction.name);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#getNPoints(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#getNPoints(ainstruction.points!, pts);
+    }
 
     if (r.ok && pts.length > 2) {
 
@@ -818,15 +885,17 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
-  /**  */
+
+  /** Draw rectangle by bottom left and upper right corners*/
   #drawRectangleByPoints(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.#drawRectangleByPoints.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS, ainstruction.name);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#get2Points(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#get2Points(ainstruction.points!, pts);
+    }
 
     if (r.ok) {
 
@@ -850,49 +919,54 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   /** Draws a rectangle from an origin and sizes */
   #drawRectangleBySizes(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.#drawRectangleBySizes.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES, ainstruction.name);
 
-    const origin = this._points.get(ainstruction.origin!);
-    if (!origin) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point named [%1] not found: `,
-        [ainstruction.origin!]
-      )
-    }
-    else {
+    if (r.ok) {
 
-      const vertices: A2D.Apg2DPoint[] = [];
-      vertices.push(new A2D.Apg2DPoint(origin.x, origin.y));
-      vertices.push(new A2D.Apg2DPoint(origin.x + ainstruction.w!, origin.y));
-      vertices.push(new A2D.Apg2DPoint(origin.x + ainstruction.w!, origin.y + ainstruction.h!));
-      vertices.push(new A2D.Apg2DPoint(origin.x, origin.y + ainstruction.h!));
-      vertices.push(new A2D.Apg2DPoint(origin.x, origin.y));
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
 
-      const factory = this.#getBasicShapesFactory();
-      const node = factory.buildPolyLine(vertices, true)
+        const vertices: A2D.Apg2DPoint[] = [];
+        vertices.push(new A2D.Apg2DPoint(origin.x, origin.y));
+        vertices.push(new A2D.Apg2DPoint(origin.x + ainstruction.w!, origin.y));
+        vertices.push(new A2D.Apg2DPoint(origin.x + ainstruction.w!, origin.y + ainstruction.h!));
+        vertices.push(new A2D.Apg2DPoint(origin.x, origin.y + ainstruction.h!));
+        vertices.push(new A2D.Apg2DPoint(origin.x, origin.y));
 
-      r = this.#setShapeAttributes(node, ainstruction, origin);
+        const factory = this.#getBasicShapesFactory();
+        const node = factory.buildPolyLine(vertices, true)
 
-      this.#setParent(node);
+        r = this.#setShapeAttributes(node, ainstruction, origin);
+
+        this.#setParent(node);
+      }
     }
     this.logEnd();
     return r;
   }
 
+
   /** Draws a closed polyline or any polygon from the given points */
   drawPolygon_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawPolygon_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_POLYGON, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_POLYGON, ainstruction.name);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#getNPoints(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#getNPoints(ainstruction.points!, pts);
+    }
 
     if (r.ok && pts.length < 3) {
       r = Rst.ApgRstErrors.Parametrized(
@@ -916,29 +990,31 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
   /** Draws a regular polygon from the given origin, radious and number of sides */
   drawRegularPolygon_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawRegularPolygon_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON, ainstruction.name);
 
-    const origin = this._points.get(ainstruction.origin!);
-    if (!origin) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point named [%1] not found: `,
-        [ainstruction.origin!]
-      )
-    }
-    else {
+    if (r.ok) {
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
 
-      const factory = this.#getBasicShapesFactory();
-      const node = factory.buildPolygon(origin, ainstruction.radious!, ainstruction.n!, 0)
+        const factory = this.#getBasicShapesFactory();
+        const node = factory.buildPolygon(origin, ainstruction.radious!, ainstruction.n!, 0)
 
-      r = this.#setShapeAttributes(node, ainstruction, origin);
+        r = this.#setShapeAttributes(node, ainstruction, origin);
 
-      this.#setParent(node);
+        this.#setParent(node);
 
+      }
     }
     this.logEnd();
     return r;
@@ -948,25 +1024,26 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws a circle given center and radious  */
   drawCircle_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawCircle_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_CIRCLE, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_CIRCLE, ainstruction.name);
 
-    const origin = this._points.get(ainstruction.origin!);
-    if (!origin) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point named [%1] not found: `,
-        [ainstruction.origin!]
-      )
-    }
-    else {
+    if (r.ok) {
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
 
-      const factory = this.#getBasicShapesFactory();
-      const node = factory.buildCircle(origin, ainstruction.radious!);
+        const factory = this.#getBasicShapesFactory();
+        const node = factory.buildCircle(origin, ainstruction.radious!);
 
-      r = this.#setShapeAttributes(node, ainstruction, origin);
+        r = this.#setShapeAttributes(node, ainstruction, origin);
 
-      this.#setParent(node);
+        this.#setParent(node);
+      }
     }
 
     this.logEnd();
@@ -977,12 +1054,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws an arc given center the radious the beggining and the end */
   drawArc_(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.drawArc_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ARC, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ARC, ainstruction.name);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#get2Points(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#get2Points(ainstruction.points!, pts);
+    }
 
     if (r.ok) {
 
@@ -993,6 +1071,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       r = this.#setShapeAttributes(node, ainstruction, pts[0]);
 
       this.#setParent(node);
+
     }
 
     this.logEnd();
@@ -1000,36 +1079,33 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-
   /** Draws a text at the given coords */
-  #drawText(
-    ainstruction: IApgCiiInstruction
-  ) {
+  #drawText(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.#drawText.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_TEXT, ainstruction.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_TEXT, ainstruction.name);
 
-    const origin = this._points.get(ainstruction.origin!);
-    if (!origin) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point named [%1] not found: `,
-        [ainstruction.origin!]
-      )
-    }
-    else {
+    if (r.ok) {
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
 
-      // TODO @5 APG ... -- this is a mess better to draw text without Annotations factory
-      // implement a method in basic shapes factroy
-      const factory = this._cad.getPrimitiveFactory(
-        Cad.eApgCadFactories.BASIC_SHAPES
-      ) as Cad.ApgCadSvgBasicShapesFactory;
-      //const g = factory.build(this._cad.currentLayer, pts[0], pts[1], atext[0]);
-      //const textStyle = this.#checkTextStyle(atextStyleName);
-      //if (textStyle) {
-      //  g?.textStyle(textStyle);
-      //}
-
+        // TODO @5 APG ... -- this is a mess better to draw text without Annotations factory
+        // implement a method in basic shapes factroy
+        const factory = this._cad.getPrimitiveFactory(
+          Cad.eApgCadFactories.BASIC_SHAPES
+        ) as Cad.ApgCadSvgBasicShapesFactory;
+        //const g = factory.build(this._cad.currentLayer, pts[0], pts[1], atext[0]);
+        //const textStyle = this.#checkTextStyle(atextStyleName);
+        //if (textStyle) {
+        //  g?.textStyle(textStyle);
+        //}
+      }
     }
     this.logEnd();
     return r;
@@ -1039,12 +1115,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws an annotation from the given data */
   #drawAnnotation(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.#drawAnnotation.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ANNOTATION);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ANNOTATION);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#get2Points(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#get2Points(ainstruction.points!, pts);
+    }
 
     if (r.ok) {
 
@@ -1070,12 +1147,14 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws a linear dimension from the given data */
   #drawLinearDim(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
+
     this.logBegin(this.#drawLinearDim.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_LIN_DIM);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_LIN_DIM);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#get2Points(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#get2Points(ainstruction.points!, pts);
+    }
 
     if (r.ok) {
 
@@ -1121,12 +1200,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws an arc dimension from the given data */
   #drawArcDim(ainstruction: IApgCiiInstruction) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.#drawArcDim.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ARC_DIM);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_ARC_DIM);
 
     const pts: A2D.Apg2DPoint[] = [];
-    r = this.#get2Points(ainstruction.points!, pts);
+    if (r.ok) {
+      r = this.#get2Points(ainstruction.points!, pts);
+    }
 
     if (r.ok) {
 
@@ -1170,8 +1250,154 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   //#endregion
 
+  // #region Path Drawing routines ---------------------------------------------
+
+  /** Enters in path mode */
+  drawPathBegin(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.drawPathBegin.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_BEGIN, ainstruction.name);
+
+    if (r.ok) {
+
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
+        this._pathMode = true;
+        this._pathBuilder = new Svg.ApgSvgPathBuilder();
+        this._pathOrigin = origin;
+      }
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  /** Moves path cursor to the given point */
+  drawPathMove(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.drawPathMove.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_MOVE, "", true);
+
+    if (r.ok) {
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
+        this._pathBuilder.moveAbs(origin.x, origin.y);
+      }
+
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  /** Closes the current path usyally to start another */
+  drawPathClose(_ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.drawPathClose.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_CLOSE, "", true);
+
+    if (r.ok) {
+      this._pathBuilder.close();
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  /** Draws a line between the given points in Path Mode*/
+  drawPathLine(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.drawPathLine.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_LINE, "", true);
+
+    const origin = this._points.get(ainstruction.origin!);
+    if (!origin) {
+      r = Rst.ApgRstErrors.Parametrized(
+        `Point named [%1] not found: `,
+        [ainstruction.origin!]
+      )
+    }
+    else {
+      this._pathBuilder.lineAbs(origin.x, origin.y);
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  /** Draws an arc between the given points in Path Mode*/
+  drawPathArc(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.drawPathArc.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_ARC, "", true);
+
+    const origin = this._points.get(ainstruction.origin!);
+    if (!origin) {
+      r = Rst.ApgRstErrors.Parametrized(
+        `Point named [%1] not found: `,
+        [ainstruction.origin!]
+      )
+    }
+    else {
+
+      let largeArc = false;
+      let clockwise = true;
+      if (ainstruction.payload) {
+        largeArc = ainstruction.payload!.largeArc! as boolean | false;
+        clockwise = ainstruction.payload!.clockwise! as boolean | true;
+      }
+      this._pathBuilder.arcAbs(
+        origin.x, origin.y,
+        ainstruction.radious!, ainstruction.radious!, ainstruction.angle! | 0,
+        largeArc, clockwise
+      );
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  /** Exits from path mode */
+  drawPathEnd(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.drawPathEnd.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_END, ainstruction.name, true);
+
+    if (r.ok) {
+      this._pathMode = false;
+      const path = this._pathBuilder.build();
+      const node = this._cad.svg.path(path);
+
+      r = this.#setShapeAttributes(node, ainstruction, this._pathOrigin!);
+
+      this.#setParent(node);
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+  // #endregion
+
   /** Parses the instructions set and builds the SVG drawing */
-  build(asettingsOnly = false) {
+  build() {
 
     this.logBegin(this.build.name);
 
@@ -1247,88 +1473,88 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           this.noGroup_(); // 2023/01/21
           break;
         }
+
         case eApgCiiInstructionTypes.DRAW_POINTS: {
-          if (!asettingsOnly) {
-            ri = this.drawPoints_(ainstruction); // 2023/01/04
-          }
+          ri = this.drawPoints_(ainstruction); // 2023/01/04
           break;
         }
         case eApgCiiInstructionTypes.DRAW_ALL_POINTS: {
-          if (!asettingsOnly) {
-            ri = this.drawAllPointsWithInfo_(ainstruction); // 2023/01/04
-          }
+          ri = this.drawAllPointsWithInfo_(ainstruction); // 2023/01/04
           break;
         }
+
         case eApgCiiInstructionTypes.DRAW_LINE: {
-          if (!asettingsOnly) {
-            ri = this.drawLine_(ainstruction); // 2023/01/04
-          }
+          ri = this.drawLine_(ainstruction); // 2023/01/04
           break;
         }
         case eApgCiiInstructionTypes.DRAW_CIRCLE: {
-          if (!asettingsOnly) {
-            ri = this.drawCircle_(ainstruction); // 2023/01/06
-          }
+          ri = this.drawCircle_(ainstruction); // 2023/01/06
           break;
         }
         case eApgCiiInstructionTypes.DRAW_ARC: {
-          if (!asettingsOnly) {
-            ri = this.drawArc_(ainstruction); // 2023/01/06
-          }
+          ri = this.drawArc_(ainstruction); // 2023/01/06
           break;
         }
         case eApgCiiInstructionTypes.DRAW_POLYLINE: {
-          if (!asettingsOnly) {
-            ri = this.#drawPolyLine(ainstruction); // 2023/01/06
-          }
+          ri = this.#drawPolyLine(ainstruction); // 2023/01/06
           break;
         }
         case eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS: {
-          if (!asettingsOnly) {
-            ri = this.#drawRectangleByPoints(ainstruction); // 2023/01/07
-          }
+          ri = this.#drawRectangleByPoints(ainstruction); // 2023/01/07
           break;
         }
         case eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES: {
-          if (!asettingsOnly) {
-            ri = this.#drawRectangleBySizes(ainstruction); // 2023/01/07 
-          }
+          ri = this.#drawRectangleBySizes(ainstruction); // 2023/01/07 
           break;
         }
         case eApgCiiInstructionTypes.DRAW_POLYGON: {
-          if (!asettingsOnly) {
-            ri = this.drawPolygon_(ainstruction); // 2023/01/07
-          }
+          ri = this.drawPolygon_(ainstruction); // 2023/01/07
           break;
         }
         case eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON: {
-          if (!asettingsOnly) {
-            ri = this.drawRegularPolygon_(ainstruction); // 2023/01/15
-          }
+          ri = this.drawRegularPolygon_(ainstruction); // 2023/01/15
           break;
         }
+
+        case eApgCiiInstructionTypes.DRAW_PATH_BEGIN: {
+          ri = this.drawPathBegin(ainstruction); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_PATH_MOVE: {
+          ri = this.drawPathMove(ainstruction); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_PATH_LINE: {
+          ri = this.drawPathLine(ainstruction); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_PATH_ARC: {
+          ri = this.drawPathArc(ainstruction); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_PATH_CLOSE: {
+          ri = this.drawPathClose(ainstruction); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.DRAW_PATH_END: {
+          ri = this.drawPathEnd(ainstruction); // 
+          break;
+        }
+
         case eApgCiiInstructionTypes.DRAW_TEXT: {
-          if (!asettingsOnly) {
-            ri = this.#drawText(ainstruction); // 
-          }
+          ri = this.#drawText(ainstruction); // 
           break;
         }
         case eApgCiiInstructionTypes.DRAW_ANNOTATION: {
-          if (!asettingsOnly) {
-            ri = this.#drawAnnotation(ainstruction);
-          }
+          ri = this.#drawAnnotation(ainstruction);
           break;
         }
         case eApgCiiInstructionTypes.DRAW_LIN_DIM: {
-          if (!asettingsOnly) {
-            ri = this.#drawLinearDim(ainstruction);
-          }
+          ri = this.#drawLinearDim(ainstruction);
           break;
         }
         case eApgCiiInstructionTypes.DRAW_ARC_DIM: {
-          if (!asettingsOnly) {
-            ri = this.#drawArcDim(ainstruction);
-          }
+          ri = this.#drawArcDim(ainstruction);
           break;
         }
 

@@ -81,7 +81,7 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         if (test) { 
 
             const insSet = new ApgCii(logger, cad)
-            insSet.set(test!.instructions);
+            let r = insSet.set(test!.instructions);
             insSet.build();
 
             this.DrawCartouche(cad);
