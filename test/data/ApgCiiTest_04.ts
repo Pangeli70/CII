@@ -112,56 +112,59 @@ function DoorOrWindowFrontView(
 }
 
 
-export const ApgCiiTest_04: IApgCiiTest = {
-    name: eApgCiiTests.TC_PED_DOORS_1,
-    description: "Pedestrian doors on side view 1",
-    instructions: [
-        {
-            type: eApgCiiInstructionTypes.SET_NAME,
-            name: 'TEST 04',
-        },
-        {
-            type: eApgCiiInstructionTypes.NEW_POINT,
-            name: 'ZERO',
-            x: 0,
-            y: 0
-        },
-        {
-            type: eApgCiiInstructionTypes.NEW_POINT,
-            name: 'Door1_O',
-            x: 200,
-            y: 200
-        },
-        ...DoorOrWindowFrontView('Door1', "Door1_O", 800, 2250, true, true),
-        {
-            type: eApgCiiInstructionTypes.NEW_POINT,
-            name: 'Door2_O',
-            x: 2000,
-            y: 200
-        },
-        ...DoorOrWindowFrontView('Door2', "Door2_O", 800, 1800, true, false),
-        {
-            type: eApgCiiInstructionTypes.NEW_POINT,
-            name: 'Door3_O',
-            x: 3400,
-            y: 50
-        },
-        ...DoorOrWindowFrontView('Door3', "Door3_O", 780, 2150, false, true),
-        {
-            type: eApgCiiInstructionTypes.NEW_POINT,
-            name: 'Door4_O',
-            x: 4500,
-            y: 0
-        },
-        ...DoorOrWindowFrontView('Door4', "Door4_O", 900, 2050, false, false),
-        {
-            type: eApgCiiInstructionTypes.PUSH_LAYER,
-            name: Cad.eApgCadDftLayers.DEBUG
-        },
-        // {
-        //     type: eApgCadInstructionTypes.DRAW_ALL_POINTS,
-        //     radious: 10
-        // },
+export function ApgCiiTest_04() {
+    const r: IApgCiiTest = {
+        name: eApgCiiTests.TC_PED_DOORS_1,
+        description: "Pedestrian doors on side view 1",
+        instructions: [
+            {
+                type: eApgCiiInstructionTypes.SET_NAME,
+                name: 'TEST 04',
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'ZERO',
+                x: 0,
+                y: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'Door1_O',
+                x: 200,
+                y: 200
+            },
+            ...DoorOrWindowFrontView('Door1', "Door1_O", 800, 2250, true, true),
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'Door2_O',
+                x: 2000,
+                y: 200
+            },
+            ...DoorOrWindowFrontView('Door2', "Door2_O", 800, 1800, true, false),
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'Door3_O',
+                x: 3400,
+                y: 50
+            },
+            ...DoorOrWindowFrontView('Door3', "Door3_O", 780, 2150, false, true),
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'Door4_O',
+                x: 4500,
+                y: 0
+            },
+            ...DoorOrWindowFrontView('Door4', "Door4_O", 900, 2050, false, false),
+            {
+                type: eApgCiiInstructionTypes.PUSH_LAYER,
+                name: Cad.eApgCadDftLayers.DEBUG
+            },
+            // {
+            //     type: eApgCadInstructionTypes.DRAW_ALL_POINTS,
+            //     radious: 10
+            // },
 
-    ]
+        ]
+    }
+    return r;
 }

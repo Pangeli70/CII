@@ -17,4 +17,6 @@ export enum eApgCiiTests {
     TC_PED_DOORS_1 = "Doors on side view",
     STRUCT_BEAMS = "Structural beams",
     SLIDING_CURVE = "Sliding curve",
+    SLIDING_SYSTEM = "Sliding system",
+    HOLE_PANEL = "Hole panel"
 }

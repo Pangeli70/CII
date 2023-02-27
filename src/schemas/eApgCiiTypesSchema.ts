@@ -16,7 +16,7 @@ const rawSchema: Jsv.IApgJsvEnum = {
         enumType: {
             type: "string",
             enum: Uts.ApgUtsEnum.StringValues(eApgCiiInstructionTypes)
-        }
+        },
     }
 }
 

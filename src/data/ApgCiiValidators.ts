@@ -10,14 +10,29 @@ import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
 import { eApgCii_TypesSchema } from "../schemas/eApgCiiTypesSchema.ts";
 import { ApgCii_GenericSchema } from "../schemas/ApgCiiGenericSchema.ts";
+
+import { ApgCad_FillStyleSchema } from "../schemas/ApgCadFillStyleSchema.ts";
+import { ApgCad_StrokeStyleSchema } from "../schemas/ApgCadStrokeStyleSchema.ts";
+import { ApgCad_TextStyleSchema } from "../schemas/ApgCadTextStyleSchema.ts";
+
+import { ApgCii_NewFillStyleSchema } from "../schemas/ApgCiiNewFillStyleSchema.ts";
+import { ApgCii_NewStrokeStyleSchema } from "../schemas/ApgCiiNewStrokeStyleSchema.ts";
+import { ApgCii_NewTextStyleSchema } from "../schemas/ApgCiiNewTextStyleSchema.ts";
+
+
 import { ApgCii_SetNameSchema } from "../schemas/ApgCiiSetNameSchema.ts";
 import { ApgCii_PopLayerSchema } from "../schemas/ApgCiiPopLayerSchema.ts";
 import { ApgCii_PushLayerSchema } from "../schemas/ApgCiiPushLayerSchema.ts";
+
 import { ApgCii_NewPointSchema } from "../schemas/ApgCiiNewPointSchema.ts";
 import { ApgCii_NewPointDeltaSchema } from "../schemas/ApgCiiNewPointDeltaSchema.ts";
+import { ApgCii_MovePointDeltaSchema } from "../schemas/ApgCiiMovePointDeltaSchema.ts";
+
 import { ApgCii_NewGroupSchema } from "../schemas/ApgCiiNewGroupSchema.ts";
 import { ApgCii_NoGroupSchema } from "../schemas/ApgCiiNoGroupSchema.ts";
+
 import { ApgCii_DrawAllPointsSchema } from "../schemas/ApgCiiDrawAllPointsSchema.ts";
+
 import { ApgCii_DrawPointsSchema } from "../schemas/ApgCiiDrawPointsSchema.ts";
 import { ApgCii_DrawLineSchema } from "../schemas/ApgCiiDrawLineSchema.ts";
 import { ApgCii_DrawPolylineSchema } from "../schemas/ApgCiiDrawPolylineSchema.ts";
@@ -42,6 +57,9 @@ import { ApgCii_DrawArcDimSchema } from "../schemas/ApgCiiDrawArcDimSchema.ts";
 import { ApgCii_DrawAnnotationSchema } from "../schemas/ApgCiiDrawAnnotationSchema.ts";
 
 
+
+
+
 export const ApgCiiValidators = [
     {
         type: eApgCiiInstructionTypes.TYPES, // Ok 2023/01/04
@@ -51,6 +69,18 @@ export const ApgCiiValidators = [
         type: eApgCiiInstructionTypes.GENERIC, // Ok 2023/01/04
         jsonSchema: ApgCii_GenericSchema,
         dependencies: ['eApgCii_Types']
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_FILL_STYLE,
+        jsonSchema: ApgCad_FillStyleSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_STROKE_STYLE,
+        jsonSchema: ApgCad_StrokeStyleSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_TEXT_STYLE,
+        jsonSchema: ApgCad_TextStyleSchema,
     },
     {
         type: eApgCiiInstructionTypes.SET_NAME,
@@ -66,6 +96,21 @@ export const ApgCiiValidators = [
     //   type: eApgCadInstructionTypes.SET_BACKGROUND,
     //   schema: 'IApgCadSvgInsSetBackground'
     // },
+    {
+        type: eApgCiiInstructionTypes.NEW_FILL_STYLE, // Ok 2023/01/21
+        jsonSchema: ApgCii_NewFillStyleSchema,
+        dependencies: ['IApgCad_FillStyle']
+    },
+    {
+        type: eApgCiiInstructionTypes.NEW_STROKE_STYLE, // Ok 2023/01/21
+        jsonSchema: ApgCii_NewStrokeStyleSchema,
+        dependencies: ['IApgCad_StrokeStyle']
+    },
+    {
+        type: eApgCiiInstructionTypes.NEW_TEXT_STYLE, // Ok 2023/01/21
+        jsonSchema: ApgCii_NewTextStyleSchema,
+        dependencies: ['IApgCad_TextStyle']
+    },
     {
         type: eApgCiiInstructionTypes.PUSH_LAYER, // Ok 2023/01/21
         jsonSchema: ApgCii_PushLayerSchema,
@@ -89,6 +134,10 @@ export const ApgCiiValidators = [
     {
         type: eApgCiiInstructionTypes.NEW_POINT_DELTA, // Ok 2023/01/04
         jsonSchema: ApgCii_NewPointDeltaSchema,
+    },
+    {
+        type: eApgCiiInstructionTypes.MOVE_POINT_DELTA, // Ok 2023/02/26
+        jsonSchema: ApgCii_MovePointDeltaSchema,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_POINTS,  // Ok 2023/01/06
@@ -155,7 +204,7 @@ export const ApgCiiValidators = [
         jsonSchema: ApgCii_DrawPathEndSchema,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_GROUP, 
+        type: eApgCiiInstructionTypes.DRAW_GROUP,
         jsonSchema: ApgCii_DrawGroupSchema,
     },
     {

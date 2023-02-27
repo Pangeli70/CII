@@ -166,7 +166,8 @@ function StructuralBeamSectionView(
 }
 
 
-export const ApgCiiTest_05: IApgCiiTest = {
+export function ApgCiiTest_05() {
+    const r: IApgCiiTest = {
     name: eApgCiiTests.STRUCT_BEAMS,
     description: "Structural beams on side view 1",
     instructions: [
@@ -186,28 +187,28 @@ export const ApgCiiTest_05: IApgCiiTest = {
             x: 200,
             y: 1200
         },
-        ...StructuralBeamSectionView('IPE_1', "IPE1_O", 800, 800, true),
+        ...StructuralBeamSectionView('IPE_1', "IPE1_O", 250, 300, true),
         {
             type: eApgCiiInstructionTypes.NEW_POINT,
             name: 'IPE2_O',
             x: 2000,
             y: 1200
         },
-        ...StructuralBeamSectionView('Door2', "IPE2_O", 800, 1800, true),
+        ...StructuralBeamSectionView('Door2', "IPE2_O", 300, 400, true),
         {
             type: eApgCiiInstructionTypes.NEW_POINT,
             name: 'HEA1_O',
             x: 3400,
             y: 500
         },
-        ...StructuralBeamSectionView('HEA1', "HEA1_O", 780, 2150, false),
+        ...StructuralBeamSectionView('HEA1', "HEA1_O", 400, 300, false),
         {
             type: eApgCiiInstructionTypes.NEW_POINT,
             name: 'HEA2_O',
             x: 4500,
             y: 1500
         },
-        ...StructuralBeamSectionView('HEA2', "HEA2_O", 900, 2050, false),
+        ...StructuralBeamSectionView('HEA2', "HEA2_O", 200, 150, false),
         {
             type: eApgCiiInstructionTypes.PUSH_LAYER,
             name: Cad.eApgCadDftLayers.DEBUG
@@ -218,4 +219,6 @@ export const ApgCiiTest_05: IApgCiiTest = {
         // },
 
     ]
+}
+return r;
 }

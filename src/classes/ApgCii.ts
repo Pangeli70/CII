@@ -55,7 +55,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   private _pathBuilder = new Svg.ApgSvgPathBuilder();
 
   /** Path origin */
-  private _pathOrigin: A2D.Apg2DPoint | null = null;
+  private _pathPoints: A2D.Apg2DPoint[] = [];
+
 
 
   constructor(alogger: Lgr.ApgLgr, acad: Cad.ApgCadSvg) {
@@ -214,6 +215,76 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     this.logEnd();
     return r;
   }
+
+
+  newStrokeStyle(ainstruction: IApgCiiInstruction) {
+    this.logBegin(this.newStrokeStyle.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_STROKE_STYLE, ainstruction.name);
+    this._cad.newStrokeStyle(
+       ainstruction.name!,
+       ainstruction.payload!
+    );
+    this.logEnd()
+    return r;
+  }
+
+
+  newFillStyle(ainstruction: IApgCiiInstruction) {
+    this.logBegin(this.newFillStyle.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_FILL_STYLE, ainstruction.name);
+    this._cad.newFillStyle(
+      ainstruction.name!,
+      ainstruction.payload!
+    );
+    this.logEnd()
+    return r;
+  }
+
+
+  newTextStyle(ainstruction: IApgCiiInstruction) {
+    this.logBegin(this.newTextStyle.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_TEXT_STYLE, ainstruction.name);
+    this._cad.newTextStyle(
+      ainstruction.name!,
+      ainstruction.payload!
+    );
+    this.logEnd()
+    return r;
+  }
+
+
+  newPattern(ainstruction: IApgCiiInstruction) {
+    this.logBegin(this.newPattern.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_PATTERN, ainstruction.name);
+    this._cad.newPattern(
+      ainstruction.payload!
+    );
+    this.logEnd()
+    return r;
+  }
+
+
+  newTexture(ainstruction: IApgCiiInstruction) {
+    this.logBegin(this.newTexture.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_TEXTURE, ainstruction.name);
+    this._cad.newTexture(
+      ainstruction.payload!
+    );
+    this.logEnd()
+    return r;
+  }
+
+
+  newGradient(ainstruction: IApgCiiInstruction) {
+    this.logBegin(this.newGradient.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_GRADIENT, ainstruction.name);
+    this._cad.newGradient(
+      ainstruction.payload!
+    );
+    this.logEnd()
+    return r;
+  }
+
 
   //#endregion
 
@@ -415,6 +486,32 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
+
+  /** Moves the specified point by the specified deltas */
+  movePointByDelta(ainstruction: IApgCiiInstruction) {
+    const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
+
+    this.logBegin(this.movePointByDelta.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.MOVE_POINT_DELTA, pointName, true);
+
+    const point = this._points.get(ainstruction.origin!);
+
+    if (!point) {
+      r = Rst.ApgRstErrors.Parametrized(
+        `Point origin named [%1] not found in set.`,
+        [ainstruction.origin!]
+      )
+    }
+    else {
+      point.x += ainstruction.w!;
+      point.y += ainstruction.h!;
+      const clone = A2D.Apg2DPoint.Clone(point);
+      this._pathPoints.push(clone);
+    }
+
+    this.logEnd();
+    return r;
+  }
 
   //#endregion
 
@@ -1250,6 +1347,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   //#endregion
 
+
   // #region Path Drawing routines ---------------------------------------------
 
   /** Enters in path mode */
@@ -1270,7 +1368,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       else {
         this._pathMode = true;
         this._pathBuilder = new Svg.ApgSvgPathBuilder();
-        this._pathOrigin = origin;
+        this._pathPoints.push(origin);
       }
     }
 
@@ -1385,7 +1483,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       const path = this._pathBuilder.build();
       const node = this._cad.svg.path(path);
 
-      r = this.#setShapeAttributes(node, ainstruction, this._pathOrigin!);
+      r = this.#setShapeAttributes(node, ainstruction, this._pathPoints[0]!);
 
       this.#setParent(node);
     }
@@ -1395,6 +1493,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
   // #endregion
+
 
   /** Parses the instructions set and builds the SVG drawing */
   build() {
@@ -1429,29 +1528,21 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           ri = this.newPointByDelta_(ainstruction); // 2023/01/04
           break;
         }
+        case eApgCiiInstructionTypes.MOVE_POINT_DELTA: {
+          ri = this.movePointByDelta(ainstruction); // 2023/02/26
+          break;
+        }
         case eApgCiiInstructionTypes.NEW_STROKE_STYLE: {
-          throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_STROKE_STYLE);
-          // this._cad.newStrokeStyle(
-          //   ainstruction.name!,
-          //   ainstruction.payload!
-          // );
-          // break;
+          ri = this.newStrokeStyle(ainstruction);
+          break;
         }
         case eApgCiiInstructionTypes.NEW_FILL_STYLE: {
-          throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_FILL_STYLE);
-          // this._cad.newFillStyle(
-          //   ainstruction.name!,
-          //   ainstruction.payload!
-          // );
-          // break;
+          ri = this.newFillStyle(ainstruction);
+          break;
         }
         case eApgCiiInstructionTypes.NEW_TEXT_STYLE: {
-          throw new Error('Not implemented ' + eApgCiiInstructionTypes.NEW_FILL_STYLE);
-          // this._cad.newFillStyle(
-          //   ainstruction.name!,
-          //   ainstruction.payload!
-          // );
-          // break;
+          ri = this.newTextStyle(ainstruction);
+          break;
         }
         case eApgCiiInstructionTypes.PUSH_LAYER: {
           ri = this.pushLayer_(ainstruction.name!); // 2023/01/04
