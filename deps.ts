@@ -29,8 +29,8 @@ export * as Rst from "https://raw.githubusercontent.com/Pangeli70/apg-rst/master
 export * as Svg from "https://raw.githubusercontent.com/Pangeli70/apg-svg/master/mod.ts";
 //export * as Svg from "../SVG/mod.ts";
 
-//export * as Cad from "https://raw.githubusercontent.com/Pangeli70/apg-cad/master/mod.ts";
-export * as Cad from "../CAD/mod.ts";
+export * as Cad from "https://raw.githubusercontent.com/Pangeli70/apg-cad/master/mod.ts";
+//export * as Cad from "../CAD/mod.ts";
 
 export * as Uts from "https://raw.githubusercontent.com/Pangeli70/apg-uts/master/mod.ts";
 
