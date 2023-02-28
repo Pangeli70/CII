@@ -11,11 +11,11 @@ import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
 const rawSchema: Jsv.IApgJsvInterface = {
     $schema: 'http://json-schema.org/schema#',
-    $id: 'IApgCii_NoGroup#',
+    $id: 'IApgCii_CloseGroup#',
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.NO_GROUP as string
+            const: eApgCiiInstructionTypes.CLOSE_GROUP as string
         }
     },
     additionalProperties: false,
@@ -26,4 +26,4 @@ const rawSchema: Jsv.IApgJsvInterface = {
 
 };
 
-export const ApgCii_NoGroupSchema = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const ApgCii_CloseGroupSchema = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

@@ -37,8 +37,8 @@ export enum eApgCiiInstructionTypes {
   PUSH_LAYER = "PUSH_LAYER",  // S + I
   POP_LAYER = "POP_LAYER",  // S + I
   NEW_GROUP = "NEW_GROUP", // S + I
-  SET_GROUP = "SET_GROUP", // S
-  NO_GROUP = "NO_GROUP", // S + I
+  // SET_GROUP = "SET_GROUP", // S
+  CLOSE_GROUP = "CLOSE_GROUP", // S + I
 
   NEW_POINT = "NEW_POINT", // S + I
   NEW_POINT_DELTA = "NEW_POINT_DELTA", // S + I

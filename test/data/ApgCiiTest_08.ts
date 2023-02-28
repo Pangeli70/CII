@@ -15,17 +15,22 @@ import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 export function ApgCiiTest_08() {
 
     const W = Math.random() * 2000 + 2000;
+    const N = Math.round(Math.random() * 2) + 1;
 
-
-    const WD = (W - (520 * 3)) / 4;
+    const WD = (W - (520 * N)) / (N + 1);
     const holes1 = [
         new A2D.Apg2DPoint(-W / 2 + WD, (495 - 15 - 350) / 2),
         new A2D.Apg2DPoint(520, 350),
-        new A2D.Apg2DPoint(WD, 0),
-        new A2D.Apg2DPoint(520, 350),
-        new A2D.Apg2DPoint(WD, 0),
-        new A2D.Apg2DPoint(520, 350),
     ]
+
+    if (N > 1) {
+        holes1.push(new A2D.Apg2DPoint(WD, 0));
+        holes1.push(new A2D.Apg2DPoint(520, 350))
+    }
+    if (N > 2) {
+        holes1.push(new A2D.Apg2DPoint(WD, 0));
+        holes1.push(new A2D.Apg2DPoint(520, 350));
+    }
 
     const glassWidth = (W - 140 - 140 - (75 * 2)) / 3;
     const glassheight = 495 - 142;
@@ -47,6 +52,11 @@ export function ApgCiiTest_08() {
             {
                 type: eApgCiiInstructionTypes.SET_NAME,
                 name: 'TEST 08',
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_GROUP,
+                name: 'Door',
+                strokeStyle: 'None'
             },
             {
                 type: eApgCiiInstructionTypes.NEW_FILL_STYLE,
@@ -84,23 +94,94 @@ export function ApgCiiTest_08() {
                 type: eApgCiiInstructionTypes.NEW_POINT,
                 name: 'O_1',
                 x: 2000,
-                y: 45
+                y: 55
             },
             ...ApgCiiTestPanel.PanelFront("PANEL_1", 'O_1', W, 495, 'PANEL_FILL'),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
                 name: 'O_2',
                 x: 2000,
-                y: 45 + 495
+                y: 55 + 495
             },
             ...ApgCiiTestPanel.PanelFront("PANEL_2", 'O_2', W, 495, 'PANEL_FILL', holes1),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
                 name: 'O_3',
                 x: 2000,
-                y: 45 + 495 + 495
+                y: 55 + 495 + 495
             },
             ...ApgCiiTestPanel.PanelFront("PANEL_3", 'O_3', W, 495, 'PANEL_FILL', holes2),
+            {
+                type: eApgCiiInstructionTypes.NEW_FILL_STYLE,
+                name: 'RUBBER',
+                payload: {
+                    color: '#222222',
+                    opacity: 1
+                }
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_FILL_STYLE,
+                name: 'SALLOX',
+                payload: {
+                    color: '#111111',
+                    opacity: 1
+                }
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'O_4',
+                x: 2000 - W / 2,
+                y: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
+                origin: 'O_4',
+                w: W,
+                h: 45,
+                fillStyle: 'RUBBER'
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'O_5',
+                x: 2000 - W / 2,
+                y: 45
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
+                origin: 'O_5',
+                w: W,
+                h: 20,
+                fillStyle: 'SALLOX'
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'O_6',
+                x: 2000 - W / 2,
+                y: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
+                origin: 'O_6',
+                w: 15,
+                h: 495 * 3 + 55,
+                fillStyle: 'RUBBER'
+            },
+            {
+                type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+                origin: 'O_6',
+                w: W,
+                h: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
+                origin: 'O_6',
+                w: -15,
+                h: 495 * 3 + 55,
+                fillStyle: 'RUBBER'
+            },
+            {
+                type: eApgCiiInstructionTypes.CLOSE_GROUP
+            }
         ]
     }
 

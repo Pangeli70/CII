@@ -357,7 +357,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_GROUP);
 
     if (r.ok) {
-      const group: Svg.ApgSvgNode | undefined = this._cad.getGroup(ainstruction.name!);
+      const group: Svg.ApgSvgNode | undefined = this._cad.groups.get(ainstruction.name!);
 
       if (group) {
         r = Rst.ApgRstErrors.Parametrized(
@@ -369,12 +369,21 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         const options: Cad.IApgCadStyleOptions = {};
         if (ainstruction.strokeStyle) {
           r = this.#checkStrokeStyle(ainstruction.strokeStyle);
+          if (r.ok) {
+            options.strokeName = ainstruction.strokeStyle
+          }
         }
         if (r.ok && ainstruction.fillStyle) {
           r = this.#checkFillStyle(ainstruction.fillStyle);
+          if (r.ok) { 
+            options.fillName = ainstruction.fillStyle;
+          }
         }
         if (r.ok && ainstruction.textStyle) {
           r = this.#checkTextStyle(ainstruction.textStyle);
+          if (r.ok) { 
+            options.textName = ainstruction.textStyle
+          }
         }
         if (r.ok) {
           this._cad.newGroup(ainstruction.name!, options);
@@ -388,35 +397,35 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
 
   /** Relinks the drawing instructions to the already created and named group.  */
-  setGroup_(agroupName: string) {
+  // setGroup_(agroupName: string) {
 
-    this.logBegin(this.setGroup_.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_GROUP);
+  //   this.logBegin(this.setGroup_.name);
+  //   let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_GROUP);
 
-    if (r.ok) {
-      const group: Svg.ApgSvgNode | undefined = this._cad.setCurrentGroup(agroupName);
+  //   if (r.ok) {
+  //     const group: Svg.ApgSvgNode | undefined = this._cad.groups.get(agroupName);
 
-      if (!group) {
-        r = Rst.ApgRstErrors.Parametrized(
-          `Group [%1] not found .`,
-          [agroupName]
-        )
-      }
-    }
+  //     if (!group) {
+  //       r = Rst.ApgRstErrors.Parametrized(
+  //         `Group [%1] not found .`,
+  //         [agroupName]
+  //       )
+  //     }
+  //   }
 
-    this.logEnd();
-    return r;
-  }
+  //   this.logEnd();
+  //   return r;
+  // }
 
 
   /** After this call the drawing instructions will bond to the current layer */
-  noGroup_() {
+  closeGroup_() {
 
-    this.logBegin(this.noGroup_.name);
-    const r = this.#traceInstruction(eApgCiiInstructionTypes.NO_GROUP);
+    this.logBegin(this.closeGroup_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.CLOSE_GROUP);
 
     if (r.ok) {
-      this._cad.unSetCurrentGroup();
+      this._cad.closeGroup();
     }
 
     this.logEnd();
@@ -523,7 +532,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
    */
   #setParent(anode: Svg.ApgSvgNode) {
 
-    const currentParent = (this._cad.currentGroup) ? this._cad.currentGroup : this._cad.currentLayer;
+    const currentParent = this._cad.currentGroupOrLayer();
     anode.childOf(currentParent);
 
   }
@@ -1556,12 +1565,12 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           ri = this.newGroup_(ainstruction); // 2023/01/21
           break;
         }
-        case eApgCiiInstructionTypes.SET_GROUP: {
-          ri = this.setGroup_(ainstruction.name!); // 
-          break;
-        }
-        case eApgCiiInstructionTypes.NO_GROUP: {
-          this.noGroup_(); // 2023/01/21
+        // case eApgCiiInstructionTypes.SET_GROUP: {
+        //   ri = this.setGroup_(ainstruction.name!); // 
+        //   break;
+        // }
+        case eApgCiiInstructionTypes.CLOSE_GROUP: {
+          this.closeGroup_(); // 2023/01/21
           break;
         }
 

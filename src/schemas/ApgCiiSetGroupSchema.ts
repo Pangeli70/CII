@@ -30,4 +30,4 @@ const rawSchema: Jsv.IApgJsvInterface = {
 
 };
 
-export const ApgCii_GroupSchema = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const ApgCii_SetGroupSchema = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

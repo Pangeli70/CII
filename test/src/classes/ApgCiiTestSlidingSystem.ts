@@ -202,7 +202,7 @@ export class ApgCiiTestSlidingSystem {
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.NO_GROUP
+            type: eApgCiiInstructionTypes.CLOSE_GROUP
         });
         return r;
 
@@ -353,6 +353,9 @@ export class ApgCiiTestSlidingSystem {
         r.push({
             type: eApgCiiInstructionTypes.DRAW_PATH_END
         });
+        r.push({
+            type: eApgCiiInstructionTypes.CLOSE_GROUP
+        });
 
         if (atrimLenght > 0) { 
             r.push({
@@ -373,9 +376,7 @@ export class ApgCiiTestSlidingSystem {
             });
         }
 
-        r.push({
-            type: eApgCiiInstructionTypes.NO_GROUP
-        });
+
         return r;
 
     }

@@ -29,7 +29,7 @@ import { ApgCii_NewPointDeltaSchema } from "../schemas/ApgCiiNewPointDeltaSchema
 import { ApgCii_MovePointDeltaSchema } from "../schemas/ApgCiiMovePointDeltaSchema.ts";
 
 import { ApgCii_NewGroupSchema } from "../schemas/ApgCiiNewGroupSchema.ts";
-import { ApgCii_NoGroupSchema } from "../schemas/ApgCiiNoGroupSchema.ts";
+import { ApgCii_CloseGroupSchema } from "../schemas/ApgCiiCloseGroupSchema.ts";
 
 import { ApgCii_DrawAllPointsSchema } from "../schemas/ApgCiiDrawAllPointsSchema.ts";
 
@@ -124,8 +124,8 @@ export const ApgCiiValidators = [
         jsonSchema: ApgCii_NewGroupSchema,
     },
     {
-        type: eApgCiiInstructionTypes.NO_GROUP, // Ok 2023/01/21
-        jsonSchema: ApgCii_NoGroupSchema,
+        type: eApgCiiInstructionTypes.CLOSE_GROUP, // Ok 2023/01/21
+        jsonSchema: ApgCii_CloseGroupSchema,
     },
     {
         type: eApgCiiInstructionTypes.NEW_POINT, // Ok 2023/01/04

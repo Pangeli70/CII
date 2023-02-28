@@ -159,7 +159,7 @@ function StructuralBeamSectionView(
     });
 
     r.push({
-        type: eApgCiiInstructionTypes.NO_GROUP
+        type: eApgCiiInstructionTypes.CLOSE_GROUP
     });
     return r;
 

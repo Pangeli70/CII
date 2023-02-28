@@ -105,7 +105,7 @@ function DoorOrWindowFrontView(
         strokeStyle: Cad.eApgCadDftStrokeStyles.HIDDEN
     });
     r.push({
-        type: eApgCiiInstructionTypes.NO_GROUP
+        type: eApgCiiInstructionTypes.CLOSE_GROUP
     });
     return r;
 

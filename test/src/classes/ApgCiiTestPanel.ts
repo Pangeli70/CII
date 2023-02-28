@@ -162,7 +162,7 @@ export class ApgCiiTestPanel {
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.NO_GROUP
+            type: eApgCiiInstructionTypes.CLOSE_GROUP
         });
 
 
