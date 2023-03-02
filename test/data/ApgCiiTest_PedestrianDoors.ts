@@ -112,9 +112,9 @@ function DoorOrWindowFrontView(
 }
 
 
-export function ApgCiiTest_04() {
+export function ApgCiiTest_PedestrianDoors() {
     const r: IApgCiiTest = {
-        name: eApgCiiTests.TC_PED_DOORS_1,
+        name: eApgCiiTests.TC_PED_DOORS,
         description: "Pedestrian doors on side view 1",
         instructions: [
             {

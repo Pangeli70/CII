@@ -14,9 +14,9 @@ import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
 
 
-export function ApgCiiTest_06() {
+export function ApgCiiTest_SlidingCurves() {
     const r: IApgCiiTest = {
-        name: eApgCiiTests.SLIDING_CURVE,
+        name: eApgCiiTests.TC_SLIDING_CURVE,
         description: "Sliding systems curves",
         instructions: [
             {

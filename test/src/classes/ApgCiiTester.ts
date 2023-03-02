@@ -10,14 +10,15 @@
 import { Lgr, Cad, StdPath } from "../../../deps.ts";
 import { ApgCii } from "../../../src/classes/ApgCii.ts";
 
-import { ApgCiiTest_01 } from "../../data/ApgCiiTest_01.ts";
-import { ApgCiiTest_02 } from "../../data/ApgCiiTest_02.ts";
-import { ApgCiiTest_03 } from "../../data/ApgCiiTest_03.ts";
-import { ApgCiiTest_04 } from "../../data/ApgCiiTest_04.ts";
-import { ApgCiiTest_05 } from "../../data/ApgCiiTest_05.ts";
-import { ApgCiiTest_06 } from "../../data/ApgCiiTest_06.ts";
-import { ApgCiiTest_07 } from "../../data/ApgCiiTest_07.ts";
-import { ApgCiiTest_08 } from "../../data/ApgCiiTest_08.ts";
+import { ApgCiiTest_DrawingPrimitives } from "../../data/ApgCiiTest_DrawingPrimitives.ts";
+import { ApgCiiTest_DimsAndAnnots } from "../../data/ApgCiiTest_DimsAndAnnots.ts";
+import { ApgCiiTest_MeasSideView } from "../../data/ApgCiiTest_MeasSideView.ts";
+import { ApgCiiTest_PedestrianDoors } from "../../data/ApgCiiTest_PedestrianDoors.ts";
+import { ApgCiiTest_StructuralBeams } from "../../data/ApgCiiTest_StructuralBeams.ts";
+import { ApgCiiTest_SlidingCurves } from "../../data/ApgCiiTest_SlidingCurves.ts";
+import { ApgCiiTest_SlidingSystem } from "../../data/ApgCiiTest_SlidingSystem.ts";
+import { ApgCiiTest_PanelsWithHoles } from "../../data/ApgCiiTest_PanelsWithHoles.ts";
+import { ApgCiiTest_Coats } from "../../data/ApgCiiTest_Coats.ts";
 import { eApgCiiTests } from "../enums/eApgCiiTests.ts";
 
 import { IApgCiiTest } from "../interfaces/IApgCiiTest.ts";
@@ -31,14 +32,15 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
 
     protected static init() {
 
-        this._tests.set(eApgCiiTests.BASIC, ApgCiiTest_01);
-        this._tests.set(eApgCiiTests.DIMS_AND_ANNOTS, ApgCiiTest_02);
-        this._tests.set(eApgCiiTests.TC_MEAS_ON_SITE_1, ApgCiiTest_03);
-        this._tests.set(eApgCiiTests.TC_PED_DOORS_1, ApgCiiTest_04);
-        this._tests.set(eApgCiiTests.STRUCT_BEAMS, ApgCiiTest_05);
-        this._tests.set(eApgCiiTests.SLIDING_CURVE, ApgCiiTest_06);
-        this._tests.set(eApgCiiTests.SLIDING_SYSTEM, ApgCiiTest_07);
-        this._tests.set(eApgCiiTests.HOLE_PANEL, ApgCiiTest_08);
+        this._tests.set(eApgCiiTests.PRIMITIVES, ApgCiiTest_DrawingPrimitives);
+        this._tests.set(eApgCiiTests.DIMS_AND_ANNOTS, ApgCiiTest_DimsAndAnnots);
+        this._tests.set(eApgCiiTests.TC_MEAS_ON_SITE_SV, ApgCiiTest_MeasSideView);
+        this._tests.set(eApgCiiTests.TC_PED_DOORS, ApgCiiTest_PedestrianDoors);
+        this._tests.set(eApgCiiTests.TC_STRUCT_BEAMS, ApgCiiTest_StructuralBeams);
+        this._tests.set(eApgCiiTests.TC_SLIDING_CURVE, ApgCiiTest_SlidingCurves);
+        this._tests.set(eApgCiiTests.TC_SLIDING_SYSTEM, ApgCiiTest_SlidingSystem);
+        this._tests.set(eApgCiiTests.TC_HOLE_PANEL, ApgCiiTest_PanelsWithHoles);
+        this._tests.set(eApgCiiTests.TC_COAT, ApgCiiTest_Coats);
 
         this._ready = true;
     }

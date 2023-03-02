@@ -11,12 +11,15 @@
  * Groups of instructions for testing
  */
 export enum eApgCiiTests { 
-    BASIC = "Basic",
+    PRIMITIVES = "Primitive shapes",
     DIMS_AND_ANNOTS = "Dims as annotations",
-    TC_MEAS_ON_SITE_1 = "Measures taken on site side view",
-    TC_PED_DOORS_1 = "Doors on side view",
-    STRUCT_BEAMS = "Structural beams",
-    SLIDING_CURVE = "Sliding curve",
-    SLIDING_SYSTEM = "Sliding system",
-    HOLE_PANEL = "Hole panel"
+    TC_MEAS_ON_SITE_SV = "Measures taken on site side view",
+    TC_MEAS_ON_SITE_TV = "Measures taken on site top view",
+    TC_MEAS_ON_SITE_FV = "Measures taken on site front view",
+    TC_PED_DOORS = "Doors on side view",
+    TC_STRUCT_BEAMS = "Structural beams",
+    TC_SLIDING_CURVE = "Sliding curve",
+    TC_SLIDING_SYSTEM = "Sliding system",
+    TC_HOLE_PANEL = "Panel with holes",
+    TC_COAT = "Panels and gaskets"
 }

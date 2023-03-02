@@ -704,13 +704,14 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   #trySetStrokeStyle(node: Svg.ApgSvgNode, astrokeStyleName: string) {
     let r = this.#checkStrokeStyle(astrokeStyleName);
+    // TODO @3 Cache this it is called many times
     const p = Rst.ApgRst.ExtractPayload(r, "IApgSvgStrokeStyle") as Rst.IApgRst;
     if (p.ok != undefined && p.ok == false) {
       r = p;
     }
     if (r.ok) {
       const strk = p as unknown as Svg.IApgSvgStrokeStyle;
-      node.stroke(strk.color, strk.width);
+      node.stroke(strk.color, strk.width, strk.opacity);
       if (strk.dashPattern) {
         node.strokeDashPattern(strk.dashPattern, strk.dashOffset)
       }

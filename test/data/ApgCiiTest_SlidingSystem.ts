@@ -19,9 +19,9 @@ function getVerticalAngle(ax1: number, ax2: number, al: number) {
 }
 
 
-export function ApgCiiTest_07() {
+export function ApgCiiTest_SlidingSystem() {
     const r: IApgCiiTest = {
-        name: eApgCiiTests.SLIDING_SYSTEM,
+        name: eApgCiiTests.TC_SLIDING_SYSTEM,
         description: "Sliding systems",
         instructions: [
             {

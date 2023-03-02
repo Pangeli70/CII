@@ -12,29 +12,33 @@ import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 
 
 
-export function ApgCiiTest_08() {
+export function ApgCiiTest_Coats() {
 
     const W = Math.random() * 2000 + 2000;
     const N = Math.round(Math.random() * 2) + 1;
+    const TYPE = Math.round(Math.random() * 2);
+
+
+    const noHoles: A2D.Apg2DPoint[] = [];
 
     const WD = (W - (520 * N)) / (N + 1);
-    const holes1 = [
+    const inspectionWindowHoles1 = [
         new A2D.Apg2DPoint(-W / 2 + WD, (495 - 15 - 350) / 2),
         new A2D.Apg2DPoint(520, 350),
     ]
 
     if (N > 1) {
-        holes1.push(new A2D.Apg2DPoint(WD, 0));
-        holes1.push(new A2D.Apg2DPoint(520, 350))
+        inspectionWindowHoles1.push(new A2D.Apg2DPoint(WD, 0));
+        inspectionWindowHoles1.push(new A2D.Apg2DPoint(520, 350))
     }
     if (N > 2) {
-        holes1.push(new A2D.Apg2DPoint(WD, 0));
-        holes1.push(new A2D.Apg2DPoint(520, 350));
+        inspectionWindowHoles1.push(new A2D.Apg2DPoint(WD, 0));
+        inspectionWindowHoles1.push(new A2D.Apg2DPoint(520, 350));
     }
 
     const glassWidth = (W - 140 - 140 - (75 * 2)) / 3;
     const glassheight = 495 - 142;
-    const holes2 = [
+    const glazedSectionHoles = [
         new A2D.Apg2DPoint(-W / 2 + 140, 71),
         new A2D.Apg2DPoint(glassWidth, glassheight),
         new A2D.Apg2DPoint(75, 0),
@@ -43,19 +47,21 @@ export function ApgCiiTest_08() {
         new A2D.Apg2DPoint(glassWidth, glassheight),
     ]
 
+    const holes = TYPE == 0 ? noHoles : TYPE == 1 ? inspectionWindowHoles1 : glazedSectionHoles; 
+
     const randomColor = "#000000".replace(/0/g, function () { return (~~(Math.random() * 16)).toString(16); });
 
     const r = {
-        name: eApgCiiTests.HOLE_PANEL,
-        description: "Panels",
+        name: eApgCiiTests.TC_COAT,
+        description: "Coat made of a series of panels",
         instructions: [
             {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 08',
+                name: 'TEST 09',
             },
             {
                 type: eApgCiiInstructionTypes.NEW_GROUP,
-                name: 'Door',
+                name: 'Door Coat',
                 strokeStyle: 'None'
             },
             {
@@ -70,18 +76,18 @@ export function ApgCiiTest_08() {
                 type: eApgCiiInstructionTypes.NEW_STROKE_STYLE,
                 name: 'RIB_LIGHT',
                 payload: {
-                    color: '#FFFF66',
+                    color: '#FFFFFF',
                     width: 4,
-                    opacity: 0.5
+                    opacity: 0.7
                 }
             },
             {
                 type: eApgCiiInstructionTypes.NEW_STROKE_STYLE,
                 name: 'RIB_SHADOW',
                 payload: {
-                    color: '#000066',
+                    color: '#000000',
                     width: 4,
-                    opacity: 0.5
+                    opacity: 0.7
                 }
             },
             {
@@ -96,21 +102,36 @@ export function ApgCiiTest_08() {
                 x: 2000,
                 y: 55
             },
-            ...ApgCiiTestPanel.PanelFront("PANEL_1", 'O_1', W, 495, 'PANEL_FILL'),
+            ...ApgCiiTestPanel.PanelFront(
+                "PANEL_1", 'O_1', W, 495, 'PANEL_FILL', ['RIB_SHADOW','RIB_LIGHT'], holes
+            ),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
                 name: 'O_2',
                 x: 2000,
                 y: 55 + 495
             },
-            ...ApgCiiTestPanel.PanelFront("PANEL_2", 'O_2', W, 495, 'PANEL_FILL', holes1),
+            ...ApgCiiTestPanel.PanelFront(
+                "PANEL_2", 'O_2', W, 495, 'PANEL_FILL', ['RIB_SHADOW', 'RIB_LIGHT'], holes
+            ),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
                 name: 'O_3',
                 x: 2000,
-                y: 55 + 495 + 495
+                y: 55 + 495 *2
             },
-            ...ApgCiiTestPanel.PanelFront("PANEL_3", 'O_3', W, 495, 'PANEL_FILL', holes2),
+            ...ApgCiiTestPanel.PanelFront(
+                "PANEL_3", 'O_3', W, 495, 'PANEL_FILL', ['RIB_SHADOW', 'RIB_LIGHT'], holes
+            ),
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'O_4',
+                x: 2000,
+                y: 55 + 495 * 3
+            },
+            ...ApgCiiTestPanel.PanelFront(
+                "PANEL_4", 'O_4', W, 495, 'PANEL_FILL', ['RIB_SHADOW', 'RIB_LIGHT'], holes
+            ),
             {
                 type: eApgCiiInstructionTypes.NEW_FILL_STYLE,
                 name: 'RUBBER',
@@ -129,54 +150,54 @@ export function ApgCiiTest_08() {
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
-                name: 'O_4',
+                name: 'O_5',
                 x: 2000 - W / 2,
                 y: 0
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
-                origin: 'O_4',
+                origin: 'O_5',
                 w: W,
                 h: 45,
                 fillStyle: 'RUBBER'
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
-                name: 'O_5',
+                name: 'O_6',
                 x: 2000 - W / 2,
                 y: 45
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
-                origin: 'O_5',
+                origin: 'O_6',
                 w: W,
                 h: 20,
                 fillStyle: 'SALLOX'
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
-                name: 'O_6',
+                name: 'O_7',
                 x: 2000 - W / 2,
                 y: 0
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
-                origin: 'O_6',
+                origin: 'O_7',
                 w: 15,
-                h: 495 * 3 + 55,
+                h: 495 * 4 + 55,
                 fillStyle: 'RUBBER'
             },
             {
                 type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
-                origin: 'O_6',
+                origin: 'O_7',
                 w: W,
                 h: 0
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
-                origin: 'O_6',
+                origin: 'O_7',
                 w: -15,
-                h: 495 * 3 + 55,
+                h: 495 * 4 + 55,
                 fillStyle: 'RUBBER'
             },
             {

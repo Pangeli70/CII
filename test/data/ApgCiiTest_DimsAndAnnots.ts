@@ -11,7 +11,7 @@ import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_02() {
+export function ApgCiiTest_DimsAndAnnots() {
     const r: IApgCiiTest = {
         name: eApgCiiTests.DIMS_AND_ANNOTS,
         description: "Dimensions and annotatins o proper layers",

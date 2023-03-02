@@ -14,6 +14,7 @@ export class ApgCiiTestPanel {
         awidth: number,
         aheight: number,
         afillStyleName: string,
+        astrokeStyleNames: string[] = [],
         aholes: A2D.Apg2DPoint[] = []
     ) {
         const cursor = aname + '_c';
@@ -160,6 +161,50 @@ export class ApgCiiTestPanel {
             type: eApgCiiInstructionTypes.DRAW_PATH_END,
             fillStyle: afillStyleName
         });
+
+        if (astrokeStyleNames
+            && Array.isArray(astrokeStyleNames)
+            && astrokeStyleNames.length == 2
+        ) {
+            r.push({
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: aname + '_TS1a',
+                origin: aorigin,
+                w: -awidth / 2,
+                h: aheight - 2
+            });
+            r.push({
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: aname + '_TS1b',
+                origin: aorigin,
+                w: awidth / 2,
+                h: aheight - 2
+            });
+            r.push({
+                type: eApgCiiInstructionTypes.DRAW_LINE,
+                points: [aname + '_TS1a', aname + '_TS1b'],
+                strokeStyle: astrokeStyleNames[0]
+            });
+            r.push({
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: aname + '_TR1a',
+                origin: aorigin,
+                w: -awidth / 2,
+                h: aheight - 17
+            });
+            r.push({
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: aname + '_TR1b',
+                origin: aorigin,
+                w: awidth / 2,
+                h: aheight - 17
+            });
+            r.push({
+                type: eApgCiiInstructionTypes.DRAW_LINE,
+                points: [aname + '_TR1a', aname + '_TR1b'],
+                strokeStyle: astrokeStyleNames[1]
+            });
+        }
 
         r.push({
             type: eApgCiiInstructionTypes.CLOSE_GROUP

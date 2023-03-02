@@ -12,9 +12,9 @@ import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_01() {
+export function ApgCiiTest_DrawingPrimitives() {
     const r: IApgCiiTest = {
-        name: eApgCiiTests.BASIC,
+        name: eApgCiiTests.PRIMITIVES,
         description: "Basic shapes on the default layer: Zero ",
         instructions: [
             {

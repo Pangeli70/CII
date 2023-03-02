@@ -12,9 +12,9 @@ import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_03() {
+export function ApgCiiTest_MeasSideView() {
     const r: IApgCiiTest = {
-        name: eApgCiiTests.TC_MEAS_ON_SITE_1,
+        name: eApgCiiTests.TC_MEAS_ON_SITE_SV,
         description: "Measures taken on site 1",
         instructions: [
             {

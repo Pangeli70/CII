@@ -166,9 +166,9 @@ function StructuralBeamSectionView(
 }
 
 
-export function ApgCiiTest_05() {
+export function ApgCiiTest_StructuralBeams() {
     const r: IApgCiiTest = {
-    name: eApgCiiTests.STRUCT_BEAMS,
+    name: eApgCiiTests.TC_STRUCT_BEAMS,
     description: "Structural beams on side view 1",
     instructions: [
         {
