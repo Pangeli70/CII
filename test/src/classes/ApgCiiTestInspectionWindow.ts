@@ -161,7 +161,7 @@ export class ApgCiiTestInspectionWindow {
                 w: -awidth / 2,
                 h: +aheight / 2
             });
-            ApgCiiTestInspectionWindow.TopLeftBevel(r, aorigin, bevelCursor1, awidth, aheight, abevelStyleNames[0]);
+            ApgCiiTestInspectionWindow.TopRightBevel(r, aorigin, bevelCursor1, awidth, aheight, abevelStyleNames[0]);
 
             const bevelCursor2 = aname + '_bc2';
             r.push({
@@ -171,7 +171,7 @@ export class ApgCiiTestInspectionWindow {
                 w: -awidth / 2 + this.WIDTH / 3 * 2,
                 h: +aheight / 2 - this.WIDTH / 3 * 2
             });
-            ApgCiiTestInspectionWindow.TopLeftBevel(r, aorigin, bevelCursor2, awidth - this.WIDTH / 3 * 2 * 2, aheight - this.WIDTH / 3 * 2 * 2, abevelStyleNames[1]);
+            ApgCiiTestInspectionWindow.TopRightBevel(r, aorigin, bevelCursor2, awidth - this.WIDTH / 3 * 2 * 2, aheight - this.WIDTH / 3 * 2 * 2, abevelStyleNames[1]);
 
         }
 
@@ -187,7 +187,75 @@ export class ApgCiiTestInspectionWindow {
 
 
 
-    private static TopLeftBevel(r: IApgCiiInstruction[], aorigin: string, bevelCursor: string, awidth: number, aheight: number, abevelStyleName: string) {
+    private static TopRightBevel(r: IApgCiiInstruction[], aorigin: string, bevelCursor: string, awidth: number, aheight: number, abevelStyleName: string) {
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
+            origin: aorigin,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_MOVE,
+            origin: bevelCursor,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            origin: bevelCursor,
+            w: awidth,
+            h: 0
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+            origin: bevelCursor,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            origin: bevelCursor,
+            w: 0,
+            h: -aheight
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+            origin: bevelCursor,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            origin: bevelCursor,
+            w: -this.WIDTH / 3,
+            h: +this.WIDTH / 3
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+            origin: bevelCursor,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            origin: bevelCursor,
+            w: 0,
+            h: aheight - (this.WIDTH / 3) * 2
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+            origin: bevelCursor,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            origin: bevelCursor,
+            w: -awidth + (this.WIDTH / 3) * 2,
+            h: 0
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+            origin: bevelCursor,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE,
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_END,
+            fillStyle: abevelStyleName
+        });
+    }
+
+    private static BottomLeftBevel(r: IApgCiiInstruction[], aorigin: string, bevelCursor: string, awidth: number, aheight: number, abevelStyleName: string) {
         r.push({
             type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
             origin: aorigin,
