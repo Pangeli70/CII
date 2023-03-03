@@ -21,5 +21,6 @@ export enum eApgCiiTests {
     TC_SLIDING_CURVE = "Sliding curve",
     TC_SLIDING_SYSTEM = "Sliding system",
     TC_HOLE_PANEL = "Panel with holes",
-    TC_COAT = "Panels and gaskets"
+    TC_COAT = "Panels and gaskets",
+    TC_INSP_WINDOW = "Inspection windows"
 }

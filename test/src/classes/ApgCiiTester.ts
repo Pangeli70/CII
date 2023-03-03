@@ -19,6 +19,7 @@ import { ApgCiiTest_SlidingCurves } from "../../data/ApgCiiTest_SlidingCurves.ts
 import { ApgCiiTest_SlidingSystem } from "../../data/ApgCiiTest_SlidingSystem.ts";
 import { ApgCiiTest_PanelsWithHoles } from "../../data/ApgCiiTest_PanelsWithHoles.ts";
 import { ApgCiiTest_Coats } from "../../data/ApgCiiTest_Coats.ts";
+import { ApgCiiTest_InspectionWindows } from "../../data/ApgCiiTest_InspectionWindows.ts";
 import { eApgCiiTests } from "../enums/eApgCiiTests.ts";
 
 import { IApgCiiTest } from "../interfaces/IApgCiiTest.ts";
@@ -41,6 +42,7 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         this._tests.set(eApgCiiTests.TC_SLIDING_SYSTEM, ApgCiiTest_SlidingSystem);
         this._tests.set(eApgCiiTests.TC_HOLE_PANEL, ApgCiiTest_PanelsWithHoles);
         this._tests.set(eApgCiiTests.TC_COAT, ApgCiiTest_Coats);
+        this._tests.set(eApgCiiTests.TC_INSP_WINDOW, ApgCiiTest_InspectionWindows);
 
         this._ready = true;
     }
