@@ -37,7 +37,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "JSON",
             description: "Read instructions from JSON file",
             activities: [
-                "@1 Migrate to ApgJsv 0.9.6",
+                "... No further activity",
             ]
         },
         {
@@ -55,6 +55,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "TC_SDSS",
             description: "Technical closures sectional doors sliding system",
             activities: [
+                "Random curves",
                 "Full sliding system test",
             ]
         },
@@ -64,7 +65,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             activities: [
                 "Rib patterns test",
                 "Block pattern test",
-                "Rouded corners inspection window test",
+                "Rounded corners inspection window test",
                 "Panel grayscale textures for embossing test",
                 "Panel textures test",
                 "Full coat with gaskets"
@@ -81,7 +82,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "HELP",
             description: "Use instructions JSON schemas to create interactive help",
             activities: [
-                "Add descriptions to JSON schema fields",
+                "Add descriptions and titles to JSON schema fields",
                 "TNG page to list instructions",
                 "Drash resource for page with list of instructions",
                 "TNG partials to display schema data",
@@ -102,6 +103,15 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
 
 
     done: [
+        {
+            date: "20230306",
+            milestone: "JSON",
+            version: "0.9.6",
+            description: "Read instructions from JSON file",
+            activities: [
+                "Completed migration to ApgJsv 0.9.6",
+            ]
+        },
         {
             date: "20230306",
             milestone: "TOOLS",
@@ -205,7 +215,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
                 "Settings dialog",
             ]
         },
-
         {
             date: "20230110",
             milestone: "PRIMITIVES",

@@ -2,10 +2,9 @@
  * @module [CAD]
  * @author [APG] ANGELI Paolo Giusto
  * @version 0.9.5 [APG 2023/02/12]
+ * @version 0.9.6 [APG 2023/03/07]
  * ------------------------------------------------------------------------
  */
-
-
 
 // https://deno.land/std
 export * as StdFs from "https://deno.land/std@0.153.0/fs/mod.ts";
@@ -26,19 +25,20 @@ export * as A2D from "https://raw.githubusercontent.com/Pangeli70/apg-2d/master/
 export * as Rst from "https://raw.githubusercontent.com/Pangeli70/apg-rst/master/mod.ts";
 //export * as Rst from "../RST/mod.ts";
 
-//export * as Svg from "https://raw.githubusercontent.com/Pangeli70/apg-svg/master/mod.ts";
-export * as Svg from "../SVG/mod.ts";
+export * as Svg from "https://raw.githubusercontent.com/Pangeli70/apg-svg/master/mod.ts";
+// export * as Svg from "../SVG/mod.ts";
 
-//export * as Cad from "https://raw.githubusercontent.com/Pangeli70/apg-cad/master/mod.ts";
-export * as Cad from "../CAD/mod.ts";
+export * as Cad from "https://raw.githubusercontent.com/Pangeli70/apg-cad/master/mod.ts";
+//export * as Cad from "../CAD/mod.ts";
 
 export * as Uts from "https://raw.githubusercontent.com/Pangeli70/apg-uts/master/mod.ts";
+//export * as Uts from "../UTS/mod.ts";
 
 export * as Lgr from "https://raw.githubusercontent.com/Pangeli70/apg-lgr/master/mod.ts";
 //export * as Lgr from "../LGR/mod.ts";
 
-// export * as Jsv from "https://raw.githubusercontent.com/Pangeli70/apg-jsv/master/mod.ts";
-export * as Jsv from "../JSV/mod.ts";
+export * as Jsv from "https://raw.githubusercontent.com/Pangeli70/apg-jsv/master/mod.ts";
+//export * as Jsv from "../JSV/mod.ts";
 
 export * as Edr from "https://raw.githubusercontent.com/Pangeli70/apg-edr/master/mod.ts";
 
