@@ -25,7 +25,7 @@ function StructuralBeamSectionView(
     const bwidth = (aipeOrHea) ? aheight / 10 : awidth / 10;
     const r: IApgCiiInstruction[] = [];
     r.push({
-        type: eApgCiiInstructionTypes.NEW_GROUP,
+        type: eApgCiiInstructionTypes.GROUP_BEGIN,
         name: aname,
     });
 
@@ -159,7 +159,7 @@ function StructuralBeamSectionView(
     });
 
     r.push({
-        type: eApgCiiInstructionTypes.CLOSE_GROUP
+        type: eApgCiiInstructionTypes.GROUP_END
     });
     return r;
 

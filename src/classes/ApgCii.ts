@@ -54,8 +54,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Path builder for path mode */
   private _pathBuilder = new Svg.ApgSvgPathBuilder();
 
-  /** Path origin */
-  private _pathPoints: A2D.Apg2DPoint[] = [];
+
 
 
 
@@ -67,6 +66,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     this._cad = acad;
     this._name = 'Unnamed ApgCii';
     this._layersStack.push(acad.currentLayer);
+
+    ApgCiiValidatorService.Init(alogger);
 
     this.logEnd();
   }
@@ -354,7 +355,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   newGroup_(ainstruction: IApgCiiInstruction) {
 
     this.logBegin(this.newGroup_.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_GROUP);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.GROUP_BEGIN);
 
     if (r.ok) {
       const group: Svg.ApgSvgNode | undefined = this._cad.groups.get(ainstruction.name!);
@@ -422,7 +423,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   closeGroup_() {
 
     this.logBegin(this.closeGroup_.name);
-    const r = this.#traceInstruction(eApgCiiInstructionTypes.CLOSE_GROUP);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.GROUP_END);
 
     if (r.ok) {
       this._cad.closeGroup();
@@ -514,8 +515,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     else {
       point.x += ainstruction.w!;
       point.y += ainstruction.h!;
-      const clone = A2D.Apg2DPoint.Clone(point);
-      this._pathPoints.push(clone);
     }
 
     this.logEnd();
@@ -704,7 +703,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   #trySetStrokeStyle(node: Svg.ApgSvgNode, astrokeStyleName: string) {
     let r = this.#checkStrokeStyle(astrokeStyleName);
-    // TODO @3 Cache this it is called many times
+    // TODO @3 Cache this it is called many times -- APG 20230215
     const p = Rst.ApgRst.ExtractPayload(r, "IApgSvgStrokeStyle") as Rst.IApgRst;
     if (p.ok != undefined && p.ok == false) {
       r = p;
@@ -856,6 +855,9 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       }
       else if (ainstruction.pivot) {
         r = this.#trySetRotation(anode, ainstruction.pivot, ainstruction.angle);
+      }
+      else if (ainstruction.origin) {
+        r = this.#trySetRotation(anode, ainstruction.origin, ainstruction.angle);
       }
     }
 
@@ -1202,8 +1204,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       }
       else {
 
-        // TODO @5 APG ... -- this is a mess better to draw text without Annotations factory
-        // implement a method in basic shapes factroy
+        // TODO @5 this is a mess better to draw text without Annotations factory
+        // implement a method in basic shapes factory -- APG 20230115
         const factory = this._cad.getPrimitiveFactory(
           Cad.eApgCadFactories.BASIC_SHAPES
         ) as Cad.ApgCadSvgBasicShapesFactory;
@@ -1378,7 +1380,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       else {
         this._pathMode = true;
         this._pathBuilder = new Svg.ApgSvgPathBuilder();
-        this._pathPoints.push(origin);
       }
     }
 
@@ -1493,7 +1494,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       const path = this._pathBuilder.build();
       const node = this._cad.svg.path(path);
 
-      r = this.#setShapeAttributes(node, ainstruction, this._pathPoints[0]!);
+      r = this.#setShapeAttributes(node, ainstruction);
 
       this.#setParent(node);
     }
@@ -1562,7 +1563,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           ri = this.popLayer_(); // 2023/01/22
           break;
         }
-        case eApgCiiInstructionTypes.NEW_GROUP: {
+        case eApgCiiInstructionTypes.GROUP_BEGIN: {
           ri = this.newGroup_(ainstruction); // 2023/01/21
           break;
         }
@@ -1570,7 +1571,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         //   ri = this.setGroup_(ainstruction.name!); // 
         //   break;
         // }
-        case eApgCiiInstructionTypes.CLOSE_GROUP: {
+        case eApgCiiInstructionTypes.GROUP_END: {
           this.closeGroup_(); // 2023/01/21
           break;
         }

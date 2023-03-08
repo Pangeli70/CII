@@ -60,7 +60,7 @@ export function ApgCiiTest_Coats() {
                 name: 'TEST 09',
             },
             {
-                type: eApgCiiInstructionTypes.NEW_GROUP,
+                type: eApgCiiInstructionTypes.GROUP_BEGIN,
                 name: 'Door Coat',
                 strokeStyle: 'None'
             },
@@ -201,7 +201,7 @@ export function ApgCiiTest_Coats() {
                 fillStyle: 'RUBBER'
             },
             {
-                type: eApgCiiInstructionTypes.CLOSE_GROUP
+                type: eApgCiiInstructionTypes.GROUP_END
             }
         ]
     }

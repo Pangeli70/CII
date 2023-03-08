@@ -20,7 +20,7 @@ export class ApgCiiTestPanel {
         const cursor = aname + '_c';
         const r: IApgCiiInstruction[] = [];
         r.push({
-            type: eApgCiiInstructionTypes.NEW_GROUP,
+            type: eApgCiiInstructionTypes.GROUP_BEGIN,
             name: aname,
         });
 
@@ -207,7 +207,7 @@ export class ApgCiiTestPanel {
         }
 
         r.push({
-            type: eApgCiiInstructionTypes.CLOSE_GROUP
+            type: eApgCiiInstructionTypes.GROUP_END
         });
 
 

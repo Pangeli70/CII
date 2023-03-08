@@ -58,7 +58,7 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
             r = fn();
         }
         else {
-            // TODO @2 move this const declaration outside from here
+            // TODO @2 move this const declaration outside from here -- APG 20230115
             const JSON_INSTRUCTIONS_PATH = StdPath.resolve('./test/data/json');
             const file = StdPath.normalize(JSON_INSTRUCTIONS_PATH + "/" + atestName);
             const fileContent = await Deno.readTextFile(file);

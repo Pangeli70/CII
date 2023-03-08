@@ -46,7 +46,6 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
         let instructions: IApgCiiInstruction[] = [];
         let cadState: any = {};
 
-        // TODO @1 -- APG 20230221 - Use same logger for validator and for interpreter
         const { svg, logger, test } = await ApgCiiTester.RunTest(cad, params.name as unknown as eApgCiiTests);
 
         svgContent = svg;
@@ -59,7 +58,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
         const templateData = {
             site: {
                 name: "Apg-Cii",
-                title: "Apg Cad Instructions Interpreter Tests"
+                title: "Apg Cad Instructions Interpreter"
             },
             page: {
                 title: "Viewer",
@@ -209,7 +208,7 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
     }
 
 
-    // TODO @1 -- APG 20230219 Move from here maybe in LGR
+    // TODO @5 Move from here to static method in Lgr.ApgLgr --  APG 20230219
     #loggerResult(alogger: Lgr.ApgLgr) {
 
         const r: Rst.IApgRst = { ok: true };
@@ -260,7 +259,8 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
                     typeof (event.result.payload.data) == 'object' ||
                     Array.isArray(event.result.payload.data)
                 ) {
-                    payloadData = '<br/>' + JSON.stringify(event.result.payload.data);
+                   // payloadData = '<br/>' + JSON.stringify(event.result.payload.data);
+                    payloadData = '<br/>' + 'Circular recursion error here!!!';
                 }
                 else {
                     payloadData = `${event.result.payload.data}`;

@@ -20,7 +20,7 @@ export class ApgCiiTestSlidingSystem {
 
         const r: IApgCiiInstruction[] = [];
         r.push({
-            type: eApgCiiInstructionTypes.NEW_GROUP,
+            type: eApgCiiInstructionTypes.GROUP_BEGIN,
             name: aname,
         });
 
@@ -202,7 +202,7 @@ export class ApgCiiTestSlidingSystem {
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.CLOSE_GROUP
+            type: eApgCiiInstructionTypes.GROUP_END
         });
         return r;
 
@@ -220,7 +220,7 @@ export class ApgCiiTestSlidingSystem {
 
         const r: IApgCiiInstruction[] = [];
         r.push({
-            type: eApgCiiInstructionTypes.NEW_GROUP,
+            type: eApgCiiInstructionTypes.GROUP_BEGIN,
             name: aname,
         });
         
@@ -354,7 +354,7 @@ export class ApgCiiTestSlidingSystem {
             type: eApgCiiInstructionTypes.DRAW_PATH_END
         });
         r.push({
-            type: eApgCiiInstructionTypes.CLOSE_GROUP
+            type: eApgCiiInstructionTypes.GROUP_END
         });
 
         if (atrimLenght > 0) { 

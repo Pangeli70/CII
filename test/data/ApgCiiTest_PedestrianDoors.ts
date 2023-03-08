@@ -25,7 +25,7 @@ function DoorOrWindowFrontView(
 ) {
     const r: IApgCiiInstruction[] = [];
     r.push({
-        type: eApgCiiInstructionTypes.NEW_GROUP,
+        type: eApgCiiInstructionTypes.GROUP_BEGIN,
         name: aname,
     });
     r.push({
@@ -105,7 +105,7 @@ function DoorOrWindowFrontView(
         strokeStyle: Cad.eApgCadDftStrokeStyles.HIDDEN
     });
     r.push({
-        type: eApgCiiInstructionTypes.CLOSE_GROUP
+        type: eApgCiiInstructionTypes.GROUP_END
     });
     return r;
 

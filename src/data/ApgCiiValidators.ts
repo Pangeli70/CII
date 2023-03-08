@@ -3,88 +3,108 @@
  * @author [APG] ANGELI Paolo Giusto
  * @version 0.9.4 [APG 2023/01/21] Deno Deploy Beta
  * @version 0.9.5 [APG 2023/01/28] Moved from CAD to CII
+ * @version 0.9.6 [APG 2023/03/06] Updated to JSV 0.9.6
  * -----------------------------------------------------------------------
  */
 
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
-import { eApgCii_TypesSchema } from "../schemas/eApgCiiTypesSchema.ts";
-import { ApgCii_GenericSchema } from "../schemas/ApgCiiGenericSchema.ts";
+import { eApgCii_TYPES_SCHEMA, eApgCii_TYPES_SCHEMA_ID } from "../schemas/eApgCii_TYPES_SCHEMA.ts";
+import { IApgCii_INSTRUCTION_SCHEMA } from "../schemas/IApgCii_INSTRUCTION_SCHEMA.ts";
 
-import { ApgCad_FillStyleSchema } from "../schemas/ApgCadFillStyleSchema.ts";
-import { ApgCad_StrokeStyleSchema } from "../schemas/ApgCadStrokeStyleSchema.ts";
-import { ApgCad_TextStyleSchema } from "../schemas/ApgCadTextStyleSchema.ts";
+import { IApgCad_FILL_STYLE_SCHEMA, IApgCad_FILL_STYLE_SCHEMA_ID } from "../schemas/IApgCad_FILL_STYLE_SCHEMA.ts";
+import { IApgCad_STROKE_STYLE_SCHEMA, IApgCad_STROKE_STYLE_SCHEMA_ID } from "../schemas/IApgCad_STROKE_STYLE_SCHEMA.ts";
+import { IApgCad_TEXT_STYLE_SCHEMA, IApgCad_TEXT_STYLE_SCHEMA_ID } from "../schemas/IApgCad_TEXT_STYLE_SCHEMA.ts";
 
-import { ApgCii_NewFillStyleSchema } from "../schemas/ApgCiiNewFillStyleSchema.ts";
-import { ApgCii_NewStrokeStyleSchema } from "../schemas/ApgCiiNewStrokeStyleSchema.ts";
-import { ApgCii_NewTextStyleSchema } from "../schemas/ApgCiiNewTextStyleSchema.ts";
+import { eApgCad_ARC_DIMENSION_TYPES_SCHEMA, eApgCad_ARC_DIMENSION_TYPES_SCHEMA_ID } from "../schemas/eApgCad_ARC_DIMENSION_TYPES_SCHEMA.ts";
+import { eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA, eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID } from "../schemas/eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA.ts";
+import { IApgCad_ARC_DIM_OPTIONS_SCHEMA, IApgCad_ARC_DIM_OPTIONS_SCHEMA_ID } from "../schemas/IApgCad_ARC_DIM_OPTIONS_SCHEMA.ts";
+import { IApgCad_LINEAR_DIM_OPTIONS_SCHEMA, IApgCad_LINEAR_DIM_OPTIONS_SCHEMA_ID } from "../schemas/IApgCad_LINEAR_DIM_OPTIONS_SCHEMA.ts";
 
-
-import { ApgCii_SetNameSchema } from "../schemas/ApgCiiSetNameSchema.ts";
-import { ApgCii_PopLayerSchema } from "../schemas/ApgCiiPopLayerSchema.ts";
-import { ApgCii_PushLayerSchema } from "../schemas/ApgCiiPushLayerSchema.ts";
-
-import { ApgCii_NewPointSchema } from "../schemas/ApgCiiNewPointSchema.ts";
-import { ApgCii_NewPointDeltaSchema } from "../schemas/ApgCiiNewPointDeltaSchema.ts";
-import { ApgCii_MovePointDeltaSchema } from "../schemas/ApgCiiMovePointDeltaSchema.ts";
-
-import { ApgCii_NewGroupSchema } from "../schemas/ApgCiiNewGroupSchema.ts";
-import { ApgCii_CloseGroupSchema } from "../schemas/ApgCiiCloseGroupSchema.ts";
-
-import { ApgCii_DrawAllPointsSchema } from "../schemas/ApgCiiDrawAllPointsSchema.ts";
-
-import { ApgCii_DrawPointsSchema } from "../schemas/ApgCiiDrawPointsSchema.ts";
-import { ApgCii_DrawLineSchema } from "../schemas/ApgCiiDrawLineSchema.ts";
-import { ApgCii_DrawPolylineSchema } from "../schemas/ApgCiiDrawPolylineSchema.ts";
-import { ApgCii_DrawCircleSchema } from "../schemas/ApgCiiDrawCircleSchema.ts";
-import { ApgCii_DrawGroupSchema } from "../schemas/ApgCiiDrawGroupSchema.ts";
-import { ApgCii_DrawArcSchema } from "../schemas/ApgCiiDrawArcSchema.ts";
-import { ApgCii_DrawRectanglePointsSchema } from "../schemas/ApgCiiDrawRectanglePointsSchema.ts";
-import { ApgCii_DrawRectangleSizesSchema } from "../schemas/ApgCiiDrawRectangleSizesSchema.ts";
-import { ApgCii_DrawRegularPolygonSchema } from "../schemas/ApgCiiDrawRegularPolygonSchema.ts";
-import { ApgCii_DrawPolygonSchema } from "../schemas/ApgCiiDrawPolygonSchema.ts";
-
-import { ApgCii_DrawPathBeginSchema } from "../schemas/ApgCiiDrawPathBeginSchema.ts";
-import { ApgCii_DrawPathMoveSchema } from "../schemas/ApgCiiDrawPathMoveSchema.ts";
-import { ApgCii_DrawPathLineSchema } from "../schemas/ApgCiiDrawPathLineSchema.ts";
-import { ApgCii_DrawPathArcSchema } from "../schemas/ApgCiiDrawPathArcSchema.ts";
-import { ApgCii_DrawPathCloseSchema } from "../schemas/ApgCiiDrawPathCloseSchema.ts";
-import { ApgCii_DrawPathEndSchema } from "../schemas/ApgCiiDrawPathEndSchema.ts";
+import { IApgCii_NEW_FILL_STYLE_SCHEMA } from "../schemas/IApgCii_NEW_FILL_STYLE_SCHEMA.ts";
+import { IApgCii_NEW_STROKE_STYLE_SCHEMA } from "../schemas/IApgCii_NEW_STROKE_STYLE_SCHEMA.ts";
+import { IApgCii_NEW_TEXT_STYLE_SCHEMA } from "../schemas/IApgCii_NEW_TEXT_STYLE_SCHEMA.ts";
 
 
-import { ApgCii_DrawLinearDimSchema } from "../schemas/ApgCiiDrawLinearDimSchema.ts";
-import { ApgCii_DrawArcDimSchema } from "../schemas/ApgCiiDrawArcDimSchema.ts";
-import { ApgCii_DrawAnnotationSchema } from "../schemas/ApgCiiDrawAnnotationSchema.ts";
+import { IApgCii_SET_NAME_SCHEMA } from "../schemas/IApgCii_SET_NAME_SCHEMA.ts";
+import { IApgCii_POP_LAYER_SCHEMA } from "../schemas/IApgCii_POP_LAYER_SCHEMA.ts";
+import { IApgCii_PUSH_LAYER_SCHEMA } from "../schemas/IApgCii_PUSH_LAYER_SCHEMA.ts";
 
+import { IApgCii_NEW_POINT_SCHEMA } from "../schemas/IApgCii_NEW_POINT_SCHEMA.ts";
+import { IApgCii_NEW_POINT_DELTA_SCHEMA } from "../schemas/IApgCii_NEW_POINT_DELTA_SCHEMA.ts";
+import { IApgCii_MOVE_POINT_DELTA_SCHEMA } from "../schemas/IApgCii_MOVE_POINT_DELTA_SCHEMA.ts";
 
+import { IApgCii_GROUP_BEGIN_SCHEMA } from "../schemas/IApgCii_GROUP_BEGIN_SCHEMA.ts";
+import { IApgCii_GROUP_END_SCHEMA } from "../schemas/IApgCii_GROUP_END_SCHEMA.ts";
 
+import { IApgCii_DRAW_ALL_POINTS_SCHEMA } from "../schemas/IApgCii_DRAW_ALL_POINTS_SCHEMA.ts";
+
+import { IApgCii_DRAW_POINTS_SCHEMA } from "../schemas/IApgCii_DRAW_POINTS_SCHEMA.ts";
+import { IApgCii_DRAW_LINE_SCHEMA } from "../schemas/IApgCii_DRAW_LINE_SCHEMA.ts";
+import { IApgCii_DRAW_POLYLINE_SCHEMA } from "../schemas/IApgCii_DRAW_POLYLINE_SCHEMA.ts";
+import { IApgCii_DRAW_CIRCLE_SCHEMA } from "../schemas/IApgCii_DRAW_CIRCLE_SCHEMA.ts";
+import { IApgCii_DRAW_GROUP_SCHEMA } from "../schemas/IApgCii_DRAW_GROUP_SCHEMA.ts";
+import { IApgCii_DRAW_ARC_SCHEMA } from "../schemas/IApgCii_DRAW_ARC_SCHEMA.ts";
+import { IApgCii_DRAW_RECTANGLE_POINTS_SCHEMA } from "../schemas/IApgCii_DRAW_RECTANGLE_POINTS_SCHEMA.ts";
+import { IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA } from "../schemas/IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA.ts";
+import { IApgCii_DRAW_REGULAR_POLIGON_SCHEMA } from "../schemas/IApgCii_DRAW_REGULAR_POLIGON_SCHEMA.ts";
+import { IApgCii_DRAW_POLYGON_SCHEMA } from "../schemas/IApgCii_DRAW_POLYGON_SCHEMA.ts";
+
+import { IApgCii_DRAW_PATH_BEGIN_SCHEMA } from "../schemas/IApgCii_DRAW_PATH_BEGIN_SCHEMA.ts";
+import { IApgCii_DRAW_PATH_MOVE_SCHEMA } from "../schemas/IApgCii_DRAW_PATH_MOVE_SCHEMA.ts";
+import { IApgCii_DRAW_PATH_LINE_SCHEMA } from "../schemas/IApgCii_DRAW_PATH_LINE_SCHEMA.ts";
+import { IApgCii_DRAW_PATH_ARC_SCHEMA } from "../schemas/IApgCii_DRAW_PATH_ARC_SCHEMA.ts";
+import { IApgCii_DRAW_PATH_CLOSE_SCHEMA } from "../schemas/IApgCii_DRAW_PATH_CLOSE_SCHEMA.ts";
+import { IApgCii_DRAW_PATH_END_SCHEMA } from "../schemas/IApgCii_DRAW_PATH_END_SCHEMA.ts";
+
+import { IApgCii_DRAW_LINEAR_DIM_SCHEMA } from "../schemas/IApgCii_DRAW_LINEAR_DIM_SCHEMA.ts";
+import { IApgCii_DRAW_ARC_DIM_SCHEMA } from "../schemas/IApgCii_DRAW_ARC_DIM_SCHEMA.ts";
+import { IApgCii_DRAW_ANNOTATION_SCHEMA } from "../schemas/IApgCii_DRAW_ANNOTATION_SCHEMA.ts";
 
 
 export const ApgCiiValidators = [
     {
         type: eApgCiiInstructionTypes.TYPES, // Ok 2023/01/04
-        jsonSchema: eApgCii_TypesSchema,
+        jsonSchema: eApgCii_TYPES_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.GENERIC, // Ok 2023/01/04
-        jsonSchema: ApgCii_GenericSchema,
-        dependencies: ['eApgCii_Types']
+        type: eApgCiiInstructionTypes.INSTRUCTION, // Ok 2023/01/04
+        jsonSchema: IApgCii_INSTRUCTION_SCHEMA,
+        dependencies: [eApgCii_TYPES_SCHEMA_ID]
     },
     {
-        type: eApgCiiInstructionTypes.CAD_FILL_STYLE,
-        jsonSchema: ApgCad_FillStyleSchema,
+        type: eApgCiiInstructionTypes.CAD_FILL_STYLE, // Ok 2023/02/27
+        jsonSchema: IApgCad_FILL_STYLE_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.CAD_STROKE_STYLE,
-        jsonSchema: ApgCad_StrokeStyleSchema,
+        type: eApgCiiInstructionTypes.CAD_STROKE_STYLE, // Ok 2023/02/27
+        jsonSchema: IApgCad_STROKE_STYLE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.CAD_TEXT_STYLE,
-        jsonSchema: ApgCad_TextStyleSchema,
+        jsonSchema: IApgCad_TEXT_STYLE_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_LIN_DIM_TYPES, // Ok 2023/03/04
+        jsonSchema: eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_ARC_DIM_TYPES, // Ok 2023/03/04
+        jsonSchema: eApgCad_ARC_DIMENSION_TYPES_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_LIN_DIM_OPTIONS, // Ok 2023/03/04
+        jsonSchema: IApgCad_LINEAR_DIM_OPTIONS_SCHEMA,
+        dependencies: [eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID]
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_ARC_DIM_OPTIONS, // Ok 2023/03/04
+        jsonSchema: IApgCad_ARC_DIM_OPTIONS_SCHEMA,
+        dependencies: [eApgCad_ARC_DIMENSION_TYPES_SCHEMA_ID]
     },
     {
         type: eApgCiiInstructionTypes.SET_NAME,
-        jsonSchema: ApgCii_SetNameSchema,
+        jsonSchema: IApgCii_SET_NAME_SCHEMA,
     },
     // {
     //   type: eApgCadInstructionTypes.SET_VIEWBOX,
@@ -98,126 +118,134 @@ export const ApgCiiValidators = [
     // },
     {
         type: eApgCiiInstructionTypes.NEW_FILL_STYLE, // Ok 2023/01/21
-        jsonSchema: ApgCii_NewFillStyleSchema,
-        dependencies: ['IApgCad_FillStyle']
+        jsonSchema: IApgCii_NEW_FILL_STYLE_SCHEMA,
+        dependencies: [IApgCad_FILL_STYLE_SCHEMA_ID]
     },
     {
         type: eApgCiiInstructionTypes.NEW_STROKE_STYLE, // Ok 2023/01/21
-        jsonSchema: ApgCii_NewStrokeStyleSchema,
-        dependencies: ['IApgCad_StrokeStyle']
+        jsonSchema: IApgCii_NEW_STROKE_STYLE_SCHEMA,
+        dependencies: [IApgCad_STROKE_STYLE_SCHEMA_ID]
     },
     {
         type: eApgCiiInstructionTypes.NEW_TEXT_STYLE, // Ok 2023/01/21
-        jsonSchema: ApgCii_NewTextStyleSchema,
-        dependencies: ['IApgCad_TextStyle']
+        jsonSchema: IApgCii_NEW_TEXT_STYLE_SCHEMA,
+        dependencies: [IApgCad_TEXT_STYLE_SCHEMA_ID]
     },
     {
         type: eApgCiiInstructionTypes.PUSH_LAYER, // Ok 2023/01/21
-        jsonSchema: ApgCii_PushLayerSchema,
+        jsonSchema: IApgCii_PUSH_LAYER_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.POP_LAYER, // Ok 2023/01/21
-        jsonSchema: ApgCii_PopLayerSchema,
+        jsonSchema: IApgCii_POP_LAYER_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.NEW_GROUP, // Ok 2023/01/21
-        jsonSchema: ApgCii_NewGroupSchema,
+        type: eApgCiiInstructionTypes.GROUP_BEGIN, // Ok 2023/01/21
+        jsonSchema: IApgCii_GROUP_BEGIN_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.CLOSE_GROUP, // Ok 2023/01/21
-        jsonSchema: ApgCii_CloseGroupSchema,
+        type: eApgCiiInstructionTypes.GROUP_END, // Ok 2023/01/21
+        jsonSchema: IApgCii_GROUP_END_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.NEW_POINT, // Ok 2023/01/04
-        jsonSchema: ApgCii_NewPointSchema,
+        jsonSchema: IApgCii_NEW_POINT_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.NEW_POINT_DELTA, // Ok 2023/01/04
-        jsonSchema: ApgCii_NewPointDeltaSchema,
+        jsonSchema: IApgCii_NEW_POINT_DELTA_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.MOVE_POINT_DELTA, // Ok 2023/02/26
-        jsonSchema: ApgCii_MovePointDeltaSchema,
+        jsonSchema: IApgCii_MOVE_POINT_DELTA_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_POINTS,  // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawPointsSchema,
+        jsonSchema: IApgCii_DRAW_POINTS_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_ALL_POINTS, // Ok 2023/01/04
-        jsonSchema: ApgCii_DrawAllPointsSchema,
+        jsonSchema: IApgCii_DRAW_ALL_POINTS_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_ARC, // Ok 2023/01/15
-        jsonSchema: ApgCii_DrawArcSchema,
+        jsonSchema: IApgCii_DRAW_ARC_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_CIRCLE, // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawCircleSchema,
+        jsonSchema: IApgCii_DRAW_CIRCLE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_LINE, // Ok 2023/01/04
-        jsonSchema: ApgCii_DrawLineSchema,
+        jsonSchema: IApgCii_DRAW_LINE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_POLYLINE, // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawPolylineSchema,
+        jsonSchema: IApgCii_DRAW_POLYLINE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_POLYGON, // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawPolygonSchema,
+        jsonSchema: IApgCii_DRAW_POLYGON_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON, // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawRegularPolygonSchema,
+        jsonSchema: IApgCii_DRAW_REGULAR_POLIGON_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS, // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawRectanglePointsSchema,
+        jsonSchema: IApgCii_DRAW_RECTANGLE_POINTS_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES, // Ok 2023/01/06
-        jsonSchema: ApgCii_DrawRectangleSizesSchema,
+        jsonSchema: IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN, // 
-        jsonSchema: ApgCii_DrawPathBeginSchema,
+        jsonSchema: IApgCii_DRAW_PATH_BEGIN_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_PATH_MOVE, // 
-        jsonSchema: ApgCii_DrawPathMoveSchema,
+        jsonSchema: IApgCii_DRAW_PATH_MOVE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_PATH_LINE, // 
-        jsonSchema: ApgCii_DrawPathLineSchema,
+        jsonSchema: IApgCii_DRAW_PATH_LINE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_PATH_ARC, // 
-        jsonSchema: ApgCii_DrawPathArcSchema,
+        jsonSchema: IApgCii_DRAW_PATH_ARC_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE, // 
-        jsonSchema: ApgCii_DrawPathCloseSchema,
+        jsonSchema: IApgCii_DRAW_PATH_CLOSE_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_PATH_END, // 
-        jsonSchema: ApgCii_DrawPathEndSchema,
+        jsonSchema: IApgCii_DRAW_PATH_END_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_GROUP,
-        jsonSchema: ApgCii_DrawGroupSchema,
+        jsonSchema: IApgCii_DRAW_GROUP_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_LIN_DIM, // Ok 2023/01/15
-        jsonSchema: ApgCii_DrawLinearDimSchema,
+        jsonSchema: IApgCii_DRAW_LINEAR_DIM_SCHEMA,
+        dependencies: [
+            eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID,
+            IApgCad_LINEAR_DIM_OPTIONS_SCHEMA_ID,
+        ]
     },
     {
         type: eApgCiiInstructionTypes.DRAW_ARC_DIM, // Ok 2023/01/15
-        jsonSchema: ApgCii_DrawArcDimSchema,
+        jsonSchema: IApgCii_DRAW_ARC_DIM_SCHEMA,
+        dependencies: [
+            eApgCad_ARC_DIMENSION_TYPES_SCHEMA_ID,
+            IApgCad_ARC_DIM_OPTIONS_SCHEMA_ID,
+        ]
     },
     {
         type: eApgCiiInstructionTypes.DRAW_ANNOTATION, // Ok 2023/01/15
-        jsonSchema: ApgCii_DrawAnnotationSchema,
+        jsonSchema: IApgCii_DRAW_ANNOTATION_SCHEMA,
     },
     //{
     //   type: eApgCadInstructionTypes.DRAW_TEXT,

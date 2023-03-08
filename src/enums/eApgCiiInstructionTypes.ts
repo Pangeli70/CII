@@ -15,11 +15,15 @@
 export enum eApgCiiInstructionTypes {
 
   TYPES = "TYPES",
-  GENERIC = "GENERIC",
+  INSTRUCTION = "GENERIC",
 
   CAD_FILL_STYLE = "CAD_FILL_STYLE",
   CAD_STROKE_STYLE = "CAD_STROKE_STYLE",
   CAD_TEXT_STYLE = "CAD_TEXT_STYLE",
+  CAD_ARC_DIM_TYPES = "CAD_ARC_DIM_TYPES",
+  CAD_ARC_DIM_OPTIONS = "CAD_ARC_DIM_OPTIONS",
+  CAD_LIN_DIM_TYPES = "CAD_LIN_DIM_TYPES",
+  CAD_LIN_DIM_OPTIONS = "CAD_LIN_DIM_OPTIONS",
 
   SET_NAME = "SET_NAME", // S : Schema ok + I: Implementation Ok
   SET_VIEWBOX = "SET_VIEWBOX",
@@ -36,9 +40,9 @@ export enum eApgCiiInstructionTypes {
   NEW_LAYER = "NEW_LAYER", // unused
   PUSH_LAYER = "PUSH_LAYER",  // S + I
   POP_LAYER = "POP_LAYER",  // S + I
-  NEW_GROUP = "NEW_GROUP", // S + I
+  GROUP_BEGIN = "GROUP_END", // S + I
   // SET_GROUP = "SET_GROUP", // S
-  CLOSE_GROUP = "CLOSE_GROUP", // S + I
+  GROUP_END = "GROUP_END", // S + I
 
   NEW_POINT = "NEW_POINT", // S + I
   NEW_POINT_DELTA = "NEW_POINT_DELTA", // S + I
@@ -53,7 +57,7 @@ export enum eApgCiiInstructionTypes {
   DRAW_RECTANGLE_POINTS = "DRAW_RECTANGLE_POINTS", // S + I
   DRAW_RECTANGLE_SIZES = "DRAW_RECTANGLE_SIZE", // S + I
   DRAW_CIRCLE = "DRAW_CIRCLE", // S + I
-  DRAW_ARC = "DRAW_ARC", // S + I // TODO test
+  DRAW_ARC = "DRAW_ARC", // S + I // TODO @1 test -- APG 20230115
 
   DRAW_PATH_BEGIN = "DRAW_PATH_BEGIN",// S + I
   DRAW_PATH_MOVE = "DRAW_PATH_MOVE",// S + I
@@ -67,12 +71,12 @@ export enum eApgCiiInstructionTypes {
   DRAW_IMAGE = "DRAW_IMAGE",
 
   DRAW_ANNOTATION = "DRAW_ANNOTATION", // S + I 
-  DRAW_LIN_DIM = "DRAW_LIN_DIM", // S + I // TODO test
+  DRAW_LIN_DIM = "DRAW_LIN_DIM", // S + I // TODO @1 test -- APG 20230215
   DRAW_ARC_DIM = "DRAW_ARC_DIM",
   DRAW_ANG_DIM = "DRAW_ANG_DIM",
 
 
   BUILD_BLOCK = "BUILD_BLOCK",
-  DRAW_GROUP = "DRAW_GROUP", // S // TODO remove? Change in draw Block?
+  DRAW_GROUP = "DRAW_GROUP", // S // TODO @1 remove? Change in draw Block? -- APG 20230215
   DRAW_ARRAY = "DRAW_ARRAY",
 }

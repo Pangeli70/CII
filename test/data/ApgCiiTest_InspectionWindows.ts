@@ -14,8 +14,8 @@ import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 
 export function ApgCiiTest_InspectionWindows() {
 
-    const W = 525;
-    const H = 350;
+    const W = [525, 700, 250];
+    const H = [350, 350, 250];
 
     const randomColor = "#000000".replace(/0/g, function () { return (~~(Math.random() * 16)).toString(16); });
 
@@ -28,7 +28,7 @@ export function ApgCiiTest_InspectionWindows() {
                 name: 'TEST 10',
             },
             {
-                type: eApgCiiInstructionTypes.NEW_GROUP,
+                type: eApgCiiInstructionTypes.GROUP_BEGIN,
                 name: 'Bevels',
                 strokeStyle: 'None'
             },
@@ -69,7 +69,7 @@ export function ApgCiiTest_InspectionWindows() {
                 y: 1000
             },
             ...ApgCiiTestInspectionWindow.BevelFront(
-                "BEVEL_1", 'O_1', W, H, 'BEVEL_FILL', ['FACE_ENLIGHTED', 'FACE_DARKENED']
+                "BEVEL_1", 'O_1', W[0], H[0], 'BEVEL_FILL', ['FACE_ENLIGHTED', 'FACE_DARKENED']
             ),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
@@ -78,7 +78,7 @@ export function ApgCiiTest_InspectionWindows() {
                 y: 1000
             },
             ...ApgCiiTestInspectionWindow.BevelFront(
-                "BEVEL_2", 'O_2', W, H, 'BEVEL_FILL', ['FACE_ENLIGHTED', 'FACE_DARKENED']
+                "BEVEL_2", 'O_2', W[1], H[1], 'BEVEL_FILL', ['FACE_ENLIGHTED', 'FACE_DARKENED']
             ),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
@@ -87,10 +87,10 @@ export function ApgCiiTest_InspectionWindows() {
                 y: 1000
             },
             ...ApgCiiTestInspectionWindow.BevelFront(
-                "BEVEL_3", 'O_3', W, H, 'BEVEL_FILL', ['FACE_ENLIGHTED', 'FACE_DARKENED']
+                "BEVEL_3", 'O_3', W[2], H[2], 'BEVEL_FILL', ['FACE_ENLIGHTED', 'FACE_DARKENED']
             ),
             {
-                type: eApgCiiInstructionTypes.CLOSE_GROUP
+                type: eApgCiiInstructionTypes.GROUP_END
             }
         ]
     }

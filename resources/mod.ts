@@ -5,3 +5,4 @@
  */
 export * from "./src/ApgCiiHomeResource.ts";
 export * from "./src/ApgCiiTestViewerResource.ts";
+export * from "./src/ApgCiiDevlogResource.ts";

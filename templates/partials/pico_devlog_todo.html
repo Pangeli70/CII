@@ -1,0 +1,35 @@
+<pre hidden>
+  [: arguments({
+    "#0": [{
+      "date": "string", 
+      "milestone": "string", 
+      "version": "string",
+      "description": "string",
+      "activities": "string[]"
+    }]
+  }) :]
+</pre>
+
+<details>
+
+  <summary>
+    <h2 style="margin-bottom:1rem; margin-top:2rem">
+      Todo
+    </h2>
+  </summary>
+  <ul>
+    [: for (const v of [#0]) { :]
+    <li>
+      <h4 style="margin-bottom:0.5rem; margin-top:0">Milestone: [: v.milestone :]</h4>
+      <h6 style="margin-bottom:0.5rem; margin-top:0">[: v.description :]</h6>
+      <ol>
+        [: for (const p of v.activities) { :]
+        <li>
+          [: p :]
+        </li>
+        [: } :]
+      </ol>
+    </li>
+    [: } :]
+  </ul>
+</details>

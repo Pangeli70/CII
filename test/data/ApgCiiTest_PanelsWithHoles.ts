@@ -54,7 +54,7 @@ export function ApgCiiTest_PanelsWithHoles() {
                 name: 'TEST 08',
             },
             {
-                type: eApgCiiInstructionTypes.NEW_GROUP,
+                type: eApgCiiInstructionTypes.GROUP_BEGIN,
                 name: 'Door',
                 strokeStyle: 'None'
             },
@@ -94,7 +94,7 @@ export function ApgCiiTest_PanelsWithHoles() {
             },
             ...ApgCiiTestPanel.PanelFront("PANEL_3", 'O_3', W, 495, 'PANEL_FILL', [], holes2),
             {
-                type: eApgCiiInstructionTypes.CLOSE_GROUP
+                type: eApgCiiInstructionTypes.GROUP_END
             }
         ]
     }

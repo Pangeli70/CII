@@ -43,7 +43,7 @@ export class ApgCiiValidatorService {
     let r: Rst.IApgRst = { ...this._status };
 
     if (!this._initialized) {
-      r = this.#init();
+      r = Rst.ApgRstErrors.Simple("ApgCiiValidatorService is not initialized")
     }
 
     if (r.ok) {
@@ -62,11 +62,15 @@ export class ApgCiiValidatorService {
   }
 
 
-  static #init() {
+  static Init(alogger: Lgr.ApgLgr) {
 
-    this._logger = new Lgr.ApgLgr('ApgCiiValidatorServiceLogger');
+    if (this._initialized == true) {
+      return this._status;
+    }
+
+    this._logger = alogger;
     this._loggable = new Lgr.ApgLgrLoggable('ApgCiiValidatorsService', this._logger);
-    this._loggable.logBegin(this.#init.name);
+    this._loggable.logBegin(this.Init.name);
 
     this._status = this.#getValidators(this._loggable, this._logger);
     if (this._status.ok) {
@@ -82,19 +86,31 @@ export class ApgCiiValidatorService {
     aloggable.logBegin(this.#getValidators.name);
     let r: Rst.IApgRst = { ok: true };
 
+    // TODO @6 Seems to me that using this pattern the Ajv is used to create
+    // singular indipendent functions that contain every detail of every referenced
+    // dependency. This seems not very efficient, and maybe is the reason why the
+    // warmup time is so long. -- APG 20230405
     const validatorService = new Jsv.ApgJsvService(alogger);
 
-    ApgCiiValidators.forEach(element => {
-      if (r.ok && element.jsonSchema) {
-        const deps = element.dependencies ? element.dependencies : [];
-        r = validatorService.addValidator(element.jsonSchema, deps);
-        if (r.ok) {
-          const validatorName = element.jsonSchema.$id.replaceAll("#", "");
-          const validator = validatorService.getValidator(validatorName);
-          this._validators.set(element.type, validator!);
-        }
+    for (const element of ApgCiiValidators) {
+
+      const deps = element.dependencies ? element.dependencies : [];
+      r = validatorService.addValidator(element.jsonSchema, deps);
+
+      if (!r.ok) break;
+
+      const validatorName = element.jsonSchema.$id;
+      const validator = validatorService.getValidator(validatorName);
+
+      if (validator && !validator.status.ok) {
+        r = validator.status;
+        break;
       }
-    });
+      else {
+        this._validators.set(element.type, validator!);
+      }
+
+    }
 
     aloggable.logEnd(r);
     return r;
@@ -105,11 +121,11 @@ export class ApgCiiValidatorService {
 
     let r: Rst.IApgRst = { ok: true };
 
-    const genVal = this._validators.get(eApgCiiInstructionTypes.GENERIC);
+    const genVal = this._validators.get(eApgCiiInstructionTypes.INSTRUCTION);
 
     if (!genVal) {
       r = Rst.ApgRstErrors.Parametrized(
-        "Validator [%1] Not found", [eApgCiiInstructionTypes.GENERIC]
+        "Validator [%1] Not found", [eApgCiiInstructionTypes.INSTRUCTION]
       );
     }
     else {

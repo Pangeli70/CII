@@ -15,6 +15,7 @@ export const resources: typeof Drash.Resource[] = [
 
     // Cad
     res.ApgCiiHomeResource,
-    res.ApgCiiTestViewerResource
+    res.ApgCiiTestViewerResource,
+    res.ApgCiiDevlogResource
 
 ];
