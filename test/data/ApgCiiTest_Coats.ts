@@ -56,8 +56,14 @@ export function ApgCiiTest_Coats() {
         description: "Coat made of a series of panels",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 09',
+                name: 'Coats',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.GROUP_BEGIN,

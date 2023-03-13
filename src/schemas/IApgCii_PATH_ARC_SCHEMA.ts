@@ -8,12 +8,12 @@
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
-export const IApgCii_DRAW_PATH_ARC_SCHEMA_ID =
-    Jsv.ApgJsv_DOMAIN + 'IApgCii_DrawPathArc';
+export const IApgCii_PATH_ARC_SCHEMA_ID =
+    Jsv.ApgJsv_DOMAIN + 'IApgCii_PathArc';
 
 const rawSchema: Jsv.IApgJsvInterface = {
     $schema: Jsv.ApgJsv_DIALECT,
-    $id: IApgCii_DRAW_PATH_ARC_SCHEMA_ID,
+    $id: IApgCii_PATH_ARC_SCHEMA_ID,
     type: 'object',
     properties: {
         type: {
@@ -43,4 +43,4 @@ const rawSchema: Jsv.IApgJsvInterface = {
 
 };
 
-export const IApgCii_DRAW_PATH_ARC_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const IApgCii_PATH_ARC_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

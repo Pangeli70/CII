@@ -11,11 +11,13 @@
  * Groups of instructions for testing
  */
 export enum eApgCiiTests { 
+    SETUP = "Setup of the CAD evironment",
     PRIMITIVES = "Primitive shapes",
     DIMS_AND_ANNOTS = "Dims as annotations",
     TC_MEAS_ON_SITE_SV = "Measures taken on site side view",
     TC_MEAS_ON_SITE_TV = "Measures taken on site top view",
-    TC_MEAS_ON_SITE_FV = "Measures taken on site front view",
+    TC_MEAS_ON_SITE_OV = "Measures taken on site outside view",
+    TC_MEAS_ON_SITE_IV = "Measures taken on site inside view",
     TC_PED_DOORS = "Doors on side view",
     TC_STRUCT_BEAMS = "Structural beams",
     TC_SLIDING_CURVE = "Sliding curve",

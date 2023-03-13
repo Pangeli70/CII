@@ -50,9 +50,6 @@ export class ApgCiiValidatorService {
       this._loggable!.logBegin(this.Validate.name);
 
       r = this.#validateInstructionsWithAjv(ainstructions);
-      if (r.ok) {
-        r = this.#checkFirstInstruction(ainstructions);
-      }
 
       this._loggable!.logEnd(this._status);
     }
@@ -157,18 +154,6 @@ export class ApgCiiValidatorService {
   }
 
 
-  static #checkFirstInstruction(instructions: IApgCiiInstruction[]) {
-    let r: Rst.IApgRst = { ok: true };
-
-    if (instructions[0].type !== eApgCiiInstructionTypes.SET_NAME) {
-      r = Rst.ApgRstErrors.Parametrized(
-        "[%1] not found as first instruction",
-        [eApgCiiInstructionTypes.SET_NAME]
-      );
-    }
-
-    return r;
-  }
 
 
 }

@@ -24,6 +24,7 @@ function DoorOrWindowFrontView(
     ainward: boolean
 ) {
     const r: IApgCiiInstruction[] = [];
+
     r.push({
         type: eApgCiiInstructionTypes.GROUP_BEGIN,
         name: aname,
@@ -118,8 +119,14 @@ export function ApgCiiTest_PedestrianDoors() {
         description: "Pedestrian doors on side view 1",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 04',
+                name: 'Pedestrian doors',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,

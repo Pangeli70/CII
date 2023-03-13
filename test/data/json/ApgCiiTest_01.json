@@ -70,7 +70,7 @@
     },
     {
       "type": "PUSH_LAYER",
-      "name": "DimensionsLayer"
+      "name": "Layer_Dimensions"
     },
     {
       "type": "DRAW_LIN_DIM",
@@ -90,7 +90,7 @@
       "radious": 500,
       "text": ["Roof:", ""],
       "payload": {
-        "type": "VERTICAL"
+        "type": 2
       }
     },
     {
@@ -99,7 +99,7 @@
       "radious": 500,
       "text": ["hT:", ""],
       "payload": {
-        "type": "VERTICAL"
+        "type": 1
       }
     },
     {
@@ -119,7 +119,7 @@
     },
     {
       "type": "PUSH_LAYER",
-      "name": "AnnotationsLayer"
+      "name": "Layer_Annotations"
     },
     {
       "type": "DRAW_ANNOTATION",
@@ -131,7 +131,7 @@
     },
     {
       "type": "PUSH_LAYER",
-      "name": "Debuglayer"
+      "name": "Layer_Debug"
     },
     {
       "type": "DRAW_ALL_POINTS",

@@ -1,34 +1,35 @@
 /** -----------------------------------------------------------------------
  * @module [CII+JSV]
  * @author [APG] ANGELI Paolo Giusto
- * @version 0.9.5 [APG 2023/02/21]
- * @version 0.9.6 [APG 2023/03/06] Updated to JSV 0.9.6
+ * @version 0.9.6 [APG 2023/03/12]
  * -----------------------------------------------------------------------
  */
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
+import { IApgCad_CARTESIANS_SCHEMA_ID } from "./IApgCad_CARTESIANS_SCHEMA.ts";
 
-export const IApgCii_DRAW_PATH_MOVE_SCHEMA_ID =
-    Jsv.ApgJsv_DOMAIN + 'IApgCii_DrawPathMove';
+export const IApgCii_SET_CARTESIANS_SCHEMA_ID =
+    Jsv.ApgJsv_DOMAIN + 'IApgCii_SetCartesians'
+
 
 const rawSchema: Jsv.IApgJsvInterface = {
     $schema: Jsv.ApgJsv_DIALECT,
-    $id: IApgCii_DRAW_PATH_MOVE_SCHEMA_ID,
+    $id: IApgCii_SET_CARTESIANS_SCHEMA_ID,
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_MOVE as string
+            const: eApgCiiInstructionTypes.SET_BACKGROUND as string
         },
-        origin: {
-            type: 'string',
-        },
+        payload: {
+            $ref: IApgCad_CARTESIANS_SCHEMA_ID
+        }
     },
     additionalProperties: false,
     allErrors: true,
     required: [
-        'type', 'origin'
+        'type', 'payload'
     ]
 
 };
 
-export const IApgCii_DRAW_PATH_MOVE_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const IApgCii_SET_CARTESIANS_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

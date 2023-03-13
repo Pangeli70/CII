@@ -20,8 +20,14 @@ export function ApgCiiTest_SlidingCurves() {
         description: "Sliding systems curves",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 06',
+                name: 'Sliding curves',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,

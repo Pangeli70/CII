@@ -1,28 +1,60 @@
 /** -----------------------------------------------------------------------
  * @module [CII]
  * @author [APG] ANGELI Paolo Giusto
- * @version 0.9.4 [APG 2023/01/21] Deno Deploy beta
- * @version 0.9.5 [APG 2023/01/28] Moved from CAD to CII
+ * @version 0.9.6 [APG 2023/03/12]
  * -----------------------------------------------------------------------
  */
 
 
 import { Cad } from "../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes.ts";
+import { ApgCiiTesterRandomizer } from "../src/classes/ApgCiiTesterRandomizer.ts";
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_MeasSideView() {
+export function ApgCiiTest_Setup(arandomizer: ApgCiiTesterRandomizer) {
+
+    const MIN_X_1 = 4000;
+    const MIN_X_2 = 1000;
+    const MAX_X_1 = 5000;
+    const MAX_X_2 = 10000;
+    const MIN_Y_1 = 4000;
+    const MIN_Y_2 = 1000;
+    const MAX_Y_1 = 5000;
+    const MAX_Y_2 = 10000;
+
+    const minx = arandomizer.randomInt(MIN_X_1, MIN_X_2);
+    const maxx = arandomizer.randomInt(MAX_X_1, MAX_X_2);
+    const miny = arandomizer.randomInt(MIN_Y_1, MIN_Y_2);
+    const maxy = arandomizer.randomInt(MAX_Y_1, MAX_Y_2);
+
+
+    const vw = maxx - minx;
+    const vh = maxy - miny;
+
+    const VIEWBOX: Cad.IApgCadSvgViewBox = {
+        canvasWidth: 1000,
+        canvasHeight: Math.round(1000 / vw * vh),
+        viewPortWidth: vw,
+        viewPortHeight: vh,
+        originXDisp: minx,
+        originYDisp: miny
+    }
+
     const r: IApgCiiTest = {
-        name: eApgCiiTests.TC_MEAS_ON_SITE_SV,
-        description: "Measures taken on site 1",
+        name: eApgCiiTests.SETUP,
+        description: "Randomized setup",
         instructions: [
             {
                 type: eApgCiiInstructionTypes.SETUP_BEGIN,
             },
             {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'Measures side view',
+                name: 'Setup tests',
+            },
+            {
+                type: eApgCiiInstructionTypes.SET_VIEWBOX,
+                payload: VIEWBOX
             },
             {
                 type: eApgCiiInstructionTypes.SETUP_END,
@@ -35,59 +67,51 @@ export function ApgCiiTest_MeasSideView() {
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
-                name: 'HF',
-                x: 0,
-                y: 2550
+                name: 'HWR',
+                x: 2000,
+                y: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'HFE',
-                origin: "HF",
-                w: -250,
+                name: 'RS1',
+                origin: "HWR",
+                w: 300,
                 h: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'HTE',
-                origin: "HFE",
+                name: 'RS2',
+                origin: "RS1",
                 w: 0,
-                h: 1000
+                h: -1000
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_POLYLINE,
-                points: ['HF', 'HFE', 'HTE'],
+                points: ['HWR', 'RS1', 'RS2'],
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'HWL',
+                x: -2000,
+                y: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'hF',
-                origin: "HF",
-                w: 0,
-                h: 125
-            },
-            {
-                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'hF1',
-                origin: "hF",
-                w: 250,
+                name: 'LS1',
+                origin: "HWL",
+                w: -400,
                 h: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'hT',
-                origin: "hF1",
+                name: 'LS2',
+                origin: "LS1",
                 w: 0,
-                h: 800
-            },
-            {
-                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'Ceiling1',
-                origin: "hT",
-                w: 2800,
-                h: 800
+                h: -1000
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_POLYLINE,
-                points: ['HF', 'hF', 'hF1', 'hT', 'Ceiling1'],
+                points: ['HWL', 'LS1', 'LS2'],
             },
             {
                 type: eApgCiiInstructionTypes.PUSH_LAYER,
@@ -95,48 +119,24 @@ export function ApgCiiTest_MeasSideView() {
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
-                points: ['ZERO', 'HF'],
+                points: ['HWL', 'HWR'],
                 radious: 500,
-                text: ["HF:", ""]
+                text: ["LF:", ""]
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
-                points: ['hF', 'HF'],
+                points: ['HWL', 'LS1'],
                 radious: -700,
-                text: ["hF:", ""]
+                text: ["SSx:", ""]
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
-                points: ['ZERO', 'hT'],
-                radious: 500,
-                text: ["HT:", ""],
-                payload: {
-                    type: Cad.eApgCadLinearDimensionTypes.VERTICAL
-                }
-            },
-
-            {
-                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'Lintel',
-                origin: 'HF',
-                w: 0,
-                h: 70
+                points: ['HWR', 'RS1'],
+                radious: -700,
+                text: ["SDx:", ""]
             },
             {
-                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'Lintel1',
-                origin: 'Lintel',
-                w: 1000,
-                h: -600
-            },
-            {
-                type: eApgCiiInstructionTypes.PUSH_LAYER,
-                name: Cad.eApgCadDftLayers.ANNOTATIONS
-            },
-            {
-                type: eApgCiiInstructionTypes.DRAW_ANNOTATION,
-                points: ['Lintel', 'Lintel1'],
-                text: ['Lintel'],
+                type: eApgCiiInstructionTypes.POP_LAYER,
             },
             {
                 type: eApgCiiInstructionTypes.PUSH_LAYER,

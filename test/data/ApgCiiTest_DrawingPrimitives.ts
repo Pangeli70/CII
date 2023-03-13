@@ -18,8 +18,14 @@ export function ApgCiiTest_DrawingPrimitives() {
         description: "Basic shapes on the default layer: Zero ",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 01',
+                name: 'Drawing primitives',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,

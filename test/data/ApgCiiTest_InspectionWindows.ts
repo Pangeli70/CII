@@ -24,8 +24,14 @@ export function ApgCiiTest_InspectionWindows() {
         description: "Inspection window bevels",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 10',
+                name: 'Inspection windows',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.GROUP_BEGIN,

@@ -4,15 +4,20 @@
  * @version 0.9.3 [APG 2022/12/28] Deno Deploy
  * @version 0.9.4 [APG 2023/01/21] Deno Deploy Beta
  * @version 0.9.5 [APG 2023/01/28] Moved from CAD to CII
+ * @version 0.9.6 [APG 2023/03/12] Mesures on site top, inside, outside
  * -----------------------------------------------------------------------
 */
 
 import { Lgr, Cad, StdPath } from "../../../deps.ts";
 import { ApgCii } from "../../../src/classes/ApgCii.ts";
 
+import { ApgCiiTest_Setup } from "../../data/ApgCiiTest_Setup.ts";
 import { ApgCiiTest_DrawingPrimitives } from "../../data/ApgCiiTest_DrawingPrimitives.ts";
 import { ApgCiiTest_DimsAndAnnots } from "../../data/ApgCiiTest_DimsAndAnnots.ts";
 import { ApgCiiTest_MeasSideView } from "../../data/ApgCiiTest_MeasSideView.ts";
+import { ApgCiiTest_MeasTopView } from "../../data/ApgCiiTest_MeasTopView.ts";
+import { ApgCiiTest_MeasOutsideView } from "../../data/ApgCiiTest_MeasOutsideView.ts";
+import { ApgCiiTest_MeasInsideView } from "../../data/ApgCiiTest_MeasInsideView.ts";
 import { ApgCiiTest_PedestrianDoors } from "../../data/ApgCiiTest_PedestrianDoors.ts";
 import { ApgCiiTest_StructuralBeams } from "../../data/ApgCiiTest_StructuralBeams.ts";
 import { ApgCiiTest_SlidingCurves } from "../../data/ApgCiiTest_SlidingCurves.ts";
@@ -23,19 +28,27 @@ import { ApgCiiTest_InspectionWindows } from "../../data/ApgCiiTest_InspectionWi
 import { eApgCiiTests } from "../enums/eApgCiiTests.ts";
 
 import { IApgCiiTest } from "../interfaces/IApgCiiTest.ts";
+import { ApgCiiTesterRandomizer } from "./ApgCiiTesterRandomizer.ts";
 
-type IApgCiiTestFn = () => IApgCiiTest;
+type IApgCiiTestFn = (rndz: ApgCiiTesterRandomizer) => IApgCiiTest;
+
 export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
 
     protected static _ready = false;
     protected static _tests: Map<string, IApgCiiTestFn> = new Map();
 
+    protected static _randomizer = new ApgCiiTesterRandomizer();
+
 
     protected static init() {
 
+        this._tests.set(eApgCiiTests.SETUP, ApgCiiTest_Setup);
         this._tests.set(eApgCiiTests.PRIMITIVES, ApgCiiTest_DrawingPrimitives);
         this._tests.set(eApgCiiTests.DIMS_AND_ANNOTS, ApgCiiTest_DimsAndAnnots);
         this._tests.set(eApgCiiTests.TC_MEAS_ON_SITE_SV, ApgCiiTest_MeasSideView);
+        this._tests.set(eApgCiiTests.TC_MEAS_ON_SITE_TV, ApgCiiTest_MeasTopView);
+        this._tests.set(eApgCiiTests.TC_MEAS_ON_SITE_OV, ApgCiiTest_MeasOutsideView);
+        this._tests.set(eApgCiiTests.TC_MEAS_ON_SITE_IV, ApgCiiTest_MeasInsideView);
         this._tests.set(eApgCiiTests.TC_PED_DOORS, ApgCiiTest_PedestrianDoors);
         this._tests.set(eApgCiiTests.TC_STRUCT_BEAMS, ApgCiiTest_StructuralBeams);
         this._tests.set(eApgCiiTests.TC_SLIDING_CURVE, ApgCiiTest_SlidingCurves);
@@ -53,9 +66,9 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         let r: IApgCiiTest;
         if (!this._ready) this.init();
 
-        let fn = this._tests.get(atestName);
+        const fn = this._tests.get(atestName);
         if (fn) {
-            r = fn();
+            r = fn(this._randomizer);
         }
         else {
             // TODO @2 move this const declaration outside from here -- APG 20230115
@@ -94,8 +107,8 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
         if (test) {
 
             const insSet = new ApgCii(logger, cad)
-            let r = insSet.set(test!.instructions);
-            insSet.build();
+            let _r = insSet.set(test!.instructions);
+            await insSet.build();
 
             this.DrawCartouche(cad);
 

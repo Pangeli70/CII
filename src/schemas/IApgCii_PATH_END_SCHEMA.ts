@@ -8,17 +8,29 @@
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
-export const IApgCii_DRAW_PATH_CLOSE_SCHEMA_ID =
-    Jsv.ApgJsv_DOMAIN + 'IApgCii_DrawPathClose';
+export const IApgCii_PATH_END_SCHEMA_ID =
+    Jsv.ApgJsv_DOMAIN + 'IApgCii_PathEnd';
 
 const rawSchema: Jsv.IApgJsvInterface = {
     $schema: Jsv.ApgJsv_DIALECT,
-    $id: IApgCii_DRAW_PATH_CLOSE_SCHEMA_ID,
+    $id: IApgCii_PATH_END_SCHEMA_ID,
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_CLOSE as string
-        }
+            const: eApgCiiInstructionTypes.DRAW_PATH_END as string
+        },
+        angle: {
+            type: 'number'
+        },
+        pivot: {
+            type: 'string'
+        },
+        strokeStyle: {
+            type: 'string'
+        },
+        fillStyle: {
+            type: 'string'
+        },
     },
     additionalProperties: false,
     allErrors: true,
@@ -28,4 +40,4 @@ const rawSchema: Jsv.IApgJsvInterface = {
 
 };
 
-export const IApgCii_DRAW_PATH_CLOSE_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const IApgCii_PATH_END_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

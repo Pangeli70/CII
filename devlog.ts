@@ -15,7 +15,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             description: "Logger, Profiler, Instructions, Cad Status ",
             activities: [
                 "Profiler performance graph",
-                "Debug logger for JSON circular stringification"
+                "@2 Debug logger for JSON circular stringification"
             ]
         },
         {
@@ -23,6 +23,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             description: "Interactive svg viewer",
             activities: [
                 "Fullscreen button",
+                "Enable mouse wheel zoom flag",
                 "Register partials in TNG deploy"
             ]
         },
@@ -30,7 +31,10 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "PRIMITIVES",
             description: "Basic CAD primitives instructions",
             activities: [
-                "Further test all dimensions types",
+                "@1 Test all dimensions types",
+                "Bevel as CAD primitive",
+                "Bevel edge as primitive",
+                "Bevel path as primitive"
             ]
         },
         {
@@ -44,11 +48,10 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "TC_MTOS",
             description: "Technical closures measures taken on site",
             activities: [
-                "CAD setup to define viewport",
-                "Investigate aligned linear dimension bug",
-                "Dimensions on front inside view test",
-                "Dimensions on top view test",
-                "Dimensions on front outside view test",
+                "@3 CAD setup to define viewport",
+                "@4 Front inside view test",
+                "@4 Top view test",
+                "@4 Front outside view test",
             ]
         },
         {
@@ -56,7 +59,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             description: "Technical closures sectional doors sliding system",
             activities: [
                 "Random curves",
-                "Full sliding system test",
+                "Random full sliding system test",
             ]
         },
         {
@@ -103,6 +106,15 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
 
 
     done: [
+        {
+            date: "20230308",
+            milestone: "TC_MTOS",
+            version: "0.9.6",
+            description: "Technical closures measures taken on site",
+            activities: [
+                "Investigate linear dimension bugs",
+            ]
+        },
         {
             date: "20230306",
             milestone: "JSON",

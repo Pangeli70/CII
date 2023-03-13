@@ -19,13 +19,18 @@ import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 import { IApgCiiInstruction } from "../interfaces/IApgCiiInstruction.ts";
 import { ApgCiiValidatorService } from "./ApgCiiValidatorService.ts";
 
+enum eApgCiiModes {
+  /** Setup mode: only setup instructions are allowed in this mode. Exiting this mode creates the cad object */
+  SETUP = "SETUP",
+  /** Normal instructions processing */
+  NORMAL = "NORMAL",
+  /** Path Drawing mode: only path and point operations are allowed in this mode */
+  PATH = "PATH",
+}
 
 /** Apg Cad Instructions Interpreter
  */
 export class ApgCii extends Lgr.ApgLgrLoggable {
-
-  /** Interpreter Name*/
-  private _name: string;
 
   /** Apg Cad Svg Instance*/
   private _cad: Cad.ApgCadSvg;
@@ -45,11 +50,11 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Stack of layers */
   private _layersStack: Svg.ApgSvgNode[] = [];
 
-  /** Last node for Stroke ad fill operations */
-  private _lastNode: Svg.ApgSvgNode | null = null;
+  /** Interpreter mode */
+  private _mode = eApgCiiModes.NORMAL;
 
-  /** Path Drawing mode: only path and point operations are allowed in this mode */
-  private _pathMode = false;
+  /** The setup is finished so we can't do it again */
+  private _setupDone = false;
 
   /** Path builder for path mode */
   private _pathBuilder = new Svg.ApgSvgPathBuilder();
@@ -64,7 +69,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     this.logBegin('constructor');
 
     this._cad = acad;
-    this._name = 'Unnamed ApgCii';
     this._layersStack.push(acad.currentLayer);
 
     ApgCiiValidatorService.Init(alogger);
@@ -120,168 +124,211 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   // #region Drawing setup -----------------------------------------------------
 
+  setupBegin() {
+    this.logBegin(this.setupBegin.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.SETUP_BEGIN);
+    if (r.ok) {
+      if (this._setupDone) {
+        r = Rst.ApgRstErrors.Simple(
+          "We already exited the setup mode. Can't return in that mode.",
+        );
+      }
+      else {
+        this._mode = eApgCiiModes.SETUP;
+      }
+    }
+    this.logEnd();
+    return r;
+  }
+
+
+
   setName_(aname: string) {
 
-    let r: Rst.IApgRst = { ok: true }
     this.logBegin(this.setName_.name);
-    this.#traceInstruction(eApgCiiInstructionTypes.SET_NAME);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_NAME, "", eApgCiiModes.SETUP);
 
-    if (this._currInstructionNum === 1) {
-      this._name = aname;
+    if (r.ok) {
+      this._cad.settings.name = aname;
     }
-    else {
-      r = Rst.ApgRstErrors.Parametrized(
-        "If present [%1] must first instruction",
-        [eApgCiiInstructionTypes.SET_NAME]
+
+    this.logEnd();
+    return r;
+  }
+
+
+  async setViewBox_(aviewBox: Cad.IApgCadSvgViewBox) {
+
+    this.logBegin(this.setViewBox_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_VIEWBOX, "", eApgCiiModes.SETUP);
+
+    if (r.ok) {
+      // TODO @1 Avoid rebuilding all the CAD object -- APG 20230312
+      await this._cad.setViewBox(aviewBox);
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  setGrid_(agridParams: Cad.IApgCadSvgGrid) {
+
+    this.logBegin(this.setGrid_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_GRID, "", eApgCiiModes.SETUP);
+
+    if (r.ok) {
+      // TODO @2 Implement this method -- APG 20230312
+      //await this._cad.setGrid(agridParams);
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  async setCartesians_(acartesianParams: Cad.IApgCadSvgCartesians) {
+
+    this.logBegin(this.setCartesians_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_CARTESIANS, "", eApgCiiModes.SETUP);
+
+    if (r.ok) {
+      await this._cad.setCartesian(acartesianParams);
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  async setBackground_(abckg: Cad.IApgCadSvgGround) {
+
+    this.logBegin(this.setBackground_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_BACKGROUND, "", eApgCiiModes.SETUP);
+
+    if (r.ok) {
+      await this._cad.setBackground(abckg);
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  setupEnd() {
+
+    this.logBegin(this.setupEnd.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.SETUP_END, "", eApgCiiModes.SETUP);
+
+    if (r.ok) {
+      this._setupDone = true;
+      this._mode = eApgCiiModes.NORMAL;
+      // TODO @1 We create the CAD object here!!! 
+    }
+
+    this.logEnd();
+    return r;
+  }
+  // #endregion
+
+
+  // #region Customizations  -----------------------------------------------------
+
+  newStrokeStyle(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.newStrokeStyle.name,);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_STROKE_STYLE, ainstruction.name);
+
+    if (r.ok) {
+      // TODO @2 Check is style exists - APG 20230313
+      this._cad.newStrokeStyle(
+        ainstruction.name!,
+        ainstruction.payload!
       );
     }
 
-    this.logEnd();
-    return r;
-  }
-
-
-  setViewBox_(aviewBox: Cad.IApgCadSvgViewBox) {
-
-    this.logBegin(this.setViewBox_.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_VIEWBOX);
-
-    if (r.ok) {
-
-      if (this._currInstructionNum === 2) {
-        this._cad.setViewBox(aviewBox);
-      }
-      else {
-        r = Rst.ApgRstErrors.Parametrized(
-          "If present [%1] must be the second instruction immediately after [%2]",
-          [eApgCiiInstructionTypes.SET_VIEWBOX, eApgCiiInstructionTypes.SET_NAME]
-        );
-      }
-    }
-
-    this.logEnd();
-    return r;
-  }
-
-
-  setCartesian_(acartesianParams: Cad.IApgCadSvgCartesians) {
-
-    this.logBegin(this.setCartesian_.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_CARTESIAN);
-
-    if (r.ok) {
-      const prevType = this._instructions[this._currInstructionNum - 1].type;
-      if (
-        (prevType === eApgCiiInstructionTypes.SET_NAME) ||
-        (prevType === eApgCiiInstructionTypes.SET_VIEWBOX) ||
-        (prevType === eApgCiiInstructionTypes.SET_BACKGROUND)
-      ) {
-        this._cad.setCartesian(acartesianParams);
-      }
-      else {
-        r = Rst.ApgRstErrors.Parametrized(
-          "If present [%1] must follow [%2], [%3] or [%4]",
-          [eApgCiiInstructionTypes.SET_CARTESIAN, eApgCiiInstructionTypes.SET_NAME, eApgCiiInstructionTypes.SET_VIEWBOX, eApgCiiInstructionTypes.SET_BACKGROUND]
-        );
-      }
-    }
-
-    this.logEnd();
-    return r;
-  }
-
-
-  setBackground_(abckg: Cad.IApgCadSvgGround) {
-
-    this.logBegin(this.setBackground_.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.SET_BACKGROUND);
-
-    if (r.ok) {
-
-      const prevType = this._instructions[this._currInstructionNum - 1].type;
-      if (
-        (prevType === eApgCiiInstructionTypes.SET_NAME) ||
-        (prevType === eApgCiiInstructionTypes.SET_VIEWBOX)
-      ) {
-        this._cad.setBackground(abckg);
-      }
-      else {
-        r = Rst.ApgRstErrors.Parametrized(
-          "If present [%1] must follow [%2], or [%3]",
-          [eApgCiiInstructionTypes.SET_BACKGROUND, eApgCiiInstructionTypes.SET_NAME, eApgCiiInstructionTypes.SET_VIEWBOX]
-        );
-      }
-    }
-
-    this.logEnd();
-    return r;
-  }
-
-
-  newStrokeStyle(ainstruction: IApgCiiInstruction) {
-    this.logBegin(this.newStrokeStyle.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_STROKE_STYLE, ainstruction.name);
-    this._cad.newStrokeStyle(
-       ainstruction.name!,
-       ainstruction.payload!
-    );
     this.logEnd()
     return r;
   }
 
 
   newFillStyle(ainstruction: IApgCiiInstruction) {
+
     this.logBegin(this.newFillStyle.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_FILL_STYLE, ainstruction.name);
-    this._cad.newFillStyle(
-      ainstruction.name!,
-      ainstruction.payload!
-    );
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_FILL_STYLE, ainstruction.name);
+
+    if (r.ok) {
+      this._cad.newFillStyle(
+        ainstruction.name!,
+        ainstruction.payload!
+      );
+    }
+
     this.logEnd()
     return r;
   }
 
 
   newTextStyle(ainstruction: IApgCiiInstruction) {
+
     this.logBegin(this.newTextStyle.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_TEXT_STYLE, ainstruction.name);
-    this._cad.newTextStyle(
-      ainstruction.name!,
-      ainstruction.payload!
-    );
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_TEXT_STYLE, ainstruction.name);
+
+    if (r.ok) {
+      this._cad.newTextStyle(
+        ainstruction.name!,
+        ainstruction.payload!
+      );
+    }
+
     this.logEnd()
     return r;
   }
 
 
   newPattern(ainstruction: IApgCiiInstruction) {
+
     this.logBegin(this.newPattern.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_PATTERN, ainstruction.name);
-    this._cad.newPattern(
-      ainstruction.payload!
-    );
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_PATTERN, ainstruction.name);
+
+    if (r.ok) {
+      this._cad.newPattern(
+        ainstruction.payload!
+      );
+    }
+
     this.logEnd()
     return r;
   }
 
 
   newTexture(ainstruction: IApgCiiInstruction) {
+
     this.logBegin(this.newTexture.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_TEXTURE, ainstruction.name);
-    this._cad.newTexture(
-      ainstruction.payload!
-    );
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_TEXTURE, ainstruction.name);
+
+    if (r.ok) {
+      this._cad.newTexture(
+        ainstruction.payload!
+      );
+    }
+
     this.logEnd()
     return r;
   }
 
 
   newGradient(ainstruction: IApgCiiInstruction) {
+
     this.logBegin(this.newGradient.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_GRADIENT, ainstruction.name);
-    this._cad.newGradient(
-      ainstruction.payload!
-    );
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_GRADIENT, ainstruction.name);
+
+    if (r.ok) {
+      this._cad.newGradient(
+        ainstruction.payload!
+      );
+    }
+
     this.logEnd()
     return r;
   }
@@ -352,9 +399,9 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   /** Creates a new group in the current layer ad sets it as the current one
    * @returns Error If the group name already exists */
-  newGroup_(ainstruction: IApgCiiInstruction) {
+  groupBegin_(ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.newGroup_.name);
+    this.logBegin(this.groupBegin_.name);
     let r = this.#traceInstruction(eApgCiiInstructionTypes.GROUP_BEGIN);
 
     if (r.ok) {
@@ -376,13 +423,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         }
         if (r.ok && ainstruction.fillStyle) {
           r = this.#checkFillStyle(ainstruction.fillStyle);
-          if (r.ok) { 
+          if (r.ok) {
             options.fillName = ainstruction.fillStyle;
           }
         }
         if (r.ok && ainstruction.textStyle) {
           r = this.#checkTextStyle(ainstruction.textStyle);
-          if (r.ok) { 
+          if (r.ok) {
             options.textName = ainstruction.textStyle
           }
         }
@@ -419,10 +466,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   // }
 
 
-  /** After this call the drawing instructions will bond to the current layer */
-  closeGroup_() {
+  /** After this call the drawing instructions will bond back to the current layer */
+  groupEnd_() {
 
-    this.logBegin(this.closeGroup_.name);
+    this.logBegin(this.groupEnd_.name);
     const r = this.#traceInstruction(eApgCiiInstructionTypes.GROUP_END);
 
     if (r.ok) {
@@ -438,28 +485,30 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   // #region Points management --------------------------------------------------
 
-  /** Adds a point to the points set. Path mode compatible*/
+  /** Adds a point to the points set.*/
   newPoint_(ainstruction: IApgCiiInstruction) {
 
     const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
 
     this.logBegin(this.newPoint_.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT, pointName, true);
-
-    if (ainstruction.name) {
-      const pointExists = this._points.get(ainstruction.name);
-      if (pointExists) {
-        r = Rst.ApgRstErrors.Parametrized(
-          `Point named [%1] already exists`,
-          [ainstruction.name]
-        )
-      }
-    }
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT, pointName);
 
     if (r.ok) {
-      const newPoint = new A2D.Apg2DPoint(ainstruction.x!, ainstruction.y!);
-      this._nextPointIndex++;
-      this._points.set(pointName, newPoint);
+      if (ainstruction.name) {
+        const pointExists = this._points.get(ainstruction.name);
+        if (pointExists) {
+          r = Rst.ApgRstErrors.Parametrized(
+            `Point named [%1] already exists`,
+            [ainstruction.name]
+          )
+        }
+      }
+
+      if (r.ok) {
+        const newPoint = new A2D.Apg2DPoint(ainstruction.x!, ainstruction.y!);
+        this._nextPointIndex++;
+        this._points.set(pointName, newPoint);
+      }
     }
 
     this.logEnd();
@@ -467,29 +516,31 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  /** Adds a point to the points set, by setting a distance from another point. Path mode compatible */
+  /** Adds a point to the points set, by setting a distance from another point. */
   newPointByDelta_(ainstruction: IApgCiiInstruction) {
 
     const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
 
     this.logBegin(this.newPointByDelta_.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT_DELTA, pointName, true);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_POINT_DELTA, pointName);
 
-    const point = this._points.get(ainstruction.origin!);
+    if (r.ok) {
+      const point = this._points.get(ainstruction.origin!);
 
-    if (!point) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point origin named [%1] not found in set.`,
-        [ainstruction.origin!]
-      )
-    }
-    else {
-      const x = point.x + ainstruction.w!;
-      const y = point.y + ainstruction.h!;
-      const newPoint = new A2D.Apg2DPoint(x, y);
+      if (!point) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point origin named [%1] not found in set.`,
+          [ainstruction.origin!]
+        )
+      }
+      else {
+        const x = point.x + ainstruction.w!;
+        const y = point.y + ainstruction.h!;
+        const newPoint = new A2D.Apg2DPoint(x, y);
 
-      this._nextPointIndex++;
-      this._points.set(pointName, newPoint);
+        this._nextPointIndex++;
+        this._points.set(pointName, newPoint);
+      }
     }
 
     this.logEnd();
@@ -499,22 +550,25 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   /** Moves the specified point by the specified deltas */
   movePointByDelta(ainstruction: IApgCiiInstruction) {
+    // TODO @4 This is wrong -- APG 20230313
     const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
 
     this.logBegin(this.movePointByDelta.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.MOVE_POINT_DELTA, pointName, true);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.MOVE_POINT_DELTA, pointName, eApgCiiModes.PATH);
 
-    const point = this._points.get(ainstruction.origin!);
+    if (r.ok) {
+      const point = this._points.get(ainstruction.origin!);
 
-    if (!point) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point origin named [%1] not found in set.`,
-        [ainstruction.origin!]
-      )
-    }
-    else {
-      point.x += ainstruction.w!;
-      point.y += ainstruction.h!;
+      if (!point) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point origin named [%1] not found in set.`,
+          [ainstruction.origin!]
+        )
+      }
+      else {
+        point.x += ainstruction.w!;
+        point.y += ainstruction.h!;
+      }
     }
 
     this.logEnd();
@@ -803,7 +857,11 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  #traceInstruction(atype: eApgCiiInstructionTypes, aname?: string, apathModeAllowed = false) {
+  #traceInstruction(
+    atype: eApgCiiInstructionTypes,
+    aname?: string,
+    allowedMode = eApgCiiModes.NORMAL
+  ) {
     this._currInstructionNum++;
     let m = `  > ${this._currInstructionNum}: ${atype}`;
     if (aname && aname != "") {
@@ -811,18 +869,21 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
     this.logTrace(m);
 
-    return this.#checkPathMode(atype, apathModeAllowed);
+    return this.#checkMode(atype, allowedMode);
 
   }
 
 
-  #checkPathMode(atype: eApgCiiInstructionTypes, apathModeAllowed: boolean) {
+  #checkMode(
+    atype: eApgCiiInstructionTypes,
+    aallowedMode: eApgCiiModes
+  ) {
     let r: Rst.IApgRst = { ok: true }
 
-    if (!apathModeAllowed && this._pathMode) {
+    if (this._mode != aallowedMode) {
       r = Rst.ApgRstErrors.Parametrized(
-        `Interpreter is in path mode. The current instruction [%1] is not allowed`,
-        [atype]
+        `Interpreter is in [%1] mode. The current instruction [%2] is not allowed`,
+        [this._mode, atype]
       )
     }
 
@@ -1256,7 +1317,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   /** Draws a linear dimension from the given data */
   #drawLinearDim(ainstruction: IApgCiiInstruction) {
 
-
     this.logBegin(this.#drawLinearDim.name);
     let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_LIN_DIM);
 
@@ -1274,8 +1334,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
       let dimType = Cad.eApgCadLinearDimensionTypes.ALIGNED;
       if (
-        ainstruction.payload &&
-        ainstruction.payload.type &&
+        ainstruction.payload != undefined &&
+        ainstruction.payload.type != undefined &&
         typeof (ainstruction.payload.type) == 'number' &&
         Uts.ApgUtsEnum.NumericContains(Cad.eApgCadLinearDimensionTypes, ainstruction.payload.type)
       ) {
@@ -1326,8 +1386,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
       let dimType = Cad.eApgCadArcDimensionTypes.OUTER_DIAMETER;
       if (
-        ainstruction.payload &&
-        ainstruction.payload.type &&
+        ainstruction.payload != undefined &&
+        ainstruction.payload.type != undefined &&
         typeof (ainstruction.payload.type) == 'number' &&
         Uts.ApgUtsEnum.NumericContains(Cad.eApgCadArcDimensionTypes, ainstruction.payload.type)
       ) {
@@ -1378,7 +1438,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         )
       }
       else {
-        this._pathMode = true;
+        this._mode = eApgCiiModes.PATH;
         this._pathBuilder = new Svg.ApgSvgPathBuilder();
       }
     }
@@ -1392,7 +1452,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   drawPathMove(ainstruction: IApgCiiInstruction) {
 
     this.logBegin(this.drawPathMove.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_MOVE, "", true);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_MOVE, "", eApgCiiModes.PATH);
 
     if (r.ok) {
       const origin = this._points.get(ainstruction.origin!);
@@ -1417,7 +1477,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   drawPathClose(_ainstruction: IApgCiiInstruction) {
 
     this.logBegin(this.drawPathClose.name);
-    const r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_CLOSE, "", true);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_CLOSE, "", eApgCiiModes.PATH);
 
     if (r.ok) {
       this._pathBuilder.close();
@@ -1432,17 +1492,19 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   drawPathLine(ainstruction: IApgCiiInstruction) {
 
     this.logBegin(this.drawPathLine.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_LINE, "", true);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_LINE, "", eApgCiiModes.PATH);
 
-    const origin = this._points.get(ainstruction.origin!);
-    if (!origin) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point named [%1] not found: `,
-        [ainstruction.origin!]
-      )
-    }
-    else {
-      this._pathBuilder.lineAbs(origin.x, origin.y);
+    if (r.ok) {
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
+      }
+      else {
+        this._pathBuilder.lineAbs(origin.x, origin.y);
+      }
     }
 
     this.logEnd();
@@ -1454,28 +1516,30 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   drawPathArc(ainstruction: IApgCiiInstruction) {
 
     this.logBegin(this.drawPathArc.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_ARC, "", true);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_ARC, "", eApgCiiModes.PATH);
 
-    const origin = this._points.get(ainstruction.origin!);
-    if (!origin) {
-      r = Rst.ApgRstErrors.Parametrized(
-        `Point named [%1] not found: `,
-        [ainstruction.origin!]
-      )
-    }
-    else {
-
-      let largeArc = false;
-      let clockwise = true;
-      if (ainstruction.payload) {
-        largeArc = ainstruction.payload!.largeArc! as boolean | false;
-        clockwise = ainstruction.payload!.clockwise! as boolean | true;
+    if (r.ok) {
+      const origin = this._points.get(ainstruction.origin!);
+      if (!origin) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Point named [%1] not found: `,
+          [ainstruction.origin!]
+        )
       }
-      this._pathBuilder.arcAbs(
-        origin.x, origin.y,
-        ainstruction.radious!, ainstruction.radious!, ainstruction.angle! | 0,
-        largeArc, clockwise
-      );
+      else {
+
+        let largeArc = false;
+        let clockwise = true;
+        if (ainstruction.payload) {
+          largeArc = ainstruction.payload!.largeArc! as boolean | false;
+          clockwise = ainstruction.payload!.clockwise! as boolean | true;
+        }
+        this._pathBuilder.arcAbs(
+          origin.x, origin.y,
+          ainstruction.radious!, ainstruction.radious!, ainstruction.angle! | 0,
+          largeArc, clockwise
+        );
+      }
     }
 
     this.logEnd();
@@ -1487,10 +1551,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   drawPathEnd(ainstruction: IApgCiiInstruction) {
 
     this.logBegin(this.drawPathEnd.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_END, ainstruction.name, true);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_END, ainstruction.name, eApgCiiModes.PATH);
 
     if (r.ok) {
-      this._pathMode = false;
+      this._mode = eApgCiiModes.NORMAL;
       const path = this._pathBuilder.build();
       const node = this._cad.svg.path(path);
 
@@ -1507,7 +1571,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
 
   /** Parses the instructions set and builds the SVG drawing */
-  build() {
+  async build() {
 
     this.logBegin(this.build.name);
 
@@ -1515,20 +1579,32 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     for (const ainstruction of this._instructions) {
       let ri: Rst.IApgRst = { ok: true };
       switch (ainstruction.type) {
+        case eApgCiiInstructionTypes.SETUP_BEGIN: {
+          ri = this.setupBegin(); //
+          break;
+        }
         case eApgCiiInstructionTypes.SET_NAME: {
           ri = this.setName_(ainstruction.name!); //
           break;
         }
         case eApgCiiInstructionTypes.SET_VIEWBOX: {
-          ri = this.setViewBox_(ainstruction.payload!); // 
+          ri = await this.setViewBox_(ainstruction.payload!); // 
           break;
         }
-        case eApgCiiInstructionTypes.SET_CARTESIAN: {
-          ri = this.setCartesian_(ainstruction.payload!); // 
+        case eApgCiiInstructionTypes.SET_GRID: {
+          ri = await this.setGrid_(ainstruction.payload!); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.SET_CARTESIANS: {
+          ri = await this.setCartesians_(ainstruction.payload!); // 
           break;
         }
         case eApgCiiInstructionTypes.SET_BACKGROUND: {
-          ri = this.setBackground_(ainstruction.payload!); // 
+          ri = await this.setBackground_(ainstruction.payload!); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.SETUP_END: {
+          ri = this.setupEnd(); //
           break;
         }
         case eApgCiiInstructionTypes.NEW_POINT: {
@@ -1564,7 +1640,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           break;
         }
         case eApgCiiInstructionTypes.GROUP_BEGIN: {
-          ri = this.newGroup_(ainstruction); // 2023/01/21
+          ri = this.groupBegin_(ainstruction); // 2023/01/21
           break;
         }
         // case eApgCiiInstructionTypes.SET_GROUP: {
@@ -1572,7 +1648,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         //   break;
         // }
         case eApgCiiInstructionTypes.GROUP_END: {
-          this.closeGroup_(); // 2023/01/21
+          this.groupEnd_(); // 2023/01/21
           break;
         }
 

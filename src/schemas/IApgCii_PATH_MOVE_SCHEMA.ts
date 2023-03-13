@@ -8,16 +8,16 @@
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
-export const IApgCii_DRAW_PATH_LINE_SCHEMA_ID =
-    Jsv.ApgJsv_DOMAIN + 'IApgCii_DrawPathLine';
+export const IApgCii_PATH_MOVE_SCHEMA_ID =
+    Jsv.ApgJsv_DOMAIN + 'IApgCii_PathMove';
 
 const rawSchema: Jsv.IApgJsvInterface = {
     $schema: Jsv.ApgJsv_DIALECT,
-    $id: IApgCii_DRAW_PATH_LINE_SCHEMA_ID,
+    $id: IApgCii_PATH_MOVE_SCHEMA_ID,
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_LINE as string
+            const: eApgCiiInstructionTypes.DRAW_PATH_MOVE as string
         },
         origin: {
             type: 'string',
@@ -31,4 +31,4 @@ const rawSchema: Jsv.IApgJsvInterface = {
 
 };
 
-export const IApgCii_DRAW_PATH_LINE_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const IApgCii_PATH_MOVE_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

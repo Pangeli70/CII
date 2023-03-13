@@ -50,8 +50,14 @@ export function ApgCiiTest_PanelsWithHoles() {
         description: "Panels",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 08',
+                name: 'Panels with holes',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.GROUP_BEGIN,

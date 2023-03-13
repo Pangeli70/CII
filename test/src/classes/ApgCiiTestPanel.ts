@@ -25,16 +25,16 @@ export class ApgCiiTestPanel {
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
-            origin: aorigin,
-        });
-
-        r.push({
             type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
             name: cursor,
             origin: aorigin,
             w: 0,
             h: 0
+        });
+
+        r.push({
+            type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
+            origin: aorigin,
         });
 
         r.push({
@@ -102,7 +102,7 @@ export class ApgCiiTestPanel {
         ) {
             const holesCursor = aname + '_hc';
             r.push({
-                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
                 name: holesCursor,
                 origin: aorigin,
                 w: 0,

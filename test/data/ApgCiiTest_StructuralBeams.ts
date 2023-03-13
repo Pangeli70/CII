@@ -172,8 +172,14 @@ export function ApgCiiTest_StructuralBeams() {
     description: "Structural beams on side view 1",
     instructions: [
         {
+            type: eApgCiiInstructionTypes.SETUP_BEGIN,
+        },
+        {
             type: eApgCiiInstructionTypes.SET_NAME,
-            name: 'TEST 05',
+            name: 'Structural beams',
+        },
+        {
+            type: eApgCiiInstructionTypes.SETUP_END,
         },
         {
             type: eApgCiiInstructionTypes.NEW_POINT,

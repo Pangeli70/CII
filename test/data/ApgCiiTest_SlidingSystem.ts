@@ -25,8 +25,14 @@ export function ApgCiiTest_SlidingSystem() {
         description: "Sliding systems",
         instructions: [
             {
+                type: eApgCiiInstructionTypes.SETUP_BEGIN,
+            },
+            {
                 type: eApgCiiInstructionTypes.SET_NAME,
-                name: 'TEST 07',
+                name: 'Sliding systems',
+            },
+            {
+                type: eApgCiiInstructionTypes.SETUP_END,
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
