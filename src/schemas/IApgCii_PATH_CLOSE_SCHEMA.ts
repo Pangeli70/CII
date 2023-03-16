@@ -17,7 +17,7 @@ const rawSchema: Jsv.IApgJsvInterface = {
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_CLOSE as string
+            const: eApgCiiInstructionTypes.PATH_CLOSE as string
         }
     },
     additionalProperties: false,

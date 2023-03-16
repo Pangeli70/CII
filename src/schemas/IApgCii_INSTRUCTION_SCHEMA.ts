@@ -10,6 +10,28 @@
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCii_TYPES_SCHEMA_ID_REF } from "./eApgCii_TYPES_SCHEMA.ts";
 
+
+export enum eApgCiiInstructionFieldsNames {
+    type = 'type',
+    name = 'name',
+    x = 'x',
+    y = 'y',
+    w = 'w',
+    h = 'h',
+    n = 'n',
+    origin = 'origin',
+    radious = 'radious',
+    pivot = 'pivot',
+    angle = 'angle',
+    points = 'points',
+    text = 'text',
+    strokeStyle = 'strokeStyle',
+    fillStyle = 'fillStyle',
+    textStyle = 'textStyle',
+    payload = 'payload',
+
+}
+
 export const IApgCii_INSTRUCTION_SCHEMA_ID =
     Jsv.ApgJsv_DOMAIN + "IApgCii_Instruction";
 
@@ -25,7 +47,7 @@ const rawSchema: Jsv.IApgJsvInterface = {
         },
 
         name: {
-            description:'',
+            description: '',
             type: 'string'
         },
 

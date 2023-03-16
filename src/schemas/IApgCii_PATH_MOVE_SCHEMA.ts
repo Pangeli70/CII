@@ -7,6 +7,8 @@
  */
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
+import { eApgCiiInstructionFieldsNames } from "./IApgCii_INSTRUCTION_SCHEMA.ts";
+
 
 export const IApgCii_PATH_MOVE_SCHEMA_ID =
     Jsv.ApgJsv_DOMAIN + 'IApgCii_PathMove';
@@ -16,17 +18,26 @@ const rawSchema: Jsv.IApgJsvInterface = {
     $id: IApgCii_PATH_MOVE_SCHEMA_ID,
     type: 'object',
     properties: {
-        type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_MOVE as string
+        [eApgCiiInstructionFieldsNames.type]: {
+            const: eApgCiiInstructionTypes.PATH_MOVE as string
         },
-        origin: {
+        [eApgCiiInstructionFieldsNames.origin]: {
             type: 'string',
         },
+        [eApgCiiInstructionFieldsNames.w]: {
+            type: 'number'
+        },
+        [eApgCiiInstructionFieldsNames.h]: {
+            type: 'number'
+        }
     },
     additionalProperties: false,
     allErrors: true,
     required: [
-        'type', 'origin'
+        eApgCiiInstructionFieldsNames.type,
+        eApgCiiInstructionFieldsNames.origin,
+        eApgCiiInstructionFieldsNames.w,
+        eApgCiiInstructionFieldsNames.h
     ]
 
 };

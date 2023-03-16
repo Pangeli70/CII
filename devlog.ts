@@ -12,10 +12,11 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
     todo: [
         {
             milestone: "TOOLS",
-            description: "Logger, Profiler, Instructions, Cad Status ",
+            description: "Logger, Profiler, Validator, Partials ",
             activities: [
                 "Profiler performance graph",
-                "@2 Debug logger for JSON circular stringification"
+                "Move CII validator service to it's own deploy CIV microservice",
+                "Optimize validator warmup time by compling AJV functions upon request"
             ]
         },
         {
@@ -31,10 +32,30 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "PRIMITIVES",
             description: "Basic CAD primitives instructions",
             activities: [
-                "@1 Test all dimensions types",
+                "@1 Instructions for new Pattern, Gradient, Block, Texture",
+                "@3 Test all dimensions types",
                 "Bevel as CAD primitive",
                 "Bevel edge as primitive",
                 "Bevel path as primitive"
+            ]
+        },
+        {
+            milestone: "SETUP",
+            description: "Instructions for CAD setup",
+            activities: [
+                "Set grid",
+                "Tester Randomizer",
+            ]
+        },
+        {
+            milestone: "DEBUG",
+            description: "Improve code and remove bugs",
+            activities: [
+                "@1 Sliding system test",
+                "@2 Logger for JSON circular stringification",
+                "@2 Set viewbox",
+                "@2 Set background",
+                "@2 Set cartesians",
             ]
         },
         {
@@ -48,10 +69,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "TC_MTOS",
             description: "Technical closures measures taken on site",
             activities: [
-                "@3 CAD setup to define viewport",
                 "@4 Front inside view test",
                 "@4 Top view test",
-                "@4 Front outside view test",
+                "@4 Front outside and inside view test",
             ]
         },
         {
@@ -107,45 +127,96 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
 
     done: [
         {
+            version: "0.9.6",
+            date: "20230315",
+            milestone: "DEBUG",
+            description: "Improve code and remove bugs",
+            activities: [
+                "Sliding curve with new path instructions",
+                "Sliding system with new path instructions",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230314",
+            milestone: "DEBUG",
+            description: "Improve code and remove bugs",
+            activities: [
+                "Optimize and strengthen svg.path instructions",
+                "Create Path cursor instruction",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230312",
+            milestone: "SETUP",
+            description: "Instructions for CAD setup",
+            activities: [
+                "Set viewbox",
+                "Set background",
+                "Set cartesians",
+                "Tester Randomizer",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230312",
+            milestone: "PRIMITIVES",
+            description: "Basic CAD primitives instructions",
+            activities: [
+                "Test dimensions types",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230310",
+            milestone: "TC_MTOS",
+            description: "Technical closures measures taken on site",
+            activities: [
+                "Alpha for Top view test",
+                "Alpha for Front outside and inside view test",
+            ]
+        },
+        {
+            version: "0.9.6",
             date: "20230308",
             milestone: "TC_MTOS",
-            version: "0.9.6",
             description: "Technical closures measures taken on site",
             activities: [
                 "Investigate linear dimension bugs",
             ]
         },
         {
+            version: "0.9.6",
             date: "20230306",
             milestone: "JSON",
-            version: "0.9.6",
             description: "Read instructions from JSON file",
             activities: [
                 "Completed migration to ApgJsv 0.9.6",
             ]
         },
         {
+            version: "0.9.6",
             date: "20230306",
             milestone: "TOOLS",
-            version: "0.9.6",
             description: "Logger, Profiler, Instructions, Cad Status ",
             activities: [
                 "Added validation logger to main logger",
             ]
         },
         {
+            version: "0.9.6",
             date: "20230306",
             milestone: "JSON",
-            version: "0.9.6",
             description: "Read instructions from JSON file",
             activities: [
                 "Started migration to ApgJsv 0.9.6",
             ]
         },
         {
+            version: "0.9.5",
             date: "20230304",
             milestone: "DEVLOG",
-            version: "0.9.5",
             description: "Develompment log",
             activities: [
                 "Interfaces for things to do and things done",
@@ -157,9 +228,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230303",
             milestone: "TC_SECo",
-            version: "0.9.5",
             description: "Technical closures sectional doors coat",
             activities: [
                 "Inspection windows",
@@ -167,9 +238,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230302",
             milestone: "TC_SECo",
-            version: "0.9.5",
             description: "Technical closures sectional doors coat",
             activities: [
                 "Path drawing strategy",
@@ -177,9 +248,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230220",
             milestone: "TC_SDSS",
-            version: "0.9.5",
             description: "Technical closures sectional doors sliding system",
             activities: [
                 "Curves",
@@ -187,9 +258,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230125",
             milestone: "JSON",
-            version: "0.9.5",
             description: "Read instructions form JSON file",
             activities: [
                 "Load file",
@@ -197,18 +268,18 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230120",
             milestone: "TC_MTOS",
-            version: "0.9.5",
             description: "Technical closures measures taken on site",
             activities: [
                 "Dimensions on side view",
             ]
         },
         {
+            version: "0.9.5",
             date: "20230118",
             milestone: "TOOLS",
-            version: "0.9.5",
             description: "Logger, Profiler, Instructions, Cad Status ",
             activities: [
                 "Improved logger partial",
@@ -217,9 +288,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230115",
             milestone: "VIEWER",
-            version: "0.9.5",
             description: "Interactive svg viewer",
             activities: [
                 "Svg PanZomm Toolbar",
@@ -228,9 +299,9 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             ]
         },
         {
+            version: "0.9.5",
             date: "20230110",
             milestone: "PRIMITIVES",
-            version: "0.9.5",
             description: "Basic CAD primitives instructions",
             activities: [
                 "Basic shape instructions test",

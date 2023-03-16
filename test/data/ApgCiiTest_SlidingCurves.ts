@@ -41,7 +41,7 @@ export function ApgCiiTest_SlidingCurves() {
                 x: 200,
                 y: 1200
             },
-            ...ApgCiiTestSlidingSystem.SlidingCurveSideView("CURVE_1", 'O_1', 300, 1, 35),
+            ...ApgCiiTestSlidingSystem.SlidingCurveSideView("CURVE_1", 'O_1', 300, 30, 30),
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
                 name: 'O_2',
@@ -67,10 +67,10 @@ export function ApgCiiTest_SlidingCurves() {
                 type: eApgCiiInstructionTypes.PUSH_LAYER,
                 name: Cad.eApgCadDftLayers.DEBUG
             },
-            // {
-            //     type: eApgCadInstructionTypes.DRAW_ALL_POINTS,
-            //     radious: 10
-            // },
+            {
+                type: eApgCiiInstructionTypes.DRAW_ALL_POINTS,
+                radious: 10
+            },
 
         ]
     }

@@ -24,11 +24,6 @@ export class ApgCiiTestInspectionWindow {
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
-            origin: aorigin,
-        });
-
-        r.push({
             type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
             name: cursor,
             origin: aorigin,
@@ -37,112 +32,86 @@ export class ApgCiiTestInspectionWindow {
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_MOVE,
-            origin: cursor,
+            type: eApgCiiInstructionTypes.PATH_BEGIN
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_MOVE,
+            origin: cursor,
+            w: 0,
+            h: 0
+        });
+
+        r.push({
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: cursor,
             w: awidth,
             h: 0
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: cursor,
-        });
-
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: cursor,
             w: 0,
             h: aheight
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: cursor,
-        });
-
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: cursor,
             w: -awidth,
             h: 0
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: cursor,
-        });
-
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: cursor,
             w: 0,
             h: -aheight
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
+            type: eApgCiiInstructionTypes.PATH_CLOSE,
+        });
+
+        r.push({
+            type: eApgCiiInstructionTypes.PATH_CURSOR,
             origin: cursor,
-        });
-
-        r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE,
-        });
-
-
-        const holesCursor = aname + '_hc';
-        r.push({
-            type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-            name: holesCursor,
-            origin: aorigin,
+            pivot: aorigin,
             w: -awidth / 2 + this.WIDTH,
             h: -aheight / 2 + this.WIDTH
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_MOVE,
-            origin: holesCursor,
+            type: eApgCiiInstructionTypes.PATH_MOVE,
+            origin: cursor,
+            w: 0,
+            h: 0
         });
         r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
-            origin: holesCursor,
+            type: eApgCiiInstructionTypes.PATH_LINE,
+            origin: cursor,
             w: 0,
             h: aheight - (2 * this.WIDTH),
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: holesCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
-            origin: holesCursor,
+            type: eApgCiiInstructionTypes.PATH_LINE,
+            origin: cursor,
             w: awidth - (2 * this.WIDTH),
             h: 0
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: holesCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
-            origin: holesCursor,
+            type: eApgCiiInstructionTypes.PATH_LINE,
+            origin: cursor,
             w: 0,
             h: -aheight + (2 * this.WIDTH)
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: holesCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE,
+            type: eApgCiiInstructionTypes.PATH_CLOSE,
         });
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_END,
+            type: eApgCiiInstructionTypes.PATH_END,
             fillStyle: afillStyleName
         });
 
@@ -226,10 +195,6 @@ export class ApgCiiTestInspectionWindow {
         const halfH = aheight / 2;
 
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN,
-            origin: aorigin,
-        });
-        r.push({
             type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
             name: apathCursor,
             origin: aorigin,
@@ -237,64 +202,49 @@ export class ApgCiiTestInspectionWindow {
             h: halfH
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_MOVE,
-            origin: apathCursor,
+            type: eApgCiiInstructionTypes.PATH_BEGIN,
         });
         r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_MOVE,
+            origin: apathCursor,
+            w: 0,
+            h: 0
+        });
+        r.push({
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: apathCursor,
             w: 0,
             h: -aheight
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: apathCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: apathCursor,
             w: -asize,
             h: asize
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: apathCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: apathCursor,
             w: 0,
             h: aheight - (asize * 2)
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: apathCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: apathCursor,
             w: -awidth + (asize * 2),
             h: 0
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: apathCursor,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+            type: eApgCiiInstructionTypes.PATH_LINE,
             origin: apathCursor,
             w: -asize,
             h: asize
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_LINE,
-            origin: apathCursor,
+            type: eApgCiiInstructionTypes.PATH_CLOSE,
         });
         r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE,
-        });
-        r.push({
-            type: eApgCiiInstructionTypes.DRAW_PATH_END,
+            type: eApgCiiInstructionTypes.PATH_END,
             fillStyle: afillStyleName,
             pivot: aorigin,
             angle: arotation

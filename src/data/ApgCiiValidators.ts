@@ -45,7 +45,6 @@ import { IApgCii_PUSH_LAYER_SCHEMA } from "../schemas/IApgCii_PUSH_LAYER_SCHEMA.
 
 import { IApgCii_NEW_POINT_SCHEMA } from "../schemas/IApgCii_NEW_POINT_SCHEMA.ts";
 import { IApgCii_NEW_POINT_DELTA_SCHEMA } from "../schemas/IApgCii_NEW_POINT_DELTA_SCHEMA.ts";
-import { IApgCii_MOVE_POINT_DELTA_SCHEMA } from "../schemas/IApgCii_MOVE_POINT_DELTA_SCHEMA.ts";
 
 import { IApgCii_GROUP_BEGIN_SCHEMA } from "../schemas/IApgCii_GROUP_BEGIN_SCHEMA.ts";
 import { IApgCii_GROUP_END_SCHEMA } from "../schemas/IApgCii_GROUP_END_SCHEMA.ts";
@@ -67,6 +66,7 @@ import { IApgCii_PATH_BEGIN_SCHEMA } from "../schemas/IApgCii_PATH_BEGIN_SCHEMA.
 import { IApgCii_PATH_MOVE_SCHEMA } from "../schemas/IApgCii_PATH_MOVE_SCHEMA.ts";
 import { IApgCii_PATH_LINE_SCHEMA } from "../schemas/IApgCii_PATH_LINE_SCHEMA.ts";
 import { IApgCii_PATH_ARC_SCHEMA } from "../schemas/IApgCii_PATH_ARC_SCHEMA.ts";
+import { IApgCii_PATH_CURSOR_SCHEMA } from "../schemas/IApgCii_PATH_CURSOR_SCHEMA.ts";
 import { IApgCii_PATH_CLOSE_SCHEMA } from "../schemas/IApgCii_PATH_CLOSE_SCHEMA.ts";
 import { IApgCii_PATH_END_SCHEMA } from "../schemas/IApgCii_PATH_END_SCHEMA.ts";
 
@@ -223,8 +223,8 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
         jsonSchema: IApgCii_NEW_POINT_DELTA_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.MOVE_POINT_DELTA, // Ok 2023/02/26
-        jsonSchema: IApgCii_MOVE_POINT_DELTA_SCHEMA,
+        type: eApgCiiInstructionTypes.PATH_CURSOR, // Ok 2023/02/26
+        jsonSchema: IApgCii_PATH_CURSOR_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_POINTS,  // Ok 2023/01/06
@@ -267,27 +267,27 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
         jsonSchema: IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_PATH_BEGIN, // 
+        type: eApgCiiInstructionTypes.PATH_BEGIN, // 
         jsonSchema: IApgCii_PATH_BEGIN_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_PATH_MOVE, // 
+        type: eApgCiiInstructionTypes.PATH_MOVE, // 
         jsonSchema: IApgCii_PATH_MOVE_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_PATH_LINE, // 
+        type: eApgCiiInstructionTypes.PATH_LINE, // 
         jsonSchema: IApgCii_PATH_LINE_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_PATH_ARC, // 
+        type: eApgCiiInstructionTypes.PATH_ARC, // 
         jsonSchema: IApgCii_PATH_ARC_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_PATH_CLOSE, // 
+        type: eApgCiiInstructionTypes.PATH_CLOSE, // 
         jsonSchema: IApgCii_PATH_CLOSE_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_PATH_END, // 
+        type: eApgCiiInstructionTypes.PATH_END, // 
         jsonSchema: IApgCii_PATH_END_SCHEMA,
     },
     {

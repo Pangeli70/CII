@@ -194,14 +194,15 @@ export function ApgCiiTest_Coats() {
                 fillStyle: 'RUBBER'
             },
             {
-                type: eApgCiiInstructionTypes.MOVE_POINT_DELTA,
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'O_8',
                 origin: 'O_7',
                 w: W,
                 h: 0
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES,
-                origin: 'O_7',
+                origin: 'O_8',
                 w: -15,
                 h: 495 * 4 + 55,
                 fillStyle: 'RUBBER'

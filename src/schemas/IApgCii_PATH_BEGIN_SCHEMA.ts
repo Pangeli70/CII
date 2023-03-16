@@ -17,19 +17,13 @@ const rawSchema: Jsv.IApgJsvInterface = {
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_BEGIN as string
-        },
-        name: {
-            type: 'string'
-        },
-        origin: {
-            type: 'string',
+            const: eApgCiiInstructionTypes.PATH_BEGIN as string
         },
     },
     additionalProperties: false,
     allErrors: true,
     required: [
-        'type', 'origin'
+        'type',
     ]
 
 };

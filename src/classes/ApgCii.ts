@@ -547,34 +547,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     return r;
   }
 
-
-  /** Moves the specified point by the specified deltas */
-  movePointByDelta(ainstruction: IApgCiiInstruction) {
-    // TODO @4 This is wrong -- APG 20230313
-    const pointName = ainstruction.name || 'P#' + this._nextPointIndex;
-
-    this.logBegin(this.movePointByDelta.name,);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.MOVE_POINT_DELTA, pointName, eApgCiiModes.PATH);
-
-    if (r.ok) {
-      const point = this._points.get(ainstruction.origin!);
-
-      if (!point) {
-        r = Rst.ApgRstErrors.Parametrized(
-          `Point origin named [%1] not found in set.`,
-          [ainstruction.origin!]
-        )
-      }
-      else {
-        point.x += ainstruction.w!;
-        point.y += ainstruction.h!;
-      }
-    }
-
-    this.logEnd();
-    return r;
-  }
-
   //#endregion
 
 
@@ -1423,24 +1395,14 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   // #region Path Drawing routines ---------------------------------------------
 
   /** Enters in path mode */
-  drawPathBegin(ainstruction: IApgCiiInstruction) {
+  #pathBegin_(ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.drawPathBegin.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_BEGIN, ainstruction.name);
+    this.logBegin(this.#pathBegin_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_BEGIN, ainstruction.name);
 
     if (r.ok) {
-
-      const origin = this._points.get(ainstruction.origin!);
-      if (!origin) {
-        r = Rst.ApgRstErrors.Parametrized(
-          `Point named [%1] not found: `,
-          [ainstruction.origin!]
-        )
-      }
-      else {
-        this._mode = eApgCiiModes.PATH;
-        this._pathBuilder = new Svg.ApgSvgPathBuilder();
-      }
+      this._mode = eApgCiiModes.PATH;
+      this._pathBuilder = new Svg.ApgSvgPathBuilder();
     }
 
     this.logEnd();
@@ -1449,10 +1411,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
 
   /** Moves path cursor to the given point */
-  drawPathMove(ainstruction: IApgCiiInstruction) {
+  #pathMove_(ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.drawPathMove.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_MOVE, "", eApgCiiModes.PATH);
+    this.logBegin(this.#pathMove_.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_MOVE, "", eApgCiiModes.PATH);
 
     if (r.ok) {
       const origin = this._points.get(ainstruction.origin!);
@@ -1463,6 +1425,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         )
       }
       else {
+        origin.x += ainstruction.w!;
+        origin.y += ainstruction.h!;
         this._pathBuilder.moveAbs(origin.x, origin.y);
       }
 
@@ -1473,11 +1437,11 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  /** Closes the current path usyally to start another */
-  drawPathClose(_ainstruction: IApgCiiInstruction) {
+  /** Closes the current path usually to start another */
+  #pathClose_(_ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.drawPathClose.name);
-    const r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_CLOSE, "", eApgCiiModes.PATH);
+    this.logBegin(this.#pathClose_.name);
+    const r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_CLOSE, "", eApgCiiModes.PATH);
 
     if (r.ok) {
       this._pathBuilder.close();
@@ -1489,10 +1453,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
 
   /** Draws a line between the given points in Path Mode*/
-  drawPathLine(ainstruction: IApgCiiInstruction) {
+  #pathLine_(ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.drawPathLine.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_LINE, "", eApgCiiModes.PATH);
+    this.logBegin(this.#pathLine_.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_LINE, "", eApgCiiModes.PATH);
 
     if (r.ok) {
       const origin = this._points.get(ainstruction.origin!);
@@ -1503,6 +1467,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         )
       }
       else {
+        origin.x += ainstruction.w!;
+        origin.y += ainstruction.h!;
         this._pathBuilder.lineAbs(origin.x, origin.y);
       }
     }
@@ -1513,10 +1479,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
 
   /** Draws an arc between the given points in Path Mode*/
-  drawPathArc(ainstruction: IApgCiiInstruction) {
+  #pathArc_(ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.drawPathArc.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_ARC, "", eApgCiiModes.PATH);
+    this.logBegin(this.#pathArc_.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_ARC, "", eApgCiiModes.PATH);
 
     if (r.ok) {
       const origin = this._points.get(ainstruction.origin!);
@@ -1547,11 +1513,46 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  /** Exits from path mode */
-  drawPathEnd(ainstruction: IApgCiiInstruction) {
+  /** Moves the specified cursor point by the specified deltas referring to a pivot point in Path Mode*/
+  #pathCursor_(ainstruction: IApgCiiInstruction) {
 
-    this.logBegin(this.drawPathEnd.name);
-    let r = this.#traceInstruction(eApgCiiInstructionTypes.DRAW_PATH_END, ainstruction.name, eApgCiiModes.PATH);
+    this.logBegin(this.#pathCursor_.name,);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_CURSOR, '', eApgCiiModes.PATH);
+
+    if (r.ok) {
+      const point = this._points.get(ainstruction.origin!);
+
+      if (!point) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Path cursor point named [%1] not found in set.`,
+          [ainstruction.origin!]
+        )
+      }
+      else {
+        const pivot = this._points.get(ainstruction.pivot!);
+        if (!pivot) {
+          r = Rst.ApgRstErrors.Parametrized(
+            `Pivot point named [%1] used to set path cursor not found in set.`,
+            [ainstruction.pivot!]
+          )
+        }
+        else {
+          point.x = pivot.x + ainstruction.w!;
+          point.y = pivot.y + ainstruction.h!;
+        }
+      }
+    }
+
+    this.logEnd();
+    return r;
+  }
+
+
+  /** Exits from path mode */
+  #pathEnd_(ainstruction: IApgCiiInstruction) {
+
+    this.logBegin(this.#pathEnd_.name);
+    let r = this.#traceInstruction(eApgCiiInstructionTypes.PATH_END, ainstruction.name, eApgCiiModes.PATH);
 
     if (r.ok) {
       this._mode = eApgCiiModes.NORMAL;
@@ -1613,10 +1614,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         }
         case eApgCiiInstructionTypes.NEW_POINT_DELTA: {
           ri = this.newPointByDelta_(ainstruction); // 2023/01/04
-          break;
-        }
-        case eApgCiiInstructionTypes.MOVE_POINT_DELTA: {
-          ri = this.movePointByDelta(ainstruction); // 2023/02/26
           break;
         }
         case eApgCiiInstructionTypes.NEW_STROKE_STYLE: {
@@ -1694,28 +1691,32 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           break;
         }
 
-        case eApgCiiInstructionTypes.DRAW_PATH_BEGIN: {
-          ri = this.drawPathBegin(ainstruction); // 
+        case eApgCiiInstructionTypes.PATH_BEGIN: {
+          ri = this.#pathBegin_(ainstruction); // 
           break;
         }
-        case eApgCiiInstructionTypes.DRAW_PATH_MOVE: {
-          ri = this.drawPathMove(ainstruction); // 
+        case eApgCiiInstructionTypes.PATH_MOVE: {
+          ri = this.#pathMove_(ainstruction); // 
           break;
         }
-        case eApgCiiInstructionTypes.DRAW_PATH_LINE: {
-          ri = this.drawPathLine(ainstruction); // 
+        case eApgCiiInstructionTypes.PATH_LINE: {
+          ri = this.#pathLine_(ainstruction); // 
           break;
         }
-        case eApgCiiInstructionTypes.DRAW_PATH_ARC: {
-          ri = this.drawPathArc(ainstruction); // 
+        case eApgCiiInstructionTypes.PATH_ARC: {
+          ri = this.#pathArc_(ainstruction); // 
           break;
         }
-        case eApgCiiInstructionTypes.DRAW_PATH_CLOSE: {
-          ri = this.drawPathClose(ainstruction); // 
+        case eApgCiiInstructionTypes.PATH_CURSOR: {
+          ri = this.#pathCursor_(ainstruction); // 2023/02/26
           break;
         }
-        case eApgCiiInstructionTypes.DRAW_PATH_END: {
-          ri = this.drawPathEnd(ainstruction); // 
+        case eApgCiiInstructionTypes.PATH_CLOSE: {
+          ri = this.#pathClose_(ainstruction); // 
+          break;
+        }
+        case eApgCiiInstructionTypes.PATH_END: {
+          ri = this.#pathEnd_(ainstruction); // 
           break;
         }
 

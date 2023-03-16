@@ -17,7 +17,7 @@ const rawSchema: Jsv.IApgJsvInterface = {
     type: 'object',
     properties: {
         type: {
-            const: eApgCiiInstructionTypes.DRAW_PATH_ARC as string
+            const: eApgCiiInstructionTypes.PATH_ARC as string
         },
         origin: {
             type: 'string',

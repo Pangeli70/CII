@@ -9,37 +9,41 @@ import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
 
-export const IApgCii_MOVE_POINT_DELTA_SCHEMA_ID = 
-    Jsv.ApgJsv_DOMAIN + 'IApgCii_MovePointDelta'
+export const IApgCii_PATH_CURSOR_SCHEMA_ID =
+    Jsv.ApgJsv_DOMAIN + 'IApgCii_PathCursor'
 
 const rawSchema: Jsv.IApgJsvInterface = {
     $schema: Jsv.ApgJsv_DIALECT,
-    $id: IApgCii_MOVE_POINT_DELTA_SCHEMA_ID,
+    $id: IApgCii_PATH_CURSOR_SCHEMA_ID,
     type: 'object',
     properties: {
 
         type: {
-            const: eApgCiiInstructionTypes.MOVE_POINT_DELTA as string
-        },
-        name: {
-            type: 'string',
+            const: eApgCiiInstructionTypes.PATH_CURSOR as string
         },
         origin: {
+            description: 'Name of the point used as Path cursor',
+            type: 'string',
+        },
+        pivot: {
+            description: 'Name of the point used to reset the Path cursor',
             type: 'string',
         },
         w: {
+            description: 'Horizontal delta from pivot.x',
             type: 'number'
         },
         h: {
+            description: 'Vertical delta from pivot.y',
             type: 'number'
         }
     },
     additionalProperties: false,
     allErrors: true,
     required: [
-        'type', 'origin', 'w', 'h'
+        'type', 'origin', 'pivot', 'w', 'h'
     ]
 
 };
 
-export const IApgCii_MOVE_POINT_DELTA_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
+export const IApgCii_PATH_CURSOR_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;
