@@ -3,8 +3,14 @@
   "description": "Measures taken on site 2",
   "instructions": [
     {
+      "type":"SETUP_BEGIN"
+    },
+    {
       "type": "SET_NAME",
       "name": "JSON TEST 01"
+    },
+    {
+      "type":"SETUP_END"
     },
     {
       "type": "NEW_POINT",

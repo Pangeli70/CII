@@ -810,8 +810,8 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         [afillStyleName]
       )
     }
-
-    if (r.ok) {
+    else {
+      r.ok = true;
       const p: IApgCiiFillType = {
         type: eApgCiiFillTypes.COLOR,
         name: afillStyleName
