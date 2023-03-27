@@ -6,21 +6,27 @@
  */
 
 
-import { Cad } from "../../deps.ts";
+import { Cad, A2D } from "../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes.ts";
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_MeasTopView() {
+export function ApgCiiTest_MeasTopView(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
 
     const VIEWBOX: Cad.IApgCadSvgViewBox = {
-        canvasWidth: 500,
-        canvasHeight: 500,
-        viewPortWidth: 3000,
-        viewPortHeight: 3000,
-        originXDisp: 100,
-        originYDisp: -10
+        canvasWidth: acanvasWidth,
+        canvasHeight: acanvasWidth / acanvasRatio,
+        viewPortWidth: 6000,
+        viewPortHeight: 6000 / acanvasRatio,
+        originXDisp: 3000,
+        originYDisp: 2500
     }
+
+
 
     const r: IApgCiiTest = {
         name: eApgCiiTests.TC_MEAS_ON_SITE_TV,
@@ -48,51 +54,95 @@ export function ApgCiiTest_MeasTopView() {
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
-                name: 'HWR',
+                name: 'HWR', // Hole Width Right
                 x: 2000,
                 y: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'RS1',
+                name: 'RSIS1', // Right Side internal space
                 origin: "HWR",
                 w: 300,
                 h: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'RS2',
-                origin: "RS1",
-                w: 0,
-                h: -1000
+                name: 'RSIS2',
+                origin: "RSIS1",
+                w: 300,
+                h: -2000
             },
             {
-                type: eApgCiiInstructionTypes.DRAW_POLYLINE,
-                points: ['HWR', 'RS1', 'RS2'],
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'RSIS3',
+                origin: "RSIS2",
+                w: 300,
+                h: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'RSES1',
+                origin: "HWR",
+                w: 0,
+                h: 250
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'RSES2',
+                origin: "RSES1",
+                w: 600,
+                h: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_POLYGON,
+                points: ['RSES2', 'RSES1', 'HWR', 'RSIS1', 'RSIS2', 'RSIS3'],
+                fillStyle: 'pattern(Saltire1)'
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT,
-                name: 'HWL',
+                name: 'HWL', // Hole Width Left
                 x: -2000,
                 y: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'LS1',
+                name: 'LSIS1', // Left side internal space 
                 origin: "HWL",
                 w: -400,
                 h: 0
             },
             {
                 type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
-                name: 'LS2',
-                origin: "LS1",
+                name: 'LSIS2',
+                origin: "LSIS1",
                 w: 0,
-                h: -1000
+                h: -2000
             },
             {
-                type: eApgCiiInstructionTypes.DRAW_POLYLINE,
-                points: ['HWL', 'LS1', 'LS2'],
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'LSIS3',
+                origin: "LSIS2",
+                w: -300,
+                h: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'LSES1', // Left side external space 
+                origin: "HWL",
+                w: 0,
+                h: 250
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'LSES2',
+                origin: "LSES1",
+                w: -700,
+                h: 0
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_POLYGON,
+                points: ['LSES2', 'LSES1', 'HWL', 'LSIS1', 'LSIS2', 'LSIS3'],
+                fillStyle: 'pattern(Saltire1)'
             },
             {
                 type: eApgCiiInstructionTypes.PUSH_LAYER,
@@ -106,14 +156,27 @@ export function ApgCiiTest_MeasTopView() {
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
-                points: ['HWL', 'LS1'],
-                radious: -700,
+                points: ['HWL', 'LSIS1'],
+                radious: 500,
                 text: ["SSx:", ""]
             },
             {
                 type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
-                points: ['HWR', 'RS1'],
-                radious: -700,
+                points: ['ZERO', 'RSIS2'],
+                radious: 100,
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
+                points: ['ZERO', 'RSIS2'],
+                radious: 100,
+                payload: {
+                    type: Cad.eApgCadLinearDimensionTypes.HORIZONTAL
+                }
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_LIN_DIM,
+                points: ['HWR', 'RSIS1'],
+                radious: -500,
                 text: ["SDx:", ""]
             },
             {

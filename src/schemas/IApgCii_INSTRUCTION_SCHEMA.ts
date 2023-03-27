@@ -11,6 +11,7 @@ import { Uts, Jsv } from '../../deps.ts'
 import { eApgCii_TYPES_SCHEMA_ID_REF } from "./eApgCii_TYPES_SCHEMA.ts";
 
 
+// TODO @1 Move this to its own file -- APG 20230319
 export enum eApgCiiInstructionFieldsNames {
     type = 'type',
     name = 'name',
@@ -41,99 +42,101 @@ const rawSchema: Jsv.IApgJsvInterface = {
     title: 'Defines all the possible properties for preliminary CAD instruction validation',
     type: 'object',
     properties: {
-        type: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.type]: {
+            description: 'Type of the Cad instruction',
             $ref: eApgCii_TYPES_SCHEMA_ID_REF
         },
 
-        name: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.name]: {
+            description: 'Name given to the entity (e.g. point) or shape defined by the instruction ',
             type: 'string'
         },
 
-        x: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.x]: {
+            description: 'Ordinate or X value coordinate',
             type: 'number'
         },
 
-        y: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.y]: {
+            description: 'Abscissa or Y value coordinate',
             type: 'number'
         },
 
-        w: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.w]: {
+            description: 'Width or Delta X value',
             type: 'number'
         },
 
-        h: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.h]: {
+            description: 'Height or Delta Y value',
             type: 'number'
         },
 
-        n: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.n]: {
+            description: 'Number of items or repetitions',
             type: 'integer'
         },
 
-        origin: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.origin]: {
+            description: 'Name of the point that will be used as reference for positioning the shape that has to be drawn by this instruction',
             type: 'string'
         },
 
-        radious: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.radious]: {
+            description: 'Radious of the arc/circle/curve',
             type: 'number'
         },
 
-        pivot: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.pivot]: {
+            description: 'Name of the point that will be used as reference for the rotation specified by [angle]',
             type: 'string'
         },
 
-        angle: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.angle]: {
+            description: 'A rotation angle. Will be applied from [origin], or from [pivot] if specified',
             type: 'number'
         },
 
-        points: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.points]: {
+            description: 'An array of point names',
             type: 'array',
             items: {
                 type: 'string'
             }
         },
 
-        text: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.text]: {
+            description: 'An array of paragraphs that has to be drawn',
             type: 'array',
             items: {
                 type: 'string'
             }
         },
 
-        strokeStyle: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.strokeStyle]: {
+            description: 'Name of the stroke style that will be used to draw the shape',
             type: 'string'
         },
-        fillStyle: {
-            description: '',
-            type: 'string'
-        },
-
-        textStyle: {
+        
+        [eApgCiiInstructionFieldsNames.fillStyle]: {
+            description: 'Name of the fill style that will be used to draw the shape',
             type: 'string'
         },
 
-        payload: {
-            description: '',
+        [eApgCiiInstructionFieldsNames.textStyle]: {
+            description: 'Name of the text style that will be used to draw the text defined by this instruction',
+            type: 'string'
+        },
+        // TODO @2 Rename this to Options
+        [eApgCiiInstructionFieldsNames.payload]: {
+            description: 'Additional options object that will be used to specify further parameters',
             type: 'object'
         }
     },
     additionalProperties: false,
     allErrors: true,
     required: [
-        'type'
+        eApgCiiInstructionFieldsNames.type
     ]
 }
 

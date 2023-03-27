@@ -166,7 +166,11 @@ function StructuralBeamSectionView(
 }
 
 
-export function ApgCiiTest_StructuralBeams() {
+export function ApgCiiTest_StructuralBeams(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
     const r: IApgCiiTest = {
     name: eApgCiiTests.TC_STRUCT_BEAMS,
     description: "Structural beams on side view 1",

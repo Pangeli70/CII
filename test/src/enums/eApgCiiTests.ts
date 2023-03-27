@@ -13,7 +13,8 @@
 export enum eApgCiiTests { 
     SETUP = "Setup of the CAD evironment",
     PRIMITIVES = "Primitive shapes",
-    DIMS_AND_ANNOTS = "Dims as annotations",
+    FILLINGS = "Custom fillings",
+    DIMS_AND_ANNOTS = "Dims and annotations",
     TC_MEAS_ON_SITE_SV = "Measures taken on site side view",
     TC_MEAS_ON_SITE_TV = "Measures taken on site top view",
     TC_MEAS_ON_SITE_OV = "Measures taken on site outside view",

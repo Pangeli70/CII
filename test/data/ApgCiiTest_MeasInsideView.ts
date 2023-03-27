@@ -11,7 +11,11 @@ import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_MeasInsideView() {
+export function ApgCiiTest_MeasInsideView(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
 
     const VIEWBOX: Cad.IApgCadSvgViewBox = {
         canvasWidth: 500,

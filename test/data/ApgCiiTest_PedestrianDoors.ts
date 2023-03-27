@@ -113,7 +113,11 @@ function DoorOrWindowFrontView(
 }
 
 
-export function ApgCiiTest_PedestrianDoors() {
+export function ApgCiiTest_PedestrianDoors(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
     const r: IApgCiiTest = {
         name: eApgCiiTests.TC_PED_DOORS,
         description: "Pedestrian doors on side view 1",

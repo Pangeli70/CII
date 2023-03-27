@@ -10,12 +10,15 @@
  * @version 0.9.3 [APG 2022/12/18] Deno Deploy
  * @version 0.9.4 [APG 2023/01/07] Deno Deploy Beta
  * @version 0.9.5 [APG 2023/01/28] Moved from CAD to CII
+ * @version 0.9.6 [APG 2023/03/18] Refactoring
  * -----------------------------------------------------------------------
  */
 
 import { A2D, Lgr, Rst, Svg, Uts, Cad } from "../../deps.ts";
+import { eApgCiiFillTypes } from "../enums/eApgCiiFillTypes.ts";
 
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
+import { IApgCiiFillType } from "../interfaces/IApgCiiFillType.ts";
 import { IApgCiiInstruction } from "../interfaces/IApgCiiInstruction.ts";
 import { ApgCiiValidatorService } from "./ApgCiiValidatorService.ts";
 
@@ -163,7 +166,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_VIEWBOX, "", eApgCiiModes.SETUP);
 
     if (r.ok) {
-      // TODO @1 Avoid rebuilding all the CAD object -- APG 20230312
+      // TODO @3 Avoid rebuilding all the CAD object calling init -- APG 20230312
       await this._cad.setViewBox(aviewBox);
     }
 
@@ -172,14 +175,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  setGrid_(agridParams: Cad.IApgCadSvgGrid) {
+  async setGrid_(agridParams: Cad.IApgCadSvgGrid) {
 
     this.logBegin(this.setGrid_.name);
     const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_GRID, "", eApgCiiModes.SETUP);
 
     if (r.ok) {
-      // TODO @2 Implement this method -- APG 20230312
-      //await this._cad.setGrid(agridParams);
+      await this._cad.setGrid(agridParams);
     }
 
     this.logEnd();
@@ -187,13 +189,13 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  async setCartesians_(acartesianParams: Cad.IApgCadSvgCartesians) {
+  setCartesians_(acartesianParams: Cad.IApgCadSvgCartesians) {
 
     this.logBegin(this.setCartesians_.name);
     const r = this.#traceInstruction(eApgCiiInstructionTypes.SET_CARTESIANS, "", eApgCiiModes.SETUP);
 
     if (r.ok) {
-      await this._cad.setCartesian(acartesianParams);
+      this._cad.setCartesian(acartesianParams);
     }
 
     this.logEnd();
@@ -240,7 +242,7 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     const r = this.#traceInstruction(eApgCiiInstructionTypes.NEW_STROKE_STYLE, ainstruction.name);
 
     if (r.ok) {
-      // TODO @2 Check is style exists - APG 20230313
+      // TODO @2 Check if style exists - APG 20230313
       this._cad.newStrokeStyle(
         ainstruction.name!,
         ainstruction.payload!
@@ -628,14 +630,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   #extractPointsFromPayload(ar: Rst.IApgRst, apts: A2D.Apg2DPoint[]) {
 
     if (ar.ok) {
-      const p = Rst.ApgRst.ExtractPayload(ar, "Apg2DPoint[]") as Rst.IApgRst;
-
-      if (p.ok != undefined && p.ok == false) {
-        ar = p;
-      }
-
+      ar = Rst.ApgRst.CheckPayload(ar, "Apg2DPoint[]");
       if (ar.ok) {
-        for (const point of p as unknown as A2D.Apg2DPoint[]) {
+        const points = ar.payload!.data as unknown as A2D.Apg2DPoint[];
+        for (const point of points) {
           apts.push(point);
         }
       }
@@ -715,13 +713,30 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   #trySetFillStyle(node: Svg.ApgSvgNode, afillStyleName: string) {
     let r = this.#checkFillStyle(afillStyleName);
-    const p = Rst.ApgRst.ExtractPayload(r, "IApgSvgFillStyle") as Rst.IApgRst;
-    if (p.ok != undefined && p.ok == false) {
-      r = p;
-    }
     if (r.ok) {
-      const fill = p as unknown as Svg.IApgSvgFillStyle;
-      node.fill(fill.color, fill.opacity);
+      r = Rst.ApgRst.CheckPayload(r, "IApgCiiFillType");
+      if (r.ok) {
+        const fillType = r.payload!.data as unknown as IApgCiiFillType;
+        switch (fillType.type) {
+          case eApgCiiFillTypes.COLOR: {
+            const fill = this._cad.getFillStyle(fillType.name);
+            node.fill(fill!.color, fill!.opacity);
+            break;
+          }
+          case eApgCiiFillTypes.PATTERN: {
+            node.fillPattern(fillType.name);
+            break;
+          }
+          case eApgCiiFillTypes.GRADIENT: {
+            node.fillGradient(fillType.name);
+            break;
+          }
+          case eApgCiiFillTypes.TEXTURE: {
+            node.fillTexture(fillType.name);
+            break;
+          }
+        }
+      }
     }
     return r;
   }
@@ -729,16 +744,16 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   #trySetStrokeStyle(node: Svg.ApgSvgNode, astrokeStyleName: string) {
     let r = this.#checkStrokeStyle(astrokeStyleName);
-    // TODO @3 Cache this it is called many times -- APG 20230215
-    const p = Rst.ApgRst.ExtractPayload(r, "IApgSvgStrokeStyle") as Rst.IApgRst;
-    if (p.ok != undefined && p.ok == false) {
-      r = p;
-    }
+
     if (r.ok) {
-      const strk = p as unknown as Svg.IApgSvgStrokeStyle;
-      node.stroke(strk.color, strk.width, strk.opacity);
-      if (strk.dashPattern) {
-        node.strokeDashPattern(strk.dashPattern, strk.dashOffset)
+      // TODO @3 Cache this: it is called many times -- APG 20230215
+      r = Rst.ApgRst.CheckPayload(r, "IApgSvgStrokeStyle");
+      if (r.ok) {
+        const strokeStyle = r.payload!.data as unknown as Svg.IApgSvgStrokeStyle;
+        node.stroke(strokeStyle.color, strokeStyle.width, strokeStyle.opacity);
+        if (strokeStyle.dashPattern) {
+          node.strokeDashPattern(strokeStyle.dashPattern, strokeStyle.dashOffset)
+        }
       }
     }
     return r;
@@ -747,13 +762,12 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
 
   #trySetTextStyle(node: Svg.ApgSvgNode, atextStyleName: string) {
     let r = this.#checkTextStyle(atextStyleName);
-    const p = Rst.ApgRst.ExtractPayload(r, "IApgSvgTextStyle") as Rst.IApgRst;
-    if (p.ok != undefined && p.ok == false) {
-      r = p;
-    }
     if (r.ok) {
-      const textStyle = p as unknown as Svg.IApgSvgTextStyle;
-      node.textStyle(textStyle);
+      r = Rst.ApgRst.CheckPayload(r, "IApgSvgTextStyle");
+      if (r.ok) {
+        const textStyle = r.payload!.data as unknown as Svg.IApgSvgTextStyle;
+        node.textStyle(textStyle);
+      }
     }
     return r;
   }
@@ -785,10 +799,11 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
   }
 
 
-  #checkFillStyle(afillStyleName: string) {
-    let r: Rst.IApgRst = { ok: true }
+  #checkFillStyleAsFillName(afillStyleName: string) {
 
+    let r: Rst.IApgRst = { ok: false }
     const p = this._cad.getFillStyle(afillStyleName);
+
     if (p === undefined) {
       r = Rst.ApgRstErrors.Parametrized(
         `Fill style [%1] not found`,
@@ -797,7 +812,121 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
 
     if (r.ok) {
-      r.payload = { signature: 'IApgSvgFillStyle', data: p }
+      const p: IApgCiiFillType = {
+        type: eApgCiiFillTypes.COLOR,
+        name: afillStyleName
+      };
+      r.payload = { signature: 'IApgCiiFillType', data: p }
+    }
+    return r;
+  }
+
+
+  #checkFillStyleAsPattern(afillStyleName: string) {
+    let r: Rst.IApgRst = { ok: false }
+    const patternRegex = /^pattern\(([a-zA-Z0-9\-_][\w$]*)\)$/
+    const matches = patternRegex.exec(afillStyleName);
+
+    if (matches != null) {
+      const patternName = matches[1];
+      const pattern = this._cad.getPattern(patternName);
+      if (pattern === undefined) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Pattern as fill style [%1] not found`,
+          [afillStyleName]
+        )
+      }
+      else {
+        r.ok = true;
+        const p: IApgCiiFillType = {
+          type: eApgCiiFillTypes.PATTERN,
+          name: patternName
+        };
+        r.payload = { signature: 'IApgCiiFillType', data: p }
+      }
+    }
+    return r;
+  }
+
+
+  #checkFillStyleAsGradient(afillStyleName: string) {
+    let r: Rst.IApgRst = { ok: false }
+
+    const gradientRegex = /^gradient\(([a-zA-Z0-9\-_][\w$]*)\)$/
+    const matches = gradientRegex.exec(afillStyleName);
+
+    if (matches != null) {
+      const gradientName = matches[1];
+      const gradient = this._cad.getGradient(gradientName);
+      if (gradient === undefined) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Gradient as fill style [%1] not found`,
+          [afillStyleName]
+        )
+      }
+      else {
+        r.ok = true;
+        const p: IApgCiiFillType = {
+          type: eApgCiiFillTypes.GRADIENT,
+          name: gradientName
+        };
+        r.payload = { signature: 'IApgCiiFillType', data: p }
+      }
+    }
+
+    return r;
+  }
+
+
+  #checkFillStyleAsTexture(afillStyleName: string) {
+    let r: Rst.IApgRst = { ok: false }
+
+    const textureRegex = /^texture\(([a-zA-Z0-9\-_][\w$]*)\)$/
+    const matches = textureRegex.exec(afillStyleName);
+
+    if (matches != null) {
+      const textureName = matches[1];
+      const texture = this._cad.getTexture(textureName);
+      if (texture === undefined) {
+        r = Rst.ApgRstErrors.Parametrized(
+          `Texture as fill style [%1] not found`,
+          [afillStyleName]
+        )
+      }
+      else {
+        r.ok = true;
+        const p: IApgCiiFillType = {
+          type: eApgCiiFillTypes.TEXTURE,
+          name: textureName
+        };
+        r.payload = { signature: 'IApgCiiFillType', data: p }
+      }
+    }
+
+    return r;
+  }
+
+
+  #checkFillStyle(afillStyleName: string) {
+    let r: Rst.IApgRst = { ok: true }
+
+    r = this.#checkFillStyleAsFillName(afillStyleName);
+
+    if (!r.ok) {
+      r = this.#checkFillStyleAsPattern(afillStyleName);
+    }
+    if (!r.ok) {
+      r = this.#checkFillStyleAsGradient(afillStyleName);
+    }
+    if (!r.ok) {
+      r = this.#checkFillStyleAsTexture(afillStyleName);
+    }
+
+    if (!r.ok) { 
+      r = Rst.ApgRstErrors.Parametrized(
+        'The fill style [%1] is not valid',
+        [afillStyleName]
+      )
     }
     return r;
   }
@@ -874,9 +1003,9 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     if (r.ok && ainstruction.fillStyle) {
       r = this.#trySetFillStyle(anode, ainstruction.fillStyle);
     }
-    else {
-      anode.fill(Cad.eApgCadDftFillStyles.NONE);
-    }
+    // else {
+    //   anode.fill(Cad.eApgCadDftFillStyles.NONE);
+    // }
 
     if (r.ok && ainstruction.strokeStyle) {
       r = this.#trySetStrokeStyle(anode, ainstruction.strokeStyle);
@@ -952,15 +1081,9 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
     }
 
     if (r.ok) {
-      const ts = Rst.ApgRst.ExtractPayload(r, "IApgSvgTextStyle") as Rst.IApgRst;
-
-      if (ts.ok != undefined && ts.ok == false) {
-        r = ts;
-      }
-
+      r = Rst.ApgRst.CheckPayload(r, "IApgSvgTextStyle");
       if (r.ok) {
-        const textStyle = ts as unknown as Svg.IApgSvgTextStyle
-
+        const textStyle = r.payload!.data as unknown as Svg.IApgSvgTextStyle
         const factory = this.#getBasicShapesFactory();
 
         this._points.forEach((pt, name) => {
@@ -1231,22 +1354,42 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
       const origin = this._points.get(ainstruction.origin!);
       if (!origin) {
         r = Rst.ApgRstErrors.Parametrized(
-          `Point named [%1] not found: `,
+          `Point named [%1] not found.`,
           [ainstruction.origin!]
         )
       }
-      else {
 
-        // TODO @5 this is a mess better to draw text without Annotations factory
-        // implement a method in basic shapes factory -- APG 20230115
-        const factory = this._cad.getPrimitiveFactory(
-          Cad.eApgCadFactories.BASIC_SHAPES
-        ) as Cad.ApgCadSvgBasicShapesFactory;
-        //const g = factory.build(this._cad.currentLayer, pts[0], pts[1], atext[0]);
-        //const textStyle = this.#checkTextStyle(atextStyleName);
-        //if (textStyle) {
-        //  g?.textStyle(textStyle);
-        //}
+      // FIXME @10 This is brittle we suppose that the current layer has a layerdef.
+      // This works only because we cannot create layers. Instead we must force to 
+      // create layers using a layerdef
+      let textStyle = this._cad.getCurrentLayerDef()!.textStyle;
+      if (r.ok) {
+        if (ainstruction.textStyle) {
+          r = this.#checkTextStyle(ainstruction.textStyle!);
+          if (r.ok) {
+            r = Rst.ApgRst.CheckPayload(r, 'IApgSvgTextStyle');
+            if (r.ok) {
+              textStyle = r.payload!.data as unknown as Svg.IApgSvgTextStyle;
+            }
+          }
+        }
+      }
+      if (r.ok) {
+
+        const factory = this.#getBasicShapesFactory();
+        const node = factory.buildText(origin!, ainstruction.text!, textStyle);
+
+        let pivot = origin;
+        if (ainstruction.pivot) {
+          const newPivot = this._points.get(ainstruction.pivot!);
+          if (newPivot) {
+            pivot = newPivot
+          }
+        }
+        r = this.#setShapeAttributes(node, ainstruction, pivot);
+
+        this.#setParent(node);
+
       }
     }
     this.logEnd();
@@ -1690,7 +1833,10 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
           ri = this.drawRegularPolygon_(ainstruction); // 2023/01/15
           break;
         }
-
+        case eApgCiiInstructionTypes.DRAW_TEXT: {
+          ri = this.#drawText(ainstruction); // 2023/03/18
+          break;
+        }
         case eApgCiiInstructionTypes.PATH_BEGIN: {
           ri = this.#pathBegin_(ainstruction); // 
           break;
@@ -1717,11 +1863,6 @@ export class ApgCii extends Lgr.ApgLgrLoggable {
         }
         case eApgCiiInstructionTypes.PATH_END: {
           ri = this.#pathEnd_(ainstruction); // 
-          break;
-        }
-
-        case eApgCiiInstructionTypes.DRAW_TEXT: {
-          ri = this.#drawText(ainstruction); // 
           break;
         }
         case eApgCiiInstructionTypes.DRAW_ANNOTATION: {

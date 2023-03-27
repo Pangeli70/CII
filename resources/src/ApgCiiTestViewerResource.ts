@@ -259,8 +259,8 @@ export class ApgCiiTestViewerResource extends Drash.Resource {
                     typeof (event.result.payload.data) == 'object' ||
                     Array.isArray(event.result.payload.data)
                 ) {
-                   // payloadData = '<br/>' + JSON.stringify(event.result.payload.data);
-                    payloadData = '<br/>' + 'Circular recursion error here!!!';
+                   payloadData = '<br/>' + JSON.stringify(event.result.payload.data);
+                    //payloadData = '<br/>' + 'Circular recursion error here!!!';
                 }
                 else {
                     payloadData = `${event.result.payload.data}`;

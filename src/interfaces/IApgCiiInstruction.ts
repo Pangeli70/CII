@@ -47,5 +47,6 @@ export interface IApgCiiInstruction {
   /** text style name, must be already defined*/
   textStyle?: string;
   /** other content specific of the instruction, must be validated elsewhere */
+  // deno-lint-ignore no-explicit-any
   payload?: any;
 }

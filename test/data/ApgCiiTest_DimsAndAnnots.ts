@@ -25,7 +25,11 @@ enum ePoints {
 }
 
 
-export function ApgCiiTest_DimsAndAnnots() {
+export function ApgCiiTest_DimsAndAnnots(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
     const r: IApgCiiTest = {
         name: eApgCiiTests.DIMS_AND_ANNOTS,
         description: "Dimensions and annotations on proper layers",

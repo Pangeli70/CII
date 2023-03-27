@@ -7,22 +7,22 @@
  * -----------------------------------------------------------------------
 */
 
-import { Jsv } from "../../deps.ts"
-
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
 
 import { eApgCii_TYPES_SCHEMA, eApgCii_TYPES_SCHEMA_ID } from "../schemas/eApgCii_TYPES_SCHEMA.ts";
 import { IApgCii_INSTRUCTION_SCHEMA } from "../schemas/IApgCii_INSTRUCTION_SCHEMA.ts";
 
-import { eApgCad_CARTESIAN_MODES_SCHEMA, eApgCad_CARTESIAN_MODES_SCHEMA_ID } from "../schemas/eApgCad_CARTESIAN_MODES_SCHEMA.ts";
 import { IApgCad_VIEWBOX_SCHEMA, IApgCad_VIEWBOX_SCHEMA_ID } from "../schemas/IApgCad_VIEWBOX_SCHEMA.ts";
 import { IApgCad_BACKGROUND_SCHEMA, IApgCad_BACKGROUND_SCHEMA_ID } from "../schemas/IApgCad_BACKGROUND_SCHEMA.ts";
+import { eApgCad_CARTESIAN_MODES_SCHEMA, eApgCad_CARTESIAN_MODES_SCHEMA_ID } from "../schemas/eApgCad_CARTESIAN_MODES_SCHEMA.ts";
 import { IApgCad_CARTESIANS_SCHEMA, IApgCad_CARTESIANS_SCHEMA_ID } from "../schemas/IApgCad_CARTESIANS_SCHEMA.ts";
-
+import { eApgCad_GRID_MODES_SCHEMA, eApgCad_GRID_MODES_SCHEMA_ID } from "../schemas/eApgCad_GRID_MODES_SCHEMA.ts";
+import { IApgCad_GRID_SCHEMA, IApgCad_GRID_SCHEMA_ID } from "../schemas/IApgCad_GRID_SCHEMA.ts";
 
 import { IApgCad_FILL_STYLE_SCHEMA, IApgCad_FILL_STYLE_SCHEMA_ID } from "../schemas/IApgCad_FILL_STYLE_SCHEMA.ts";
 import { IApgCad_STROKE_STYLE_SCHEMA, IApgCad_STROKE_STYLE_SCHEMA_ID } from "../schemas/IApgCad_STROKE_STYLE_SCHEMA.ts";
 import { IApgCad_TEXT_STYLE_SCHEMA, IApgCad_TEXT_STYLE_SCHEMA_ID } from "../schemas/IApgCad_TEXT_STYLE_SCHEMA.ts";
+import { IApgCad_PATH_ARC_OPTIONS_SCHEMA, IApgCad_PATH_ARC_OPTIONS_SCHEMA_ID } from "../schemas/IApgCad_PATH_ARC_OPTIONS_SCHEMA.ts";
 
 import { eApgCad_ARC_DIMENSION_TYPES_SCHEMA, eApgCad_ARC_DIMENSION_TYPES_SCHEMA_ID } from "../schemas/eApgCad_ARC_DIMENSION_TYPES_SCHEMA.ts";
 import { eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA, eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID } from "../schemas/eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA.ts";
@@ -38,6 +38,7 @@ import { IApgCii_SET_NAME_SCHEMA } from "../schemas/IApgCii_SET_NAME_SCHEMA.ts";
 import { IApgCii_SET_VIEWBOX_SCHEMA } from "../schemas/IApgCii_SET_VIEWBOX_SCHEMA.ts";
 import { IApgCii_SET_BACKGROUND_SCHEMA } from "../schemas/IApgCii_SET_BACKGROUND_SCHEMA.ts";
 import { IApgCii_SET_CARTESIANS_SCHEMA } from "../schemas/IApgCii_SET_CARTESIANS_SCHEMA.ts";
+import { IApgCii_SET_GRID_SCHEMA } from "../schemas/IApgCii_SET_GRID_SCHEMA.ts";
 import { IApgCii_SETUP_END_SCHEMA } from "../schemas/IApgCii_SETUP_END_SCHEMA.ts";
 
 import { IApgCii_POP_LAYER_SCHEMA } from "../schemas/IApgCii_POP_LAYER_SCHEMA.ts";
@@ -61,6 +62,7 @@ import { IApgCii_DRAW_RECTANGLE_POINTS_SCHEMA } from "../schemas/IApgCii_DRAW_RE
 import { IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA } from "../schemas/IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA.ts";
 import { IApgCii_DRAW_REGULAR_POLIGON_SCHEMA } from "../schemas/IApgCii_DRAW_REGULAR_POLIGON_SCHEMA.ts";
 import { IApgCii_DRAW_POLYGON_SCHEMA } from "../schemas/IApgCii_DRAW_POLYGON_SCHEMA.ts";
+import { IApgCii_DRAW_TEXT_SCHEMA } from "../schemas/IApgCii_DRAW_TEXT_SCHEMA.ts";
 
 import { IApgCii_PATH_BEGIN_SCHEMA } from "../schemas/IApgCii_PATH_BEGIN_SCHEMA.ts";
 import { IApgCii_PATH_MOVE_SCHEMA } from "../schemas/IApgCii_PATH_MOVE_SCHEMA.ts";
@@ -74,13 +76,8 @@ import { IApgCii_DRAW_LINEAR_DIM_SCHEMA } from "../schemas/IApgCii_DRAW_LINEAR_D
 import { IApgCii_DRAW_ARC_DIM_SCHEMA } from "../schemas/IApgCii_DRAW_ARC_DIM_SCHEMA.ts";
 import { IApgCii_DRAW_ANNOTATION_SCHEMA } from "../schemas/IApgCii_DRAW_ANNOTATION_SCHEMA.ts";
 
-
-export interface IApgCiiValidator  { 
-    // TODO @2 Make type optional: only for CII instructions not for CAD schemas
-    type: eApgCiiInstructionTypes;
-    jsonSchema: Jsv.IApgJsvEnum | Jsv.IApgJsvInterface;
-    dependencies?: string[];
-}
+import { IApgCiiValidator } from "../interfaces/IApgCiiValidator.ts";
+import { eApgCad_DIMENSION_POSITIONS_SCHEMA, eApgCad_DIMENSION_POSITIONS_SCHEMA_ID } from "../schemas/eApgCad_DIMENSION_POSITIONS_SCHEMA.ts";
 
 
 /** 
@@ -97,7 +94,6 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
         jsonSchema: IApgCii_INSTRUCTION_SCHEMA,
         dependencies: [eApgCii_TYPES_SCHEMA_ID]
     },
-
     {
         type: eApgCiiInstructionTypes.CAD_FILL_STYLE, // Ok 2023/02/27
         jsonSchema: IApgCad_FILL_STYLE_SCHEMA,
@@ -132,8 +128,28 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
         ]
     },
     {
+        type: eApgCiiInstructionTypes.CAD_GRID_MODES, //
+        jsonSchema: eApgCad_GRID_MODES_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_GRID, // 
+        jsonSchema: IApgCad_GRID_SCHEMA,
+        dependencies: [
+            eApgCad_GRID_MODES_SCHEMA_ID,
+            IApgCad_STROKE_STYLE_SCHEMA_ID,
+        ]
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_PATH_ARC_OPTIONS,
+        jsonSchema: IApgCad_PATH_ARC_OPTIONS_SCHEMA
+    },
+    {
         type: eApgCiiInstructionTypes.CAD_LIN_DIM_TYPES, // Ok 2023/03/04
         jsonSchema: eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.CAD_DIM_POSITIONS, // Ok 2023/03/26
+        jsonSchema: eApgCad_DIMENSION_POSITIONS_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.CAD_ARC_DIM_TYPES, // Ok 2023/03/04
@@ -142,7 +158,10 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
     {
         type: eApgCiiInstructionTypes.CAD_LIN_DIM_OPTIONS, // Ok 2023/03/04
         jsonSchema: IApgCad_LINEAR_DIM_OPTIONS_SCHEMA,
-        dependencies: [eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID]
+        dependencies: [
+            eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID,
+            eApgCad_DIMENSION_POSITIONS_SCHEMA_ID
+        ]
     },
     {
         type: eApgCiiInstructionTypes.CAD_ARC_DIM_OPTIONS, // Ok 2023/03/04
@@ -171,6 +190,15 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
             IApgCad_STROKE_STYLE_SCHEMA_ID,
             IApgCad_TEXT_STYLE_SCHEMA_ID,
             IApgCad_CARTESIANS_SCHEMA_ID
+        ]
+    },
+    {
+        type: eApgCiiInstructionTypes.SET_GRID,
+        jsonSchema: IApgCii_SET_GRID_SCHEMA,
+        dependencies: [
+            eApgCad_GRID_MODES_SCHEMA_ID,
+            IApgCad_STROKE_STYLE_SCHEMA_ID,
+            IApgCad_GRID_SCHEMA_ID
         ]
     },
     {
@@ -255,16 +283,20 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
         jsonSchema: IApgCii_DRAW_POLYGON_SCHEMA,
     },
     {
-        type: eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON, // Ok 2023/01/06
-        jsonSchema: IApgCii_DRAW_REGULAR_POLIGON_SCHEMA,
-    },
-    {
         type: eApgCiiInstructionTypes.DRAW_RECTANGLE_POINTS, // Ok 2023/01/06
         jsonSchema: IApgCii_DRAW_RECTANGLE_POINTS_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.DRAW_RECTANGLE_SIZES, // Ok 2023/01/06
         jsonSchema: IApgCii_DRAW_RECTANGLE_SIZES_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_REGULAR_POLYGON, // Ok 2023/01/06
+        jsonSchema: IApgCii_DRAW_REGULAR_POLIGON_SCHEMA,
+    },
+    {
+        type: eApgCiiInstructionTypes.DRAW_TEXT, // Ok 2023/01/06
+        jsonSchema: IApgCii_DRAW_TEXT_SCHEMA,
     },
     {
         type: eApgCiiInstructionTypes.PATH_BEGIN, // 
@@ -281,6 +313,7 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
     {
         type: eApgCiiInstructionTypes.PATH_ARC, // 
         jsonSchema: IApgCii_PATH_ARC_SCHEMA,
+        dependencies: [IApgCad_PATH_ARC_OPTIONS_SCHEMA_ID]
     },
     {
         type: eApgCiiInstructionTypes.PATH_CLOSE, // 
@@ -299,6 +332,7 @@ export const ApgCiiValidators: IApgCiiValidator[] = [
         jsonSchema: IApgCii_DRAW_LINEAR_DIM_SCHEMA,
         dependencies: [
             eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID,
+            eApgCad_DIMENSION_POSITIONS_SCHEMA_ID,
             IApgCad_LINEAR_DIM_OPTIONS_SCHEMA_ID,
         ]
     },

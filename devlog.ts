@@ -16,6 +16,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             activities: [
                 "Profiler performance graph",
                 "Move CII validator service to it's own deploy CIV microservice",
+                "Log and profile since the Drash request",
                 "Optimize validator warmup time by compling AJV functions upon request"
             ]
         },
@@ -23,6 +24,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "VIEWER",
             description: "Interactive svg viewer",
             activities: [
+                "Rebuild button if test supports random",
                 "Fullscreen button",
                 "Enable mouse wheel zoom flag",
                 "Register partials in TNG deploy"
@@ -34,6 +36,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             activities: [
                 "@1 Instructions for new Pattern, Gradient, Block, Texture",
                 "@3 Test all dimensions types",
+                "@2 implement dimension position",
                 "Bevel as CAD primitive",
                 "Bevel edge as primitive",
                 "Bevel path as primitive"
@@ -43,19 +46,14 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "SETUP",
             description: "Instructions for CAD setup",
             activities: [
-                "Set grid",
-                "Tester Randomizer",
+                "... No further activity",
             ]
         },
         {
             milestone: "DEBUG",
             description: "Improve code and remove bugs",
             activities: [
-                "@1 Sliding system test",
-                "@2 Logger for JSON circular stringification",
-                "@2 Set viewbox",
-                "@2 Set background",
-                "@2 Set cartesians",
+                "... No further activity",
             ]
         },
         {
@@ -69,8 +67,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "TC_MTOS",
             description: "Technical closures measures taken on site",
             activities: [
-                "@4 Front inside view test",
-                "@4 Top view test",
                 "@4 Front outside and inside view test",
             ]
         },
@@ -78,7 +74,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             milestone: "TC_SDSS",
             description: "Technical closures sectional doors sliding system",
             activities: [
-                "Random curves",
                 "Random full sliding system test",
             ]
         },
@@ -99,6 +94,7 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             description: "Development log",
             activities: [
                 "Create an alternative view todo/done per milestone instead than done per date",
+                "Create a graph view similar to the github commit history one"
             ]
         },
         {
@@ -128,9 +124,94 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
     done: [
         {
             version: "0.9.6",
+            date: "20230326",
+            milestone: "TC_MTOS",
+            activities: [
+                "Left view test and pattern fill",
+                "Top view test and pattern fill",
+                "Front outside view test implementation",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230326",
+            milestone: "PRIMITIVES",
+            activities: [
+                "Fill style for Pattern, Gradient, and Texture",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230323",
+            milestone: "TC_SDSS",
+            activities: [
+                "Random curves",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230323",
+            milestone: "SETUP",
+            activities: [
+                "Tests can accept canvas width and ratio to eventually adapt to browser orientation and size",
+                "Improved draw cartouche to get bounding box resized upon title width",
+                "Corrected Set viewbox",
+                "Corrected Set Cartesians",
+                "Corrected Set Grid",
+                "Implemented Set Background"
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230319",
+            hours: 3,
+            milestone: "DEBUG",
+            activities: [
+                "Improved Set viewbox",
+                "Improved Set cartesians",
+                "Improved Set grid"
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230319",
+            milestone: "SETUP",
+            activities: [
+                "Set cartesians using patterns",
+                "Started decoupling setup instructions from init"
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230319",
+            milestone: "PRIMITIVES",
+            activities: [
+                "Instruction for text",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230318",
+            milestone: "SETUP",
+
+            activities: [
+                "Implemented Set grid",
+                "Started tests of set cartesians and set grid",
+                "Moved Tester Randomizer to CAD",
+            ]
+        },
+        {
+            version: "0.9.6",
+            date: "20230318",
+            milestone: "DEBUG",
+            activities: [
+                "Logger for JSON circular stringification",
+            ]
+        },
+        {
+            version: "0.9.6",
             date: "20230315",
             milestone: "DEBUG",
-            description: "Improve code and remove bugs",
             activities: [
                 "Sliding curve with new path instructions",
                 "Sliding system with new path instructions",
@@ -140,7 +221,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230314",
             milestone: "DEBUG",
-            description: "Improve code and remove bugs",
             activities: [
                 "Optimize and strengthen svg.path instructions",
                 "Create Path cursor instruction",
@@ -150,7 +230,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230312",
             milestone: "SETUP",
-            description: "Instructions for CAD setup",
             activities: [
                 "Set viewbox",
                 "Set background",
@@ -162,7 +241,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230312",
             milestone: "PRIMITIVES",
-            description: "Basic CAD primitives instructions",
             activities: [
                 "Test dimensions types",
             ]
@@ -171,7 +249,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230310",
             milestone: "TC_MTOS",
-            description: "Technical closures measures taken on site",
             activities: [
                 "Alpha for Top view test",
                 "Alpha for Front outside and inside view test",
@@ -181,7 +258,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230308",
             milestone: "TC_MTOS",
-            description: "Technical closures measures taken on site",
             activities: [
                 "Investigate linear dimension bugs",
             ]
@@ -190,7 +266,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230306",
             milestone: "JSON",
-            description: "Read instructions from JSON file",
             activities: [
                 "Completed migration to ApgJsv 0.9.6",
             ]
@@ -199,7 +274,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230306",
             milestone: "TOOLS",
-            description: "Logger, Profiler, Instructions, Cad Status ",
             activities: [
                 "Added validation logger to main logger",
             ]
@@ -208,7 +282,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.6",
             date: "20230306",
             milestone: "JSON",
-            description: "Read instructions from JSON file",
             activities: [
                 "Started migration to ApgJsv 0.9.6",
             ]
@@ -217,7 +290,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230304",
             milestone: "DEVLOG",
-            description: "Develompment log",
             activities: [
                 "Interfaces for things to do and things done",
                 "Added interfaces to UTS module",
@@ -231,7 +303,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230303",
             milestone: "TC_SECo",
-            description: "Technical closures sectional doors coat",
             activities: [
                 "Inspection windows",
                 "Rotate svg element using pivot"
@@ -241,7 +312,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230302",
             milestone: "TC_SECo",
-            description: "Technical closures sectional doors coat",
             activities: [
                 "Path drawing strategy",
                 "Panels with holes",
@@ -251,7 +321,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230220",
             milestone: "TC_SDSS",
-            description: "Technical closures sectional doors sliding system",
             activities: [
                 "Curves",
                 "Sliding tracks",
@@ -261,7 +330,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230125",
             milestone: "JSON",
-            description: "Read instructions form JSON file",
             activities: [
                 "Load file",
                 "Compile and interpret instructions to build SVG",
@@ -271,7 +339,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230120",
             milestone: "TC_MTOS",
-            description: "Technical closures measures taken on site",
             activities: [
                 "Dimensions on side view",
             ]
@@ -280,7 +347,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230118",
             milestone: "TOOLS",
-            description: "Logger, Profiler, Instructions, Cad Status ",
             activities: [
                 "Improved logger partial",
                 "Improved Instructions partial",
@@ -291,7 +357,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230115",
             milestone: "VIEWER",
-            description: "Interactive svg viewer",
             activities: [
                 "Svg PanZomm Toolbar",
                 "Layers dialog",
@@ -302,7 +367,6 @@ export const ApgCiiDevLog: Uts.IApgUtsDevlog = {
             version: "0.9.5",
             date: "20230110",
             milestone: "PRIMITIVES",
-            description: "Basic CAD primitives instructions",
             activities: [
                 "Basic shape instructions test",
                 "Dimensions ad annotations test",

@@ -25,7 +25,7 @@ const rawSchema: Jsv.IApgJsvInterface = {
         aspectRatio: {
             type: 'number'
         },
-        leading: {
+        lineHeight: {
             type: 'number'
         },
         anchor: {

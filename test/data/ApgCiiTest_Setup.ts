@@ -4,42 +4,67 @@
  * @version 0.9.6 [APG 2023/03/12]
  * -----------------------------------------------------------------------
  */
-
-
 import { Cad } from "../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes.ts";
-import { ApgCiiTesterRandomizer } from "../src/classes/ApgCiiTesterRandomizer.ts";
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_Setup(arandomizer: ApgCiiTesterRandomizer) {
+export function ApgCiiTest_Setup(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
 
-    const MIN_X_1 = 4000;
-    const MIN_X_2 = 1000;
-    const MAX_X_1 = 5000;
-    const MAX_X_2 = 10000;
-    const MIN_Y_1 = 4000;
-    const MIN_Y_2 = 1000;
-    const MAX_Y_1 = 5000;
-    const MAX_Y_2 = 10000;
+    const VIEWBOX: Cad.IApgCadSvgViewBox = getRandomizedViewBox(arandomizer, acanvasWidth, acanvasRatio);
+    const resume = JSON.stringify(VIEWBOX, undefined, "  ").split("\n");
 
-    const minx = arandomizer.randomInt(MIN_X_1, MIN_X_2);
-    const maxx = arandomizer.randomInt(MAX_X_1, MAX_X_2);
-    const miny = arandomizer.randomInt(MIN_Y_1, MIN_Y_2);
-    const maxy = arandomizer.randomInt(MAX_Y_1, MAX_Y_2);
+    const CARTESIANS: Cad.IApgCadSvgCartesians = {
+        mode: Cad.eApgCadCartesianMode.NORMAL,
+        axisStroke: {
+            color: 'green',
+            width: 3
+        },
+        drawTicks: true,
+        ticksStep: 100,
+        ticksSize: 25,
+        bigTicksEvery: 1000,
+        bigTicksSize: 50,
+        tickStroke: {
+            color: 'blue',
+            width: 20
+        },
+        drawBigTicksLables: true,
+        drawBigTicks: true,
+        labelsTextStyleName: 'mono'
 
-
-    const vw = maxx - minx;
-    const vh = maxy - miny;
-
-    const VIEWBOX: Cad.IApgCadSvgViewBox = {
-        canvasWidth: 1000,
-        canvasHeight: Math.round(1000 / vw * vh),
-        viewPortWidth: vw,
-        viewPortHeight: vh,
-        originXDisp: minx,
-        originYDisp: miny
     }
+
+    const GRID: Cad.IApgCadSvgGrid = {
+        mode: Cad.eApgCadGridMode.DOTS,
+        gridStep: 100,
+        gridStroke: {
+            color: "red",
+            width: 2,
+            dashPattern: [10, 90],
+            dashOffset: 5
+        },
+        drawMajors: false,
+        majorEvery: 500,
+        majorGridStroke: {
+            color: 'orange',
+            width: 5,
+            dashPattern: [10, 90],
+            dashOffset: 5
+        },
+    }
+
+    const BACKGROUND: Cad.IApgCadSvgGround = {
+        draw: true,
+        strokeWidth: 20,
+        strokeColor: 'cyan',
+        fillColor: '#250060'
+    }
+
 
     const r: IApgCiiTest = {
         name: eApgCiiTests.SETUP,
@@ -55,6 +80,18 @@ export function ApgCiiTest_Setup(arandomizer: ApgCiiTesterRandomizer) {
             {
                 type: eApgCiiInstructionTypes.SET_VIEWBOX,
                 payload: VIEWBOX
+            },
+            {
+                type: eApgCiiInstructionTypes.SET_CARTESIANS,
+                payload: CARTESIANS
+            },
+            {
+                type: eApgCiiInstructionTypes.SET_GRID,
+                payload: GRID
+            },
+            {
+                type: eApgCiiInstructionTypes.SET_BACKGROUND,
+                payload: BACKGROUND
             },
             {
                 type: eApgCiiInstructionTypes.SETUP_END,
@@ -146,8 +183,65 @@ export function ApgCiiTest_Setup(arandomizer: ApgCiiTesterRandomizer) {
                 type: eApgCiiInstructionTypes.DRAW_ALL_POINTS,
                 radious: 10
             },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT_DELTA,
+                name: 'resume',
+                origin: "ZERO",
+                w: VIEWBOX.viewPortWidth / 2 - VIEWBOX.originXDisp,
+                h: VIEWBOX.viewPortHeight / 2 - VIEWBOX.originYDisp
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_TEXT,
+                origin: 'resume',
+                text: resume
+            },
 
         ]
     }
+    return r;
+}
+
+function getRandomizedViewBox(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth: number,
+    acanvasRatio: number
+) {
+    const MIN_X_1 = 1;
+    const MIN_X_2 = 4;
+    const minx = arandomizer.randomInt(MIN_X_1, MIN_X_2);
+
+    const MAX_X_1 = 5;
+    const MAX_X_2 = 10;
+    const maxx = arandomizer.randomInt(MAX_X_1, MAX_X_2);
+
+    const MIN_Y_1 = 1;
+    const MIN_Y_2 = 4;
+    const miny = arandomizer.randomInt(MIN_Y_1, MIN_Y_2);
+
+    const MAX_Y_1 = 5;
+    const MAX_Y_2 = 10;
+    const maxy = arandomizer.randomInt(MAX_Y_1, MAX_Y_2);
+
+    let vw = (maxx - minx);
+    let vh = (maxy - miny);
+
+    let xd = arandomizer.randomInt(vw / 10, vw / 2);
+    let yd = arandomizer.randomInt(vh / 10, vh / 2);
+
+    const cw = acanvasWidth;
+    const ch = Math.round(cw / acanvasRatio);
+    vw *= 1000;
+    vh *= 1000;
+    xd *= 1000;
+    yd *= 1000;
+
+    const r: Cad.IApgCadSvgViewBox = {
+        canvasWidth: cw,
+        canvasHeight: ch,
+        viewPortWidth: vw,
+        viewPortHeight: vh,
+        originXDisp: xd,
+        originYDisp: yd
+    };
     return r;
 }

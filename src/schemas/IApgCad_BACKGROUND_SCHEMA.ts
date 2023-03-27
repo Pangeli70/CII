@@ -30,11 +30,13 @@ const rawSchema: Jsv.IApgJsvInterface = {
             type: 'string'
         },
         [FIELD_NAMES.strokeWidth]: {
-            description: 'Width of the border of the ground in pixels',
-            type: 'number'
+            description: 'Width of the border of the background in pixels',
+            type: 'number',
+            minimum: 1,
+            maximum: 20,
         },
         [FIELD_NAMES.fillColor]: {
-            description: 'Color of ground',
+            description: 'Color of the background',
             type: 'string'
         },
     },

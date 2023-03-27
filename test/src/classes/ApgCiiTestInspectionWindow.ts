@@ -1,4 +1,3 @@
-import { A2D, Cad } from "../../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../../src/enums/eApgCiiInstructionTypes.ts";
 import { IApgCiiInstruction } from "../../../src/interfaces/IApgCiiInstruction.ts";
 

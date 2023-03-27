@@ -5,6 +5,7 @@
  * -----------------------------------------------------------------------
  */
 
+import { Cad } from "../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes.ts";
 import { ApgCiiTestSlidingSystem } from "../src/classes/ApgCiiTestSlidingSystem.ts";
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
@@ -19,7 +20,11 @@ function getVerticalAngle(ax1: number, ax2: number, al: number) {
 }
 
 
-export function ApgCiiTest_SlidingSystem() {
+export function ApgCiiTest_SlidingSystem(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
     const r: IApgCiiTest = {
         name: eApgCiiTests.TC_SLIDING_SYSTEM,
         description: "Sliding systems",

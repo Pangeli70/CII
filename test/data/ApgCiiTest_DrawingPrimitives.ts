@@ -12,7 +12,11 @@ import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 import { IApgCiiTest } from "../src/interfaces/IApgCiiTest.ts";
 
-export function ApgCiiTest_DrawingPrimitives() {
+export function ApgCiiTest_DrawingPrimitives(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
     const r: IApgCiiTest = {
         name: eApgCiiTests.PRIMITIVES,
         description: "Basic shapes on the default layer: Zero ",
@@ -184,6 +188,17 @@ export function ApgCiiTest_DrawingPrimitives() {
                 type: eApgCiiInstructionTypes.DRAW_ARC,
                 points: ['P18', 'P17'],
                 angle: 80
+            },
+            {
+                type: eApgCiiInstructionTypes.NEW_POINT,
+                name: 'P19',
+                x: 6400,
+                y: 1500
+            },
+            {
+                type: eApgCiiInstructionTypes.DRAW_TEXT,
+                origin: 'P19',
+                text:['Test 1','test 2']
             },
             {
                 type: eApgCiiInstructionTypes.PUSH_LAYER,

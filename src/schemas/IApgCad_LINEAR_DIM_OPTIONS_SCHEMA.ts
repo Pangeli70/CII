@@ -6,6 +6,7 @@
  * -----------------------------------------------------------------------
  */
 import { Uts, Jsv } from '../../deps.ts'
+import { eApgCad_DIMENSION_POSITIONS_SCHEMA_ID_REF } from "./eApgCad_DIMENSION_POSITIONS_SCHEMA.ts";
 import { eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID_REF } from "./eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA.ts";
 
 export const IApgCad_LINEAR_DIM_OPTIONS_SCHEMA_ID =
@@ -19,12 +20,13 @@ const rawSchema: Jsv.IApgJsvInterface = {
         type: {
             $ref: eApgCad_LINEAR_DIMENSION_TYPES_SCHEMA_ID_REF
         },
+        position: {
+            $ref: eApgCad_DIMENSION_POSITIONS_SCHEMA_ID_REF
+        }
     },
     additionalProperties: false,
     allErrors: true,
-    required: [
-        'type'
-    ]
+    required: []
 };
 
 export const IApgCad_LINEAR_DIM_OPTIONS_SCHEMA = Uts.ApgUtsObj.DeepFreeze(rawSchema) as Jsv.IApgJsvInterface;

@@ -28,16 +28,20 @@ import { ApgCiiTest_InspectionWindows } from "../../data/ApgCiiTest_InspectionWi
 import { eApgCiiTests } from "../enums/eApgCiiTests.ts";
 
 import { IApgCiiTest } from "../interfaces/IApgCiiTest.ts";
-import { ApgCiiTesterRandomizer } from "./ApgCiiTesterRandomizer.ts";
 
-type IApgCiiTestFn = (rndz: ApgCiiTesterRandomizer) => IApgCiiTest;
+
+type IApgCiiTestFn = (
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth: number,
+    acanvasRatio: number
+    ) => IApgCiiTest;
 
 export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
 
     protected static _ready = false;
     protected static _tests: Map<string, IApgCiiTestFn> = new Map();
 
-    protected static _randomizer = new ApgCiiTesterRandomizer();
+    protected static _randomizer = new Cad.Test.ApgCadTestRandomizer();
 
 
     protected static init() {
@@ -61,14 +65,14 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
     }
 
 
-    static async GetTest(atestName: string) {
+    static async GetTest(atestName: string, acanvasWidth = 1000, acanvasRatio = 16 / 9) {
 
         let r: IApgCiiTest;
         if (!this._ready) this.init();
 
         const fn = this._tests.get(atestName);
         if (fn) {
-            r = fn(this._randomizer);
+            r = fn(this._randomizer, acanvasWidth, acanvasRatio);
         }
         else {
             // TODO @2 move this const declaration outside from here -- APG 20230115
@@ -93,21 +97,23 @@ export class ApgCiiTester extends Cad.Test.ApgCadBaseTester {
 
     static async RunTest(
         cad: Cad.ApgCadSvg,
-        aname: string
+        aname: string,
+        acanvasWidth = 1000,
+        acanvasRatio = 16 / 9
     ) {
 
         cad.svg.title = aname;
         cad.svg.description = "Apg Svg Cad Instr. Interp.";
 
         const logger = new Lgr.ApgLgr('Instructions set');
-        const test = await this.GetTest(aname);
+        const test = await this.GetTest(aname, acanvasWidth, acanvasRatio);
 
         let svg = "";
 
         if (test) {
 
             const insSet = new ApgCii(logger, cad)
-            let _r = insSet.set(test!.instructions);
+            const _r = insSet.set(test!.instructions);
             await insSet.build();
 
             this.DrawCartouche(cad);

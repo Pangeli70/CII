@@ -7,6 +7,7 @@
  */
 import { Uts, Jsv } from '../../deps.ts'
 import { eApgCiiInstructionTypes } from "../enums/eApgCiiInstructionTypes.ts";
+import { IApgCad_PATH_ARC_OPTIONS_SCHEMA_ID } from "./IApgCad_PATH_ARC_OPTIONS_SCHEMA.ts";
 
 export const IApgCii_PATH_ARC_SCHEMA_ID =
     Jsv.ApgJsv_DOMAIN + 'IApgCii_PathArc';
@@ -28,11 +29,8 @@ const rawSchema: Jsv.IApgJsvInterface = {
         angle: {
             type: 'number'
         },
-        // TODO @1 Implement Path arc Options schema
         payload: {
-            type: 'object'
-            // largeArc : 'boolean'
-            // clockwise: 'boolean'
+            $ref: IApgCad_PATH_ARC_OPTIONS_SCHEMA_ID,
         }
     },
     additionalProperties: false,

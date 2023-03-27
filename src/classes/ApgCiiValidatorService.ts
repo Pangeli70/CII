@@ -11,6 +11,7 @@
  * @version 0.9.4 [APG 2023/01/07] Deno Deploy Beta
  * @version 0.9.5 [APG 2023/01/28] Moved from CAD to CII.
  * @version 0.9.5.1 [APG 2023/02/18] Moved to singleton service.
+ * @version 0.9.6 [APG 2023/03/18] Debugged logger.
  * -----------------------------------------------------------------------
  */
 
@@ -33,14 +34,11 @@ export class ApgCiiValidatorService {
 
   private static _initialized = false;
 
-  private static _status = Rst.ApgRstErrors.Simple("Validator not initialized");
-  /** Object initialization result */
-  static get Status() { return this._status; }
 
 
   static Validate(ainstructions: IApgCiiInstruction[]) {
 
-    let r: Rst.IApgRst = { ...this._status };
+    let r: Rst.IApgRst = { ok: true };
 
     if (!this._initialized) {
       r = Rst.ApgRstErrors.Simple("ApgCiiValidatorService is not initialized")
@@ -51,7 +49,7 @@ export class ApgCiiValidatorService {
 
       r = this.#validateInstructionsWithAjv(ainstructions);
 
-      this._loggable!.logEnd(this._status);
+      this._loggable!.logEnd(r);
     }
 
     return r
@@ -61,20 +59,23 @@ export class ApgCiiValidatorService {
 
   static Init(alogger: Lgr.ApgLgr) {
 
+    let r: Rst.IApgRst = { ok: true };
+
     if (this._initialized == true) {
-      return this._status;
+      return r;
     }
 
     this._logger = alogger;
     this._loggable = new Lgr.ApgLgrLoggable('ApgCiiValidatorsService', this._logger);
     this._loggable.logBegin(this.Init.name);
 
-    this._status = this.#getValidators(this._loggable, this._logger);
-    if (this._status.ok) {
+    r = this.#getValidators(this._loggable, this._logger);
+    if (r.ok) {
       this._initialized = true;
     }
-    this._loggable.logEnd(this._status);
-    return this._status;
+
+    this._loggable.logEnd(r);
+    return r;
   }
 
 
@@ -96,17 +97,16 @@ export class ApgCiiValidatorService {
 
       if (!r.ok) break;
 
-      const validatorName = element.jsonSchema.$id;
-      const validator = validatorService.getValidator(validatorName);
+      r = Rst.ApgRst.CheckPayload(r, 'ApgJsvAjvValidator') as Rst.IApgRst;
 
-      if (validator && !validator.status.ok) {
-        r = validator.status;
-        break;
-      }
-      else {
-        this._validators.set(element.type, validator!);
-      }
+      if (!r.ok ) break;
+      const validator = r.payload!.data as unknown as Jsv.ApgJsvAjvValidator;
+      this._validators.set(element.type, validator);
 
+    }
+
+    if (r.ok) { 
+      r.payload = undefined;
     }
 
     aloggable.logEnd(r);
@@ -126,7 +126,7 @@ export class ApgCiiValidatorService {
       );
     }
     else {
-      instructions.forEach(instruction => {
+      for (const instruction of instructions) {
 
         if (r.ok) {
 
@@ -147,7 +147,7 @@ export class ApgCiiValidatorService {
             }
           }
         }
-      });
+      }
     }
 
     return r;

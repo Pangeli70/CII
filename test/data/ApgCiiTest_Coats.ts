@@ -5,14 +5,18 @@
  * -----------------------------------------------------------------------
  */
 
-import { A2D } from "../../deps.ts";
+import { A2D, Cad } from "../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes.ts";
 import { ApgCiiTestPanel } from "../src/classes/ApgCiiTestPanel.ts";
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 
 
 
-export function ApgCiiTest_Coats() {
+export function ApgCiiTest_Coats(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
 
     const W = Math.random() * 2000 + 2000;
     const N = Math.round(Math.random() * 2) + 1;

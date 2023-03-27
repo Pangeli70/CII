@@ -17,8 +17,8 @@ const rawSchema: Jsv.IApgJsvEnum = {
     $id: eApgCad_CARTESIAN_MODES_SCHEMA_ID,
     $defs: {
         enumType: {
-            type: "integer",
-            enum: Uts.ApgUtsEnum.NumericValues(Cad.eApgCadCartesianMode)
+            type: "string",
+            enum: Uts.ApgUtsEnum.StringValues(Cad.eApgCadCartesianMode)
         },
     }
 }

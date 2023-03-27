@@ -5,14 +5,18 @@
  * -----------------------------------------------------------------------
  */
 
+import { Cad } from "../../deps.ts";
 import { eApgCiiInstructionTypes } from "../../src/enums/eApgCiiInstructionTypes.ts";
 import { ApgCiiTestInspectionWindow } from "../src/classes/ApgCiiTestInspectionWindow.ts";
-import { ApgCiiTestPanel } from "../src/classes/ApgCiiTestPanel.ts";
 import { eApgCiiTests } from "../src/enums/eApgCiiTests.ts";
 
 
 
-export function ApgCiiTest_InspectionWindows() {
+export function ApgCiiTest_InspectionWindows(
+    arandomizer: Cad.Test.ApgCadTestRandomizer,
+    acanvasWidth = 1000,
+    acanvasRatio = 16 / 9
+) {
 
     const W = [525, 700, 250];
     const H = [350, 350, 250];
